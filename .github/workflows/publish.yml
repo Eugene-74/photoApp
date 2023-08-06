@@ -47,7 +47,7 @@ jobs:
         mv version.md assets/
         ./gradlew desktop:dist -Pversion='${{ steps.version.outputs.content }}'
         ls desktop/build/libs/
-        mv desktop/build/libs/${{ env.ARTIFACT_NAME }}-${{ steps.version.outputs.content }}.jar ${{ env.ARTIFACT_NAME }}.jar
+        mv desktop/build/libs/*.jar ${{ env.ARTIFACT_NAME }}.jar
         ls
 
     - name: release
