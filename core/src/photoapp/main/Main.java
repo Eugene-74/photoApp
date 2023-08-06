@@ -1,6 +1,7 @@
 package photoapp.main;
 
 import java.io.File;
+import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -16,6 +17,8 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
@@ -26,6 +29,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
@@ -50,21 +54,32 @@ public class Main extends ApplicationAdapter {
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
 	public static String toReload = "";
-	public static List<String> toReloadList = List.of();
+	// public static List<String> toReloadList = List.of();
 	public static String windowOpen = "Main";
 	Integer newProgress;
+	public static ArrayList<String> toLoad = new ArrayList<String>();
+	public static ArrayList<String> toSetSize150 = new ArrayList<String>();
+	static Thread thread = null;
+	Long lastTime = (long) 0;
+
+	public void iniPreferences() {
+		preferences.putInteger("size of main images height", 1000);
+		preferences.putInteger("size of main images width", 1400);
+		preferences.putInteger("size of main images button", 150);
+		preferences.putInteger("size of close button", 50);
+
+	}
 
 	@Override
 	public void create() {
 		preferences = Gdx.app.getPreferences("graphic params");
-		preferences.putInteger("size of main images height", 1000);
-		preferences.putInteger("size of main images width", 1400);
-		preferences.putInteger("size of main images button", 200);
+		iniPreferences();
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		Gdx.input.setInputProcessor(mainStage);
+		// clear();
 		createInfoTable();
-		clear();
+		createCloseButton();
 
 		ImageData.openDataOfImages();
 
@@ -95,7 +110,7 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
-		windowOpen = "Main Images";
+
 		MainImages.createMainWindow();
 		ImageEdition.imageEdtionCreate();
 		// ImageEdition.imageEdtionCreate();
@@ -107,10 +122,14 @@ public class Main extends ApplicationAdapter {
 		Integer progress = MixOfImage.manager.getAssetNames().size;
 		// System.out.println("rendering" + progress);
 		MixOfImage.manager.update();
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+		// && TimeUtils.millis() - lastTime >= 100
+		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && TimeUtils.millis() - lastTime >= 100) {
 			ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+			lastTime = TimeUtils.millis();
+		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && TimeUtils.millis() - lastTime >= 100) {
 			ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
+			lastTime = TimeUtils.millis();
+
 		}
 		ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
 		if (!infoText.equals(" ")) {
@@ -120,11 +139,14 @@ public class Main extends ApplicationAdapter {
 		// if (MixOfImage.manager.isFinished()) {
 		// System.out.println("finish" + toReload + "");
 		// }
-		if (windowOpen.equals("Image Edition") && !toReloadList.isEmpty() && toReload.equals("imageEdition")) {
-			ImageEdition.reloadImageEdition(false);
-			toReload = "";
-			toReloadList = List.of();
-		}
+
+		// if (windowOpen.equals("Image Edition") && !toReloadList.isEmpty() &&
+		// toReload.equals("imageEdition")) {
+		// ImageEdition.reloadImageEdition(false);
+		// toReload = "";
+		// toReloadList = List.of();
+		// }
+
 		// if (windowOpen.equals("Main Images") && toReload.equals("mainImages")) {
 		// for (String reload : toReloadList) {
 		// if (MixOfImage.manager.isLoaded(reload)) {
@@ -137,27 +159,55 @@ public class Main extends ApplicationAdapter {
 		// }
 		// if (newProgress != null)
 		// System.out.println(progress + newProgress);
+		// System.out.println(MixOfImage.isLoading + toReload);
 		if (windowOpen.equals("Image Edition") &&
 				toReload.equals("imageEdition")) {
 			// || MixOfImage.manager.isFinished()
-			if (progress != newProgress) {
-				newProgress = progress;
-
-				toReload = "";
-				ImageEdition.reloadImageEdition(false);
+			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
+				if (MixOfImage.manager.isFinished()) {
+					MixOfImage.isLoading = false;
+					infoTextSet("done");
+					ImageEdition.reloadImageEdition(false);
+					toReload = "";
+					return;
+				}
+				// newProgress = progress;
+				// toReload = "";
+				// ImageEdition.reloadImageEdition(false);
 			}
 		}
+		// System.out.println(MixOfImage.manager.isFinished());
 		if (windowOpen.equals("Main Images") &&
 				toReload.equals("mainImages")) {
-			if (progress != newProgress) {
-				newProgress = progress;
-				infoTextSet(" ");
-				toReload = "";
-				MainImages.reloadMainImages();
+			// System.out.println("try --------");
+			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
+				// System.out.println("try bis");
+				if (MixOfImage.manager.isFinished()) {
+					// System.out.println("finish?");
+					MainImages.reloadMainImages();
+					MixOfImage.isLoading = false;
+					infoTextSet("done");
+					toReload = "";
+					// System.out.println("finisht");
+					return;
+
+				}
+				// newProgress = progress;
+				// System.out.println("reload Main Images");
+				// MainImages.reloadMainImages();
+				// toReload = "";
 
 			}
+
 		}
+
 		newProgress = progress;
+		if (thread != null) {
+			if (thread.getState() == State.TERMINATED && !toLoad.isEmpty()) {
+				System.out.println("terminated");
+				loadImagesForTheFirstTime();
+			}
+		}
 
 	}
 
@@ -183,7 +233,6 @@ public class Main extends ApplicationAdapter {
 	public void clear() {
 
 		mainStage.clear();
-		createCloseButton();
 	}
 
 	@Override
@@ -203,6 +252,7 @@ public class Main extends ApplicationAdapter {
 			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable) {
 
 		MixOfImage mixOfImages = new MixOfImage(imageNames, isSquare);
+		// System.out.println(preferences.getInteger("size of " + prefSizeName, 0));
 
 		if (isSquare) {
 			mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName, 100),
@@ -275,7 +325,17 @@ public class Main extends ApplicationAdapter {
 		if (windowOpen.equals("Image Edition")) {
 			ImageEdition.reloadImageEdition(returnToZero);
 		}
+		if (windowOpen.equals("Main Images")) {
+			MainImages.reloadMainImages();
+		}
 	}
+
+	// public static void allSetSize100() {
+	// for (String imageName : toSetSize100) {
+
+	// Main.setSize100(imageName);
+	// }
+	// }
 
 	public static List<String> addToList(List<String> firstList, String toAdd) {
 		List<String> newList = new ArrayList<String>();
@@ -309,7 +369,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void openFile() {
-		new Thread(new Runnable() {
+		thread = new Thread() {
 			@Override
 			public void run() {
 				JFileChooser chooser = new JFileChooser();
@@ -330,7 +390,10 @@ public class Main extends ApplicationAdapter {
 							openImageInAFile(fileRessource);
 						} else {
 							openImageOfAFile(fileRessource);
+
 							nameOfFolderOfLoadedImages = "All files loaded";
+							// reload(false);
+
 						}
 
 					}
@@ -339,17 +402,48 @@ public class Main extends ApplicationAdapter {
 				}
 			}
 
-		}).start();
-		reload(true);
+		};
+		thread.start();
+		// thread.getState();
 
 	}
 
 	public static void openImageInAFile(File dir) {
 		FileHandle from = Gdx.files.absolute(dir.toString());
 		byte[] data = from.readBytes();
+		// String fileName = ImageData.IMAGE_PATH + "/" + dir.getName();
+		// if (fileName.endsWith(".PNG")) {
+		// fileName = fileName.replace(".PNG", ".png");
+		// } else if (fileName.endsWith(".JPG")) {
+		// fileName = fileName.replace(".JPG", ".jpg");
+		// }
 		FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName());
 		to.writeBytes(data, false);
 		openImageExif(dir.getName());
+		toSetSize150.add(dir.getName());
+		// setSize100(dir.getName());
+		// remetre !!!!!!!!!!
+	}
+
+	public static void loadImagesForTheFirstTime() {
+		for (String imagePath : toLoad) {
+			String[] nameList = imagePath.split("/");
+			String name = nameList[nameList.length - 1];
+
+			infoText = "Loding a folder : "
+					+ numberOfLoadedImages
+					+ " images load / total loaded : " + totalNumberOfLoadedImages;
+
+			FileHandle from = Gdx.files.absolute(imagePath);
+			byte[] data = from.readBytes();
+			Main.setSize150(imagePath, name);
+			FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name);
+			to.writeBytes(data, false);
+			openImageExif(name);
+			numberOfLoadedImages += 1;
+			totalNumberOfLoadedImages += 1;
+		}
+		toLoad = new ArrayList<String>();
 	}
 
 	public static void openImageOfAFile(File dir) {
@@ -363,33 +457,36 @@ public class Main extends ApplicationAdapter {
 							+ "(" + numberOfLoadedImages
 							+ " images load) / total loaded : " + totalNumberOfLoadedImages
 							+ nameOfFolderOfLoadedFolder;
-
+					// String fileName = item.getName();
+					// if (item.getName().endsWith(".PNG")) {
+					// fileName = fileName.replace(".PNG", ".png");
+					// } else if (item.getName().endsWith(".JPG")) {
+					// fileName = fileName.replace(".JPG", ".jpg");
+					// }
 					if (item.getName().endsWith(".png") || item.getName().endsWith(".PNG")
 							|| item.getName().endsWith(".jpg") || item.getName().endsWith(".JPG")) {
-						FileHandle from = Gdx.files.absolute(dir + "/" + item.getName());
-						byte[] data = from.readBytes();
 
-						FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + item.getName());
-						to.writeBytes(data, false);
-						openImageExif(item.getName());
-						numberOfLoadedImages += 1;
-						totalNumberOfLoadedImages += 1;
+						toLoad.add(dir + "/" + item.getName());
+
 					}
 
 					else {
-						System.out.println("fichier non lisible : " + item.getName());
+						// System.out.println("fichier non lisible : " + item.getName());
 					}
 				} else if (item.isDirectory()) {
 
 					openImageOfAFile(item);
 
-					nameOfFolderOfLoadedFolder = " / The folder : " + item.getName() + " have been load";
+					// nameOfFolderOfLoadedFolder = " / The folder : " + item.getName() + " have
+					// been load";
 				}
 			}
 			numberOfLoadedImages = 0;
 
 		}
-		infoTextSet("All files have been load");
+		// infoTextSet("All files have been load, please refresh");
+		// loadImagesForTheFirstTime();
+
 	}
 
 	public static void openImageExif(String imagePath) {
@@ -442,4 +539,78 @@ public class Main extends ApplicationAdapter {
 		}
 	}
 
+	public static void setSize150(String imagePath, String imageName) {
+		System.out.println("setSize150");
+		FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + imageName);
+		if (!handlebis.exists()) {
+			// ImageData imageData = Main.getCurrentImageData(imageName);
+
+			Texture texture = MixOfImage.isInImageData(imagePath, true);
+			// Texture texture = new Texture(imagePath);
+			// Texture texture = MixOfImage.manager.get(imageName, Texture.class);
+			Pixmap pixmap = resize(textureToPixmap(texture), 150, 150);
+			// Image image = new Image(texture);
+			// MixOfImage.loadImage(imageName);
+			// Texture textureEdited = MixOfImage.manager.get();
+			FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150");
+
+			if (!handle.exists()) {
+				handle.mkdirs();
+			}
+			String fileName = null;
+			String[] ListImageName = imageName.split("/");
+
+			fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
+			FileHandle fh = new FileHandle(fileName);
+
+			PixmapIO.writePNG(fh, pixmap);
+			pixmap.dispose();
+		}
+
+		// if (imageName.endsWith(".JPG")) {
+		// fileName = imageName.replace(".JPG", "-100.JPG");
+		// } else if (imageName.endsWith(".png")) {
+		// fileName = imageName.replace(".png", "-100.png");
+		// }
+		// else if (imageName.endsWith(".JPG")) {
+		// fileName = imageName.replace(".jpg", "-100.jpg");
+		// } else if (imageName.endsWith(".PNG")) {
+		// fileName = imageName.replace(".png", "-100.png");
+		// }
+
+	}
+
+	/**
+	 * Return the pixmap of a texture.
+	 * 
+	 * @param in texture
+	 * @return the pixmap of a texture
+	 */
+	public static Pixmap textureToPixmap(Texture in) {
+		// get image as pixmap
+		if (!in.getTextureData().isPrepared()) {
+			in.getTextureData().prepare();
+		}
+		return in.getTextureData().consumePixmap();
+	}
+
+	/**
+	 * Resize a Pixmap.
+	 * 
+	 * @param inPm      Pixmap to resize
+	 * @param outWidth  new width
+	 * @param outheight new height
+	 * @return resized Pixmap
+	 */
+	public static Pixmap resize(Pixmap inPm, int outWidth, int outheight) {
+		Pixmap outPm = new Pixmap(outWidth, outheight, Pixmap.Format.RGBA8888);
+		outPm.drawPixmap(inPm, 0, 0, inPm.getWidth(), inPm.getHeight(), 0, 0, outWidth, outheight);
+		inPm.dispose();
+		return outPm;
+	}
+
 }
+
+// bug loading fait .finish done
+// bug infoText done
+// update image by cell and not all

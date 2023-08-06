@@ -2,11 +2,18 @@ package photoapp.main.windows;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
@@ -105,8 +112,8 @@ public class ImageEdition {
 			iniImageEdition(theCurrentImagePath, true);
 
 		}
-		Main.infoTextSet("reload is done");
-		System.out.println("end reload" + Main.infoText);
+		// Main.infoTextSet("reload is done");
+		// System.out.println("end reload" + Main.infoTex-t);
 	}
 
 	public static void openMainImage(String imageName) {
@@ -508,7 +515,7 @@ public class ImageEdition {
 					for (ImageData imageData : Main.imagesData) {
 						if ((imageData.getName())
 								.equals(currentImagePath)) {
-							// rotateAnImage(90, imageData);
+							rotateAnImage(90, imageData.getName());
 						}
 					}
 				},
@@ -538,15 +545,67 @@ public class ImageEdition {
 		// },
 		// true, true, false, table);
 
+		CommonButton.createRefreshButton(table);
 		Main.placeImage(List.of("images/refresh.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
 					// infoTextSet("test");
-
-					reloadImageEdition(false);
+					// setSize100();
 				},
 				true, true, false, table);
+		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					currentMainImage.clear();
+					table.clear();
+
+					MainImages.createMainWindow();
+				},
+				true, true, false, table);
+
+	}
+
+	public static void rotateAnImage(Integer degree, String imagePath) {
+		Texture texture = MixOfImage.isInImageData(ImageData.IMAGE_PATH + "/" + imagePath, true);
+		// Image img = new Image(texture);
+		// img.rotateBy(degree);
+
+		// Texture texture = new Texture(imagePath);
+		// Texture texture = MixOfImage.manager.get(imageName, Texture.class);
+		Pixmap pixmap = Main.textureToPixmap(texture);
+		pixmap = rotatePixmap(pixmap, degree);
+		FileHandle fh = new FileHandle(ImageData.IMAGE_PATH + "/" + imagePath);
+
+		PixmapIO.writePNG(fh, pixmap);
+		pixmap.dispose();
+		ImageEdition.reloadImageEdition(false);
+	}
+
+	public static Pixmap rotatePixmap(Pixmap src, float angle) {
+		final int width = src.getWidth();
+		final int height = src.getHeight();
+		Pixmap rotated = new Pixmap(width, height, src.getFormat());
+
+		final double radians = Math.toRadians(angle);
+		final double cos = Math.cos(radians);
+		final double sin = Math.sin(radians);
+
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				final int centerX = width / 2;
+				final int centerY = height / 2;
+				final int m = x - centerX;
+				final int n = y - centerY;
+				final int j = ((int) (m * cos + n * sin)) + centerX;
+				final int k = ((int) (n * cos - m * sin)) + centerY;
+				if (j >= 0 && j < width && k >= 0 && k < height) {
+					rotated.drawPixel(x, y, src.getPixel(j, k));
+				}
+			}
+		}
+		return rotated;
 	}
 
 	public static void save() {
