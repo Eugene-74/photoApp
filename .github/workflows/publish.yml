@@ -43,6 +43,7 @@ jobs:
 
     - name: create release
       run: |
+        chmode 777 gradlew
         mv version.md assets/
         ./gradlew desktop:dist -Pversion='${{ steps.version.outputs.content }}'
         ls desktop/build/libs/
