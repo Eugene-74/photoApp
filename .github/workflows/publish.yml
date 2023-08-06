@@ -16,7 +16,7 @@ env:
   UUID: 'ecef4ce3-5b38-4846-8e5d-9d30115d50fa'
 jobs:
   releaseJob:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     outputs:
       upload_url: ${{ steps.create_release.outputs.upload_url }}
