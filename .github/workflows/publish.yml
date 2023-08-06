@@ -1,9 +1,9 @@
 name: publish release
 
-on:
-  pull_request:
-    branches: [master]
-    types: [closed]
+on: push 
+#   pull_request:
+#     branches: [master]
+#     types: [closed]
 
 env:
   JAVA_VERSION: '18'

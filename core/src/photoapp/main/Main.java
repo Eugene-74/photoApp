@@ -614,3 +614,6 @@ public class Main extends ApplicationAdapter {
 // bug loading fait .finish done
 // bug infoText done
 // update image by cell and not all
+// git add -A
+// git commit -m "update"
+// git push
