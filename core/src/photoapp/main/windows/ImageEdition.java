@@ -560,6 +560,7 @@ public class ImageEdition {
 				(o) -> {
 					currentMainImage.clear();
 					table.clear();
+					previewTable.clear();
 
 					MainImages.createMainWindow();
 				},
