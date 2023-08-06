@@ -97,7 +97,7 @@ jobs:
         #     os: macos-latest
         #   - launcher-extension: pkg
         #     os: macos-latest
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     needs: releaseJob
     runs-on: ${{ matrix.os }}
     steps:
