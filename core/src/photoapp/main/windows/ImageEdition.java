@@ -2,24 +2,18 @@ package photoapp.main.windows;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Handler;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
@@ -88,13 +82,9 @@ public class ImageEdition {
 	}
 
 	public static void reloadImageEdition(boolean returnToZero) {
-		// System.out.println("reload");
-		// infoText = "reloading please wait";
-		// render();
-		// infoTextSet("start reload");
-		// infoTextSet("reloading please wait");
-		// render();
-		MixOfImage.clearImagesTextureData();
+		Main.windowOpen = "Image Edition";
+		Main.toReload = "imageEdition";
+
 		ImageData.openDataOfImages();
 
 		// System.out.println(imagesData.get(0).getName() + "0 name ----------");
@@ -569,7 +559,7 @@ public class ImageEdition {
 	}
 
 	public static void rotateAnImage(Integer degree, String imagePath) {
-		Texture texture = MixOfImage.isInImageData(ImageData.IMAGE_PATH + "/" + imagePath, true);
+		Texture texture = MixOfImage.isInImageData(ImageData.IMAGE_PATH + "/" + imagePath, true, "");
 		// Image img = new Image(texture);
 		// img.rotateBy(degree);
 

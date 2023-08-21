@@ -13,8 +13,6 @@ import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -35,6 +33,7 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
+
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.windows.ImageEdition;
@@ -61,6 +60,7 @@ public class Main extends ApplicationAdapter {
 	public static ArrayList<String> toSetSize150 = new ArrayList<String>();
 	static Thread thread = null;
 	Long lastTime = (long) 0;
+	static Integer setSize150Int = 0;
 
 	public void iniPreferences() {
 		preferences.putInteger("size of main images height", 1000);
@@ -136,67 +136,44 @@ public class Main extends ApplicationAdapter {
 			labelInfoText.setText(infoText);
 		}
 		mainStage.draw();
-		// if (MixOfImage.manager.isFinished()) {
-		// System.out.println("finish" + toReload + "");
-		// }
 
-		// if (windowOpen.equals("Image Edition") && !toReloadList.isEmpty() &&
-		// toReload.equals("imageEdition")) {
-		// ImageEdition.reloadImageEdition(false);
-		// toReload = "";
-		// toReloadList = List.of();
-		// }
+		if (progress != newProgress && !MixOfImage.LoadingList.isEmpty()) {
+			// Long start = TimeUtils.millis();
+			for (String imagePath : MixOfImage.LoadingList) {
+				// Long startbis = TimeUtils.millis();
 
-		// if (windowOpen.equals("Main Images") && toReload.equals("mainImages")) {
-		// for (String reload : toReloadList) {
-		// if (MixOfImage.manager.isLoaded(reload)) {
-		// System.out.println(reload + "reolad");
-		// toReloadList.remove(reload);
-		// toReload = "";
-		// MainImages.reloadMainImages();
-		// }
-		// }
-		// }
-		// if (newProgress != null)
-		// System.out.println(progress + newProgress);
-		// System.out.println(MixOfImage.isLoading + toReload);
+				if (setSize150AfterLoad(imagePath)) {
+					setSize150Int += 1;
+					// System.out.println("Pease wait ! Loaded images : " + setSize150Int);
+					infoTextSet("Pease wait ! Loaded images : " + setSize150Int);
+				}
+			}
+			MixOfImage.firstLoading = false;
+		}
+
 		if (windowOpen.equals("Image Edition") &&
 				toReload.equals("imageEdition")) {
-			// || MixOfImage.manager.isFinished()
 			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
 				if (MixOfImage.manager.isFinished()) {
+					// System.out.println("reload image edi");
+					ImageEdition.reloadImageEdition(false);
 					MixOfImage.isLoading = false;
 					infoTextSet("done");
-					ImageEdition.reloadImageEdition(false);
 					toReload = "";
 					return;
 				}
-				// newProgress = progress;
-				// toReload = "";
-				// ImageEdition.reloadImageEdition(false);
 			}
-		}
-		// System.out.println(MixOfImage.manager.isFinished());
-		if (windowOpen.equals("Main Images") &&
-				toReload.equals("mainImages")) {
+		} else if (toReload.equals("mainImages")) {
 			// System.out.println("try --------");
 			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
-				// System.out.println("try bis");
 				if (MixOfImage.manager.isFinished()) {
-					// System.out.println("finish?");
 					MainImages.reloadMainImages();
 					MixOfImage.isLoading = false;
 					infoTextSet("done");
 					toReload = "";
-					// System.out.println("finisht");
 					return;
 
 				}
-				// newProgress = progress;
-				// System.out.println("reload Main Images");
-				// MainImages.reloadMainImages();
-				// toReload = "";
-
 			}
 
 		}
@@ -419,8 +396,9 @@ public class Main extends ApplicationAdapter {
 		// }
 		FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName());
 		to.writeBytes(data, false);
-		openImageExif(dir.getName());
-		toSetSize150.add(dir.getName());
+		openImageExif(to.toString());
+		toSetSize150.add(to.toString());
+
 		// setSize100(dir.getName());
 		// remetre !!!!!!!!!!
 	}
@@ -436,10 +414,16 @@ public class Main extends ApplicationAdapter {
 
 			FileHandle from = Gdx.files.absolute(imagePath);
 			byte[] data = from.readBytes();
-			Main.setSize150(imagePath, name);
+
+			// toSetSize150.add("");
+
+			// setSize150Int += 1;
+			// System.out.println(setSize150Int);
+			// infoTextSet("loaded images : " + setSize150Int);
 			FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name);
 			to.writeBytes(data, false);
 			openImageExif(name);
+			Main.setSize150(ImageData.IMAGE_PATH + "/" + name, name);
 			numberOfLoadedImages += 1;
 			totalNumberOfLoadedImages += 1;
 		}
@@ -540,14 +524,27 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void setSize150(String imagePath, String imageName) {
-		System.out.println("setSize150");
+		// System.out.println("setSize150");
 		FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + imageName);
 		if (!handlebis.exists()) {
 			// ImageData imageData = Main.getCurrentImageData(imageName);
 
-			Texture texture = MixOfImage.isInImageData(imagePath, true);
-			// Texture texture = new Texture(imagePath);
-			// Texture texture = MixOfImage.manager.get(imageName, Texture.class);
+			// Texture texture =
+			MixOfImage.isInImageData(imagePath, false, "firstloading");
+		} else {
+			System.out.println(ImageData.IMAGE_PATH + "/150/" + imageName + " aready exist");
+		}
+	}
+
+	public static Boolean setSize150AfterLoad(String imagePath) {
+		// System.out.println("setsize150 after load : " + imagePath);
+		if (MixOfImage.manager.isLoaded(imagePath, Texture.class)) {
+			// System.err.println("loaded");
+
+			String[] nameList = imagePath.split("/");
+			String imageName = nameList[nameList.length - 1];
+
+			Texture texture = MixOfImage.isInImageData(imagePath, true, "firstloading");
 			Pixmap pixmap = resize(textureToPixmap(texture), 150, 150);
 			// Image image = new Image(texture);
 			// MixOfImage.loadImage(imageName);
@@ -557,28 +554,30 @@ public class Main extends ApplicationAdapter {
 			if (!handle.exists()) {
 				handle.mkdirs();
 			}
-			String fileName = null;
+			// String fileName = null;
 			String[] ListImageName = imageName.split("/");
 
-			fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
+			String fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
 			FileHandle fh = new FileHandle(fileName);
 
 			PixmapIO.writePNG(fh, pixmap);
 			pixmap.dispose();
+			MixOfImage.LoadingList = removeToList(MixOfImage.LoadingList, imagePath);
+			return true;
 		}
-
-		// if (imageName.endsWith(".JPG")) {
-		// fileName = imageName.replace(".JPG", "-100.JPG");
-		// } else if (imageName.endsWith(".png")) {
-		// fileName = imageName.replace(".png", "-100.png");
-		// }
-		// else if (imageName.endsWith(".JPG")) {
-		// fileName = imageName.replace(".jpg", "-100.jpg");
-		// } else if (imageName.endsWith(".PNG")) {
-		// fileName = imageName.replace(".png", "-100.png");
-		// }
-
+		return false;
 	}
+
+	// if (imageName.endsWith(".JPG")) {
+	// fileName = imageName.replace(".JPG", "-100.JPG");
+	// } else if (imageName.endsWith(".png")) {
+	// fileName = imageName.replace(".png", "-100.png");
+	// }
+	// else if (imageName.endsWith(".JPG")) {
+	// fileName = imageName.replace(".jpg", "-100.jpg");
+	// } else if (imageName.endsWith(".PNG")) {
+	// fileName = imageName.replace(".png", "-100.png");
+	// }
 
 	/**
 	 * Return the pixmap of a texture.
@@ -614,6 +613,4 @@ public class Main extends ApplicationAdapter {
 // bug loading fait .finish done
 // bug infoText done
 // update image by cell and not all
-// git add -A
-// git commit -m "update"
-// git push
+// dont load on menu

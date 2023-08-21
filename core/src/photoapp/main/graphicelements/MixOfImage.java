@@ -1,7 +1,6 @@
 package photoapp.main.graphicelements;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.badlogic.gdx.Gdx;
@@ -10,25 +9,23 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.Main;
 import photoapp.main.storage.ImageData;
 
 public class MixOfImage extends Group {
+    public static List<String> LoadingList = new ArrayList<String>();
     public static AssetManager manager = new AssetManager();
     public static boolean isLoading = false;
+    public static boolean firstLoading = false;
+
     public static long lastTime = 0;
 
     // public void mixOfImage() {
     // System.out.println("new HASH MAP ------------------------");
     // imagesData = new HashMap<>();
     // }
-    public static void clearImagesTextureData() {
-        Main.imagesTextureData = new OrderedMap<>();
-    }
 
     public static void loadImage(String lookingFor) {
         new Thread(new Runnable() {
@@ -59,62 +56,63 @@ public class MixOfImage extends Group {
 
                 isLoading = true;
                 manager.load(lookingFor, Texture.class);
-                // System.out.println(lookingFor + " : looking for ");
 
             }
         }).start();
-        // new Thread(new Runnable() {
-        // @Override
-        // public void run() {
-
-        // }
-        // }).start();
-
-        // System.out.println(lookingFor + " is now loaded");
     }
 
-    public static Texture isInImageData(String lookingFor, boolean wait) {
-        Texture texture;
+    public static Texture isInImageData(String lookingFor, boolean wait, String type) {
 
         if (!manager.isLoaded(lookingFor)) {
-            // System.out.println("to load : " + lookingFor);
             loadImage(lookingFor);
-            // System.out.println("loading ...");
-            // System.out.println(lookingFor + " : lookingfor");
+            // System.out.println("loading : ------ : " + lookingFor);
             if (lookingFor.startsWith("images/") || wait) {
-                // System.out.println("waiting");
-                // manager.
                 while (!manager.isLoaded(lookingFor)) {
                     manager.update();
+                }
+                return manager.get(lookingFor, Texture.class);
+
+            }
+        }
+        if (manager.isLoaded(lookingFor)) {
+
+            return manager.get(lookingFor, Texture.class);
+        } else {
+            String fileName = "";
+            String[] ListImageName = lookingFor.split("/");
+            if (ListImageName.length > 2) {
+
+                // System.out.println(lookingFor.split("/")[ListImageName.length - 2] +
+                // "--------------" + lookingFor);
+
+                if (type.equals("firstloading")) {
+
+                    fileName = ImageData.IMAGE_PATH + "/" + ListImageName[ListImageName.length -
+                            1];
+                    firstLoading = true;
+                    LoadingList.add(fileName);
+                    return null;
+                    // isLoading = true;
+                    // manager.load(fileName, Texture.class);
+
+                } else {
+                    if (!lookingFor.split("/")[ListImageName.length - 2].equals("images")
+                            && !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
+                            && !lookingFor.split("/")[ListImageName.length - 2].equals("places")
+                            && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
+                        isLoading = true;
+                        fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
+                        manager.load(fileName, Texture.class);
+                        manager.finishLoadingAsset(fileName);
+                        manager.update();
+                        // return isInImageData(fileName, true, "");
+                        return manager.get(fileName, Texture.class);
+                    }
 
                 }
 
-            }
-            // else {
-            // Main.toReloadList = Main.addToList(Main.toReloadList, lookingFor);
-            // // System.out.println(Main.toReloadList);
-            // }
-        }
-        if (manager.isLoaded(lookingFor)) {
-            // System.out.println("is loaded : " + lookingFor);
-
-            texture = manager.get(lookingFor, Texture.class);
-        } else {
-
-            String[] ListImageName = lookingFor.split("/");
-            String fileName;
-            System.out.println(lookingFor.split("/")[ListImageName.length - 2] + "--------------" + lookingFor);
-            if (!lookingFor.split("/")[ListImageName.length - 2].equals("images")
-                    && !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
-                    && !lookingFor.split("/")[ListImageName.length - 2].equals("places")
-                    && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
-                // System.out.println("wait");
-                fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
-                manager.load(fileName, Texture.class);
-                manager.finishLoadingAsset(fileName);
-                // return isInImageData(fileName, true);
                 // manager.finishLoading();
-                manager.update();
+                // manager.update();
             } else {
                 fileName = lookingFor;
             }
@@ -137,7 +135,6 @@ public class MixOfImage extends Group {
         // imagesData.keySet(lookingFor).entrySet(texture);
         // System.out.println(imagesData);
 
-        return texture;
     }
 
     public MixOfImage(List<String> imageNames, boolean isSquare) {
@@ -150,7 +147,7 @@ public class MixOfImage extends Group {
                 imageName = "images/error.png";
             }
             // long startTimePlaceImageOfPeoples = TimeUtils.millis();
-            Texture texture = isInImageData(imageName, false);
+            Texture texture = isInImageData(imageName, false, "");
             // long stopTimePlaceImageOfPeoples = TimeUtils.millis();
             // System.out.println(
             // "-----------------" + ImageData.IMAGE_PATH + imageName + "create mix of image

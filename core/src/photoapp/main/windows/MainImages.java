@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
-import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 
 public class MainImages {
@@ -29,6 +28,7 @@ public class MainImages {
     }
 
     public static void reloadMainImages() {
+
         imagesTable.clear();
         createImagesButton();
 
@@ -71,7 +71,7 @@ public class MainImages {
             Integer i = 0;
             for (ImageData imageData : Main.imagesData) {
                 if (i + 1 <= max) {
-                    Main.placeImage(List.of(ImageData.IMAGE_PATH + "/100/" + imageData.getName(),
+                    Main.placeImage(List.of(ImageData.IMAGE_PATH + "/150/" + imageData.getName(),
                             "images/outline.png"),
                             "main images button",
                             new Vector2(0, 0),
