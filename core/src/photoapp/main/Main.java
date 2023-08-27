@@ -61,6 +61,7 @@ public class Main extends ApplicationAdapter {
 	static Thread thread = null;
 	Long lastTime = (long) 0;
 	static Integer setSize150Int = 0;
+	static List<String> toUnload = new ArrayList<String>();
 
 	public void iniPreferences() {
 		preferences.putInteger("size of main images height", 1000);
@@ -74,6 +75,7 @@ public class Main extends ApplicationAdapter {
 	public void create() {
 		preferences = Gdx.app.getPreferences("graphic params");
 		iniPreferences();
+		MixOfImage.manager.load("images/loading button.png", Texture.class);
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		Gdx.input.setInputProcessor(mainStage);
@@ -144,6 +146,7 @@ public class Main extends ApplicationAdapter {
 
 				if (setSize150AfterLoad(imagePath)) {
 					setSize150Int += 1;
+					MixOfImage.manager.unload(imagePath);
 					// System.out.println("Pease wait ! Loaded images : " + setSize150Int);
 					infoTextSet("Pease wait ! Loaded images : " + setSize150Int);
 				}
@@ -606,6 +609,58 @@ public class Main extends ApplicationAdapter {
 		outPm.drawPixmap(inPm, 0, 0, inPm.getWidth(), inPm.getHeight(), 0, 0, outWidth, outheight);
 		inPm.dispose();
 		return outPm;
+	}
+
+	public static void unLoadAll() {
+		MixOfImage.notToReLoadList = new ArrayList<String>();
+		for (String lookingFor : MixOfImage.manager.getAssetNames()) {
+			String[] ListImageName = lookingFor.split("/");
+			// String fileName = ImageData.IMAGE_PATH + "/" +
+			// ListImageName[ListImageName.length -
+			// 1];
+			if (!lookingFor.split("/")[ListImageName.length - 2].equals("images")
+					&& !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
+					&& !lookingFor.split("/")[ListImageName.length - 2].equals("places")) {
+				System.out.println(lookingFor);
+				MixOfImage.manager.unload(lookingFor);
+
+			}
+
+		}
+	}
+
+	public static void unLoadAnImage(String imagePath) {
+		System.out.println("unload ");
+		if (!toUnload.isEmpty()) {
+			for (String unLoad : toUnload) {
+				if (MixOfImage.manager.isLoaded(unLoad)) {
+					MixOfImage.manager.unload(unLoad);
+					MixOfImage.notToReLoadList.remove(unLoad);
+					toUnload.remove(unLoad);
+				}
+			}
+		}
+		if (MixOfImage.manager.isLoaded(imagePath)) {
+
+			MixOfImage.manager.unload(imagePath);
+			MixOfImage.notToReLoadList.remove(imagePath);
+
+		} else {
+			toUnload.add(imagePath);
+		}
+		// String fileName = "";
+		String[] ListImageName = imagePath.split("/");
+		String fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
+
+		if (MixOfImage.manager.isLoaded(fileName, Texture.class)) {
+			MixOfImage.manager.unload(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
+			MixOfImage.notToReLoadList.remove(fileName);
+
+		} else {
+			toUnload.add(fileName);
+		}
+		System.out.println(MixOfImage.manager.getLoadedAssets());
+
 	}
 
 }

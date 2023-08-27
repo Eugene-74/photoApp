@@ -18,7 +18,6 @@ import com.badlogic.gdx.utils.Array;
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
-import photoapp.main.keybord.Keybord;
 import photoapp.main.storage.ImageData;
 
 public class ImageEdition {
@@ -31,7 +30,6 @@ public class ImageEdition {
 	static String nameOfFolderOfLoadedFolder = "";
 	static Integer totalNumberOfLoadedImages = 0;
 	static Array<ImageData> toDelete = new Array<ImageData>();
-	Keybord inputProcessor = new Keybord();
 	public static String theCurrentImagePath;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 
@@ -320,23 +318,35 @@ public class ImageEdition {
 
 	public static void nextImage(String currentImagePath) {
 		boolean next = false;
+		System.out.println("next image");
 		for (ImageData imageData : Main.imagesData) {
 			if ((imageData.getName())
 					.equals(currentImagePath)) {
 				next = true;
 			} else if (next) {
 				iniImageEdition(imageData.getName(), true);
+				Integer i = -3;
+				if (Main.imagesData.indexOf(imageData) + i < 0) {
+					i = Main.imagesData.size() + i;
+				}
+				Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
+						+ Main.imagesData.get(Main.imagesData.indexOf(imageData) + i).getName());
+
 				// System.out.println("image changed");
 				next = false;
 			}
 		}
 		if (next) {
 			iniImageEdition(Main.imagesData.get(0).getName(), true);
-			System.out.println("image changed to 1st one");
+
+			Main.unLoadAnImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(Main.imagesData.size() - 3).getName());
+
+			// System.out.println("image changed to 1st one");
 		}
 	}
 
 	public static void previousImage(String currentImagePath) {
+
 		ImageData previous = null;
 		for (ImageData imageData : Main.imagesData) {
 			if ((imageData.getName())
@@ -345,8 +355,18 @@ public class ImageEdition {
 				if (previous == null) {
 					iniImageEdition(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
+					Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
+							+ Main.imagesData.get(2).getName());
+					// not sure
 				} else {
 					iniImageEdition(previous.getName(), true);
+					Integer i = 3;
+					if (Main.imagesData.indexOf(previous) + 3 >= Main.imagesData.size()) {
+						i = Main.imagesData.indexOf(previous) + i - Main.imagesData.size();
+					}
+					Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
+							+ Main.imagesData.get(Main.imagesData.indexOf(previous) + i).getName());
+
 					if (imageData.getName().equals(previous.getName())) {
 
 					}

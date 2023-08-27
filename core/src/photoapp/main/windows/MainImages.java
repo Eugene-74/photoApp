@@ -77,6 +77,7 @@ public class MainImages {
                             new Vector2(0, 0),
                             Main.mainStage,
                             (o) -> {
+                                Main.unLoadAll();
                                 ImageEdition.iniImageEdition(imageData.getName(), true);
                             }, true, true, false, imagesTable);
                 }

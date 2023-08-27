@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -154,7 +153,7 @@ public class ImageData {
                 return;
             }
             String[] imagesInfo = infosString.split("\n");
-            List<ImageData> imagesData = new ArrayList<>();
+            // List<ImageData> imagesData = new ArrayList<>();
             for (String imageInfo : imagesInfo) {
 
                 String[] category = imageInfo.split(";");

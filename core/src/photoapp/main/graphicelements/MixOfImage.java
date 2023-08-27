@@ -16,10 +16,11 @@ import photoapp.main.storage.ImageData;
 
 public class MixOfImage extends Group {
     public static List<String> LoadingList = new ArrayList<String>();
+    public static List<String> notToReLoadList = new ArrayList<String>();
+
     public static AssetManager manager = new AssetManager();
     public static boolean isLoading = false;
     public static boolean firstLoading = false;
-
     public static long lastTime = 0;
 
     // public void mixOfImage() {
@@ -56,6 +57,9 @@ public class MixOfImage extends Group {
 
                 isLoading = true;
                 manager.load(lookingFor, Texture.class);
+                notToReLoadList.add(lookingFor);
+
+                System.out.println("load 1");
 
             }
         }).start();
@@ -63,7 +67,7 @@ public class MixOfImage extends Group {
 
     public static Texture isInImageData(String lookingFor, boolean wait, String type) {
 
-        if (!manager.isLoaded(lookingFor)) {
+        if (!manager.isLoaded(lookingFor) && !notToReLoadList.contains(lookingFor)) {
             loadImage(lookingFor);
             // System.out.println("loading : ------ : " + lookingFor);
             if (lookingFor.startsWith("images/") || wait) {
@@ -102,7 +106,14 @@ public class MixOfImage extends Group {
                             && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
                         isLoading = true;
                         fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
-                        manager.load(fileName, Texture.class);
+                        if (!notToReLoadList.contains(fileName)) {
+
+                            manager.load(fileName, Texture.class);
+                            notToReLoadList.add(fileName);
+                        }
+
+                        System.out.println("load 2");
+
                         manager.finishLoadingAsset(fileName);
                         manager.update();
                         // return isInImageData(fileName, true, "");
@@ -117,11 +128,16 @@ public class MixOfImage extends Group {
                 fileName = lookingFor;
             }
 
-            if (!manager.isLoaded(fileName)) {
-                // System.out.println("not loaded");
+            if (!manager.isLoaded(fileName, Texture.class)) {
+                if (manager.isLoaded("images/loading button.png", Texture.class)) {
+                    return manager.get("images/loading button.png", Texture.class);
+                } else {
+
+                    return new Texture("images/loading button.png");
+                }
 
                 // manager.load(fileName, Texture.class);
-                return new Texture("images/error.png");
+                // System.out.println("not loaded");
                 // return isInImageData(fileName, false);
             } else {
                 return manager.get(fileName, Texture.class);
