@@ -59,8 +59,6 @@ public class MixOfImage extends Group {
                 manager.load(lookingFor, Texture.class);
                 notToReLoadList.add(lookingFor);
 
-                System.out.println("load 1");
-
             }
         }).start();
     }
@@ -111,8 +109,6 @@ public class MixOfImage extends Group {
                             manager.load(fileName, Texture.class);
                             notToReLoadList.add(fileName);
                         }
-
-                        System.out.println("load 2");
 
                         manager.finishLoadingAsset(fileName);
                         manager.update();
