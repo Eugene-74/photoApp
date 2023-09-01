@@ -62,6 +62,7 @@ public class Main extends ApplicationAdapter {
 	Long lastTime = (long) 0;
 	static Integer setSize150Int = 0;
 	static List<String> toUnload = new ArrayList<String>();
+	static Long lastTimeImageEdition = (long) 0;
 
 	public void iniPreferences() {
 		preferences.putInteger("size of main images height", 1000);
@@ -125,11 +126,27 @@ public class Main extends ApplicationAdapter {
 		// System.out.println("rendering" + progress);
 		MixOfImage.manager.update();
 		// && TimeUtils.millis() - lastTime >= 100
-		if (Gdx.input.isKeyPressed(Input.Keys.LEFT) && TimeUtils.millis() - lastTime >= 100) {
-			ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
+		if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP)
+				|| Gdx.input.isKeyPressed(Input.Keys.Z))
+				&& TimeUtils.millis() - lastTime >= 200) {
+			if (windowOpen.equals("Image Edition")) {
+				ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
+
+			} else if (windowOpen.equals("Main Images")) {
+				MainImages.previousImages();
+
+			}
 			lastTime = TimeUtils.millis();
-		} else if (Gdx.input.isKeyPressed(Input.Keys.RIGHT) && TimeUtils.millis() - lastTime >= 100) {
-			ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
+		} else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN)
+				|| Gdx.input.isKeyPressed(Input.Keys.S))
+				&& TimeUtils.millis() - lastTime >= 200) {
+			if (windowOpen.equals("Image Edition")) {
+				ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
+
+			} else if (windowOpen.equals("Main Images")) {
+				MainImages.nextImages();
+
+			}
 			lastTime = TimeUtils.millis();
 
 		}
@@ -164,6 +181,13 @@ public class Main extends ApplicationAdapter {
 					infoTextSet("done");
 					toReload = "";
 					return;
+				} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+					lastTimeImageEdition = TimeUtils.millis();
+
+					ImageEdition.reloadImageEdition(false);
+					MixOfImage.isLoading = true;
+					toReload = "imageEdition";
+
 				}
 			}
 		} else if (toReload.equals("mainImages")) {
@@ -175,6 +199,12 @@ public class Main extends ApplicationAdapter {
 					infoTextSet("done");
 					toReload = "";
 					return;
+
+				} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+					lastTimeImageEdition = TimeUtils.millis();
+					MainImages.reloadMainImages();
+					MixOfImage.isLoading = true;
+					toReload = "mainImages";
 
 				}
 			}
@@ -399,11 +429,13 @@ public class Main extends ApplicationAdapter {
 		// }
 		FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName());
 		to.writeBytes(data, false);
-		openImageExif(to.toString());
-		toSetSize150.add(to.toString());
+
+		openImageExif(dir.getName());
+		// toSetSize150.add(to.toString());
+		System.out.println(ImageData.IMAGE_PATH + "/" + dir.getName() + "---------" + dir.getName());
+		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName());
 
 		// setSize100(dir.getName());
-		// remetre !!!!!!!!!!
 	}
 
 	public static void loadImagesForTheFirstTime() {
@@ -548,6 +580,17 @@ public class Main extends ApplicationAdapter {
 			String imageName = nameList[nameList.length - 1];
 
 			Texture texture = MixOfImage.isInImageData(imagePath, true, "firstloading");
+			Integer size;
+			if (texture.getWidth() > texture.getHeight()) {
+				size = texture.getWidth();
+			} else if (texture.getWidth() < texture.getHeight()) {
+				size = texture.getHeight();
+			} else {
+				size = texture.getWidth();
+
+			}
+			// Pixmap pixmap = resize(textureToPixmap(texture), size, size);
+
 			Pixmap pixmap = resize(textureToPixmap(texture), 150, 150);
 			// Image image = new Image(texture);
 			// MixOfImage.loadImage(imageName);

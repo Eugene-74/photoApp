@@ -120,100 +120,103 @@ public class ImageEdition {
 	}
 
 	public static void placePreviewImage(String currentImagePath) {
-		Integer index = 0;
-		Integer imageIndex = 0;
+		if (Main.imagesData.size() >= 5) {
 
-		for (ImageData imageData : Main.imagesData) {
-			if (imageData.getName().equals(currentImagePath)) {
-				imageIndex = index;
+			Integer index = 0;
+			Integer imageIndex = 0;
 
+			for (ImageData imageData : Main.imagesData) {
+				if (imageData.getName().equals(currentImagePath)) {
+					imageIndex = index;
+
+				}
+				index += 1;
 			}
-			index += 1;
-		}
 
-		Integer max = 5;
-		index = 0;
-		List<String> previewNames = new ArrayList<String>();
-		Integer maxImageIndex = Main.imagesData.size() - 1;
-		// System.out.println(imageIndex + "IMAGE INDEX ------------------" +
-		// maxImageIndex);
-		// System.out.println(imageIndex.equals(maxImageIndex));
-		if (imageIndex == 0) {
-			previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
-			previewNames.add(Main.imagesData.get(maxImageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-		} else if (imageIndex == 1) {
-			previewNames.add(Main.imagesData.get(maxImageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-		} else if (imageIndex == 2) {
-			previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-			previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-		} else if (imageIndex.equals(maxImageIndex - 1)) {
-			// System.out.println("MAX -1 -----------------");
-			previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-			previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-			previewNames.add(Main.imagesData.get(0).getName());
-		} else if (imageIndex.equals(maxImageIndex)) {
-			// System.out.println("MAX -----------------");
-			previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-			previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex).getName());
-			previewNames.add(Main.imagesData.get(0).getName());
-			previewNames.add(Main.imagesData.get(1).getName());
-		} else if (imageIndex >= 3) {
-			previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-			previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-			previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-		}
-
-		// FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
-		// if (!handle.exists()) {
-		// handle.mkdirs();
-		// }
-		Integer nbr = 0;
-		for (String preview : previewNames) {
-			ImageData imageData = Main.getCurrentImageData(preview);
-			List<String> previewList = new ArrayList<>();
-			previewList.add(ImageData.IMAGE_PATH + "/" + preview);
-
-			if (nbr == 2) {
-				previewList.add("images/outlineSelectedPreview.png");
-			} else {
-				previewList.add("images/outlinePreview.png");
+			Integer max = 5;
+			index = 0;
+			List<String> previewNames = new ArrayList<String>();
+			Integer maxImageIndex = Main.imagesData.size() - 1;
+			// System.out.println(imageIndex + "IMAGE INDEX ------------------" +
+			// maxImageIndex);
+			// System.out.println(imageIndex.equals(maxImageIndex));
+			if (imageIndex == 0) {
+				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
+				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+			} else if (imageIndex == 1) {
+				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+			} else if (imageIndex == 2) {
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+			} else if (imageIndex.equals(maxImageIndex - 1)) {
+				// System.out.println("MAX -1 -----------------");
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(0).getName());
+			} else if (imageIndex.equals(maxImageIndex)) {
+				// System.out.println("MAX -----------------");
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+				previewNames.add(Main.imagesData.get(0).getName());
+				previewNames.add(Main.imagesData.get(1).getName());
+			} else if (imageIndex >= 3) {
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
 			}
-			if (imageData.getLoved()) {
-				previewList.add("images/loved preview.png");
-			}
-			if (toDelete.contains(imageData, false)) {
-				previewList.add("images/deleted preview.png");
-			}
-			Main.placeImage(previewList,
-					"preview image",
-					new Vector2(0, 0),
-					Main.mainStage,
-					(o) -> {
-						iniImageEdition(preview, true);
-					},
-					false, true, false, previewTable);
 
-			index += 1;
-			if (index >= max) {
-				return;
+			// FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
+			// if (!handle.exists()) {
+			// handle.mkdirs();
+			// }
+			Integer nbr = 0;
+			for (String preview : previewNames) {
+				ImageData imageData = Main.getCurrentImageData(preview);
+				List<String> previewList = new ArrayList<>();
+				previewList.add(ImageData.IMAGE_PATH + "/" + preview);
 
+				if (nbr == 2) {
+					previewList.add("images/outlineSelectedPreview.png");
+				} else {
+					previewList.add("images/outlinePreview.png");
+				}
+				if (imageData.getLoved()) {
+					previewList.add("images/loved preview.png");
+				}
+				if (toDelete.contains(imageData, false)) {
+					previewList.add("images/deleted preview.png");
+				}
+				Main.placeImage(previewList,
+						"preview image",
+						new Vector2(0, 0),
+						Main.mainStage,
+						(o) -> {
+							iniImageEdition(preview, true);
+						},
+						false, true, false, previewTable);
+
+				index += 1;
+				if (index >= max) {
+					return;
+
+				}
+				nbr += 1;
 			}
-			nbr += 1;
 		}
 	}
 
@@ -318,7 +321,7 @@ public class ImageEdition {
 
 	public static void nextImage(String currentImagePath) {
 		boolean next = false;
-		System.out.println("next image");
+		// System.out.println("next image");
 		for (ImageData imageData : Main.imagesData) {
 			if ((imageData.getName())
 					.equals(currentImagePath)) {
@@ -338,8 +341,11 @@ public class ImageEdition {
 		}
 		if (next) {
 			iniImageEdition(Main.imagesData.get(0).getName(), true);
+			if (Main.imagesData.size() > 3) {
 
-			Main.unLoadAnImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(Main.imagesData.size() - 3).getName());
+				Main.unLoadAnImage(
+						ImageData.IMAGE_PATH + "/" + Main.imagesData.get(Main.imagesData.size() - 3).getName());
+			}
 
 			// System.out.println("image changed to 1st one");
 		}
@@ -355,9 +361,11 @@ public class ImageEdition {
 				if (previous == null) {
 					iniImageEdition(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
-					Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
-							+ Main.imagesData.get(2).getName());
-					// not sure
+					if (Main.imagesData.size() > 3) {
+
+						Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
+								+ Main.imagesData.get(2).getName());
+					}
 				} else {
 					iniImageEdition(previous.getName(), true);
 					Integer i = 3;
@@ -381,35 +389,12 @@ public class ImageEdition {
 
 	public static void addPeople(String peopleToAdd, String currentImagePath) {
 
-		// // System.out.println("adding : " + peopleToAdd);
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 		List<String> peoples = imageData.getPeoples();
-		// long startTime = TimeUtils.millis();
 		peoples = Main.addToList(peoples, peopleToAdd);
-		// long stopTime = TimeUtils.millis();
-		// System.out.println("done in 2: ");
-		// System.out.println(stopTime - startTime);
-		// List<String> peoplesList;
-		// if (peoples.isEmpty()) {
-		// peoplesList = List.of(peopleToAdd);
-		// // peoples.add(peopleToAdd);
 
-		// } else {
-		// peoplesList = new ArrayList<>();
-		// for (String people : peoples) {
-		// peoplesList.add(people);
-
-		// }
-		// peoplesList.add(peopleToAdd);
-		// }
 		imageData.setPeoples(peoples);
-		// System.out.println(peoples + "peoples");
-		// System.out.println(imageData);
-		// long startTimeb = TimeUtils.millis();
 		iniImageEdition(currentImagePath, false);
-		// long stopTimeb = TimeUtils.millis();
-		// System.out.println("done in3 : ");
-		// System.out.println(stopTimeb - startTimeb);
 	}
 
 	public static void addPlace(String placeToAdd, String currentImagePath) {
@@ -424,7 +409,6 @@ public class ImageEdition {
 		Main.toReload = "imageEdition";
 		Main.windowOpen = "Image Edition";
 
-		// infoTextSet("testbis " + infoText);
 		theCurrentImagePath = currentImagePath;
 		table.clear();
 		previewTable.clear();
@@ -435,22 +419,13 @@ public class ImageEdition {
 			MainImages.mainTable.clear();
 		}
 		if (OpenMain) {
-			// long startTimeOpenMain = TimeUtils.millis();
 			openMainImage(currentImagePath);
-			// long stopTimeOpenMain = TimeUtils.millis();
-			// System.out.println("OpenMain done in : ");
-			// System.out.println(stopTimeOpenMain - startTimeOpenMain);
 
 		}
 
 		placePreviewImage(currentImagePath);
 
-		// long startTimePlaceImageOfPeoples = TimeUtils.millis();
 		placeImageOfPeoples(currentImagePath);
-		// long stopTimePlaceImageOfPeoples = TimeUtils.millis();
-		// System.out.println("PlaceImageOfPeoples done in : ");
-		// System.out.println(stopTimePlaceImageOfPeoples -
-		// startTimePlaceImageOfPeoples);
 		table.row();
 		placeImageOfPlaces(currentImagePath);
 		table.row();
@@ -458,12 +433,10 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					// System.out.println("next image");
 					previousImage(currentImagePath);
 				},
 				true, true, false, table);
 
-		// ImageData imageData = getCurrentImageData(currentImagePath);
 		List<String> deletImages = new ArrayList<>();
 		deletImages.add("images/delete.png");
 		deletImages.add("images/outline.png");
@@ -544,6 +517,20 @@ public class ImageEdition {
 				},
 				true, true, false, table);
 
+		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					addPeople();
+				},
+				true, true, false, table);
+		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					addPlace();
+				},
+				true, true, false, table);
 		table.row();
 		CommonButton.createAddImagesButton(table);
 		// Main.placeImage(List.of("images/add images.png", "images/outline.png"),
@@ -556,14 +543,15 @@ public class ImageEdition {
 		// true, true, false, table);
 
 		CommonButton.createRefreshButton(table);
-		Main.placeImage(List.of("images/refresh.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					// infoTextSet("test");
-					// setSize100();
-				},
-				true, true, false, table);
+		// Main.placeImage(List.of("images/refresh.png", "images/outline.png"), "basic
+		// button",
+		// new Vector2(0, 0),
+		// Main.mainStage,
+		// (o) -> {
+		// // infoTextSet("test");
+		// // setSize100();
+		// },
+		// true, true, false, table);
 		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
@@ -653,6 +641,14 @@ public class ImageEdition {
 		Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageData.getName()).delete();
 		Main.imagesData.remove(imageData);
 		ImageData.saveImagesData();
+	}
+
+	public static void addPlace() {
+
+	}
+
+	public static void addPeople() {
+
 	}
 
 }
