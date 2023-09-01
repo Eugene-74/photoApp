@@ -77,6 +77,9 @@ public class Main extends ApplicationAdapter {
 		preferences = Gdx.app.getPreferences("graphic params");
 		iniPreferences();
 		MixOfImage.manager.load("images/loading button.png", Texture.class);
+		MixOfImage.manager.load("images/error.png", Texture.class);
+		MixOfImage.manager.finishLoading();
+
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		Gdx.input.setInputProcessor(mainStage);
@@ -85,9 +88,6 @@ public class Main extends ApplicationAdapter {
 		createCloseButton();
 
 		ImageData.openDataOfImages();
-
-		MixOfImage.manager.load("images/error.png", Texture.class);
-		MixOfImage.manager.finishLoading();
 
 		// for (ImageData imageData : imagesData) {
 		// // System.out.println("loading image");
@@ -165,7 +165,11 @@ public class Main extends ApplicationAdapter {
 					setSize150Int += 1;
 					MixOfImage.manager.unload(imagePath);
 					// System.out.println("Pease wait ! Loaded images : " + setSize150Int);
-					infoTextSet("Pease wait ! Loaded images : " + setSize150Int);
+					infoTextSet("Please wait ! Loaded images : " + setSize150Int);
+					if (toLoad.isEmpty()) {
+						infoTextSet("All the " + setSize150Int + " images have been loaded");
+
+					}
 				}
 			}
 			MixOfImage.firstLoading = false;
@@ -432,20 +436,22 @@ public class Main extends ApplicationAdapter {
 
 		openImageExif(dir.getName());
 		// toSetSize150.add(to.toString());
-		System.out.println(ImageData.IMAGE_PATH + "/" + dir.getName() + "---------" + dir.getName());
+		// System.out.println(ImageData.IMAGE_PATH + "/" + dir.getName() + "---------" +
+		// dir.getName());
 		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName());
 
 		// setSize100(dir.getName());
 	}
 
 	public static void loadImagesForTheFirstTime() {
+		Integer index = 0;
 		for (String imagePath : toLoad) {
 			String[] nameList = imagePath.split("/");
 			String name = nameList[nameList.length - 1];
 
-			infoText = "Loding a folder : "
-					+ numberOfLoadedImages
-					+ " images load / total loaded : " + totalNumberOfLoadedImages;
+			// infoText = "Loding a folder : "
+			// + numberOfLoadedImages
+			// + " images load / total loaded : " + totalNumberOfLoadedImages;
 
 			FileHandle from = Gdx.files.absolute(imagePath);
 			byte[] data = from.readBytes();
@@ -458,11 +464,14 @@ public class Main extends ApplicationAdapter {
 			FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name);
 			to.writeBytes(data, false);
 			openImageExif(name);
-			Main.setSize150(ImageData.IMAGE_PATH + "/" + name, name);
-			numberOfLoadedImages += 1;
-			totalNumberOfLoadedImages += 1;
+			setSize150(ImageData.IMAGE_PATH + "/" + name, name);
+			// numberOfLoadedImages += 1;
+			// totalNumberOfLoadedImages += 1;
+			index += 1;
+			// toLoad.remove(imagePath);
 		}
 		toLoad = new ArrayList<String>();
+		infoTextSet("first loading done");
 	}
 
 	public static void openImageOfAFile(File dir) {
@@ -609,6 +618,7 @@ public class Main extends ApplicationAdapter {
 			PixmapIO.writePNG(fh, pixmap);
 			pixmap.dispose();
 			MixOfImage.LoadingList = removeToList(MixOfImage.LoadingList, imagePath);
+			toLoad.remove(imagePath);
 			return true;
 		}
 		return false;
