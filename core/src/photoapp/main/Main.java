@@ -76,10 +76,14 @@ public class Main extends ApplicationAdapter {
 	static Long lastTimeImageEdition = (long) 0;
 
 	public void iniPreferences() {
-		preferences.putInteger("size of main images height", 1000);
-		preferences.putInteger("size of main images width", 1400);
 		preferences.putInteger("size of main images button", 150);
+
+		preferences.putInteger("size of main images height",
+				preferences.getInteger("size of main images button", 150) * 6);
+		preferences.putInteger("size of main images width",
+				preferences.getInteger("size of main images button", 150) * 9);
 		preferences.putInteger("size of close button", 50);
+		preferences.putInteger("border", 25);
 
 	}
 
@@ -119,29 +123,32 @@ public class Main extends ApplicationAdapter {
 
 		Integer progress = MixOfImage.manager.getAssetNames().size;
 		MixOfImage.manager.update();
-		if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP)
-				|| Gdx.input.isKeyPressed(Input.Keys.Z))
-				&& TimeUtils.millis() - lastTime >= 200) {
-			if (windowOpen.equals("Image Edition")) {
-				ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
 
-			} else if (windowOpen.equals("Main Images")) {
-				MainImages.previousImages();
+		if (ImageEdition.plusTable == null) {
+			if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP)
+					|| Gdx.input.isKeyPressed(Input.Keys.Z))
+					&& TimeUtils.millis() - lastTime >= 200) {
+				if (windowOpen.equals("Image Edition")) {
+					ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
+
+				} else if (windowOpen.equals("Main Images")) {
+					MainImages.previousImages();
+
+				}
+				lastTime = TimeUtils.millis();
+			} else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN)
+					|| Gdx.input.isKeyPressed(Input.Keys.S))
+					&& TimeUtils.millis() - lastTime >= 200) {
+				if (windowOpen.equals("Image Edition")) {
+					ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
+
+				} else if (windowOpen.equals("Main Images")) {
+					MainImages.nextImages();
+
+				}
+				lastTime = TimeUtils.millis();
 
 			}
-			lastTime = TimeUtils.millis();
-		} else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN)
-				|| Gdx.input.isKeyPressed(Input.Keys.S))
-				&& TimeUtils.millis() - lastTime >= 200) {
-			if (windowOpen.equals("Image Edition")) {
-				ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
-
-			} else if (windowOpen.equals("Main Images")) {
-				MainImages.nextImages();
-
-			}
-			lastTime = TimeUtils.millis();
-
 		}
 		ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
 		if (!infoText.equals(" ")) {
@@ -313,7 +320,7 @@ public class Main extends ApplicationAdapter {
 
 				}
 				ImageEdition.currentMainImage = mixOfImages;
-				// ImageEdition.mainImageTable.pack();
+
 				ImageEdition.mainImageTable.add(mixOfImages).align(Align.center);
 			} else {
 				mainStage.addActor(mixOfImages);
@@ -333,14 +340,12 @@ public class Main extends ApplicationAdapter {
 					System.out.println("closing");
 					dispose();
 					System.exit(0);
-				}, true, false, false, ImageEdition.table, true);// consumer en racourcis
+				}, true, false, false, ImageEdition.table, true);
 	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
 		for (ImageData imageData : imagesData) {
-			// System.out.println(imageData + " : " + currentImagePath);
-			// System.out.println(imageData.getName() + currentImagePath +
-			// "test--------------------------------------");
+
 			if ((imageData.getName())
 					.equals(currentImagePath)) {
 				return imageData;
@@ -360,13 +365,6 @@ public class Main extends ApplicationAdapter {
 		}
 	}
 
-	// public static void allSetSize100() {
-	// for (String imageName : toSetSize100) {
-
-	// Main.setSize100(imageName);
-	// }
-	// }
-
 	public static List<String> addToList(List<String> firstList, String toAdd) {
 		List<String> newList = new ArrayList<String>();
 
@@ -377,7 +375,6 @@ public class Main extends ApplicationAdapter {
 		if (!newList.contains(toAdd)) {
 			newList.add(toAdd);
 		} else {
-			// System.out.println("to remove NOW ");
 			return removeToList(firstList, toAdd);
 		}
 		return newList;

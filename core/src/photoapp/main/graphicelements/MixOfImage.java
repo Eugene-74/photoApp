@@ -180,16 +180,23 @@ public class MixOfImage extends Group {
         for (Actor actor : getChildren()) {
             if (actor.getName().equals("image") && width == Main.preferences.getInteger("size of main images button")
                     && height == Main.preferences.getInteger("size of main images button")) {
+
                 actor.setSize(Main.preferences.getInteger("size of main images button") - 10,
                         Main.preferences.getInteger("size of main images button") - 10);
+
                 actor.setPosition(10 / 2, 10 / 2);
-                // actor.setPosition(125 / 4, 125 / 4, Align.center);
+            } else if (!actor.getName().endsWith("outline")
+                    && width == Main.preferences.getInteger("size of basic button")
+                    && height == Main.preferences.getInteger("size of basic button")) {
+                actor.setSize(Main.preferences.getInteger("size of basic button") - 3,
+                        Main.preferences.getInteger("size of basic button") - 3);
+                actor.setPosition(3 / 2, 3 / 2);
+
             } else {
                 actor.setSize(width, height);
 
             }
 
-            // System.out.println(actor.getName());
         }
 
     }

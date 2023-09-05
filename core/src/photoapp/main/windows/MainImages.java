@@ -55,11 +55,11 @@ public class MainImages {
     private static void createImagesTable() {
         imagesTable = new Table();
         imagesTable.setSize(
-                Main.preferences.getInteger("size of main images width")
-                        - Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border"));
+                Main.preferences.getInteger("size of main images width"),
+                Main.preferences.getInteger("size of main images height"));
         imagesTable.setPosition(
-                Main.preferences.getInteger("border"), Main.preferences.getInteger("border"));
+                Main.preferences.getInteger("border"),
+                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - imagesTable.getHeight());
 
         Main.mainStage.addActor(imagesTable);
 
@@ -210,10 +210,11 @@ public class MainImages {
         mainTable = new Table();
         mainTable.setSize(
                 Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main images width")
-                        - Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight());
+                        - Main.preferences.getInteger("border") * 3,
+                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
         mainTable.setPosition(
-                Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border"), 0);
+                Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
+                Main.preferences.getInteger("border"));
 
         Main.mainStage.addActor(mainTable);
     }
