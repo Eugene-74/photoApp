@@ -1,10 +1,16 @@
 package photoapp.main;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.Thread.State;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -25,6 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -49,7 +56,11 @@ public class Main extends ApplicationAdapter {
 	static Integer totalNumberOfLoadedImages = 0;
 	public static Label labelInfoText;
 	public static List<ImageData> imagesData;
-	public static OrderedMap<String, Texture> imagesTextureData = new OrderedMap<>();
+	// public static OrderedMap<String, Texture> imagesTextureData = new
+	// OrderedMap<>();
+	public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
+	public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
+
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
 	public static String toReload = "";
@@ -88,27 +99,11 @@ public class Main extends ApplicationAdapter {
 		createCloseButton();
 
 		ImageData.openDataOfImages();
-
-		// for (ImageData imageData : imagesData) {
-		// // System.out.println("loading image");
-		// MixOfImage.loadImage(ImageData.IMAGE_PATH + "/" + imageData.getName());
-
-		// }
-		// Music rainMusic = Gdx.audio.newMusic(Gdx.files.internal("music/test.mp3"));
-
-		// rainMusic.setLooping(true);
-
-		// rainMusic.play();
-
-		// start the playback of the background music immediately
-
-		// bucket.x -= 200 * Gdx.graphics.getDeltaTime();
+		openPlaceData();
+		openPeopleData();
 
 		System.out.println("starting");
 
-		// System.out.println(imagesData + "images data main -----------------");
-		// System.out.println(imagesData);
-		// System.out.println(imagesData + "imagesData-1");
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH);
 		if (!handle.exists()) {
 			handle.mkdirs();
@@ -123,9 +118,7 @@ public class Main extends ApplicationAdapter {
 	public void render() {
 
 		Integer progress = MixOfImage.manager.getAssetNames().size;
-		// System.out.println("rendering" + progress);
 		MixOfImage.manager.update();
-		// && TimeUtils.millis() - lastTime >= 100
 		if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP)
 				|| Gdx.input.isKeyPressed(Input.Keys.Z))
 				&& TimeUtils.millis() - lastTime >= 200) {
@@ -168,7 +161,7 @@ public class Main extends ApplicationAdapter {
 					infoTextSet("Please wait ! Loaded images : " + setSize150Int);
 					if (toLoad.isEmpty()) {
 						infoTextSet("All the " + setSize150Int + " images have been loaded");
-
+						reload(true);
 					}
 				}
 			}
@@ -263,20 +256,42 @@ public class Main extends ApplicationAdapter {
 	public static void placeImage(List<String> imageNames, String prefSizeName,
 			Vector2 position, Stage mainStage,
 			final Consumer<Object> onClicked,
-			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable) {
+			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize) {
 
 		MixOfImage mixOfImages = new MixOfImage(imageNames, isSquare);
-		// System.out.println(preferences.getInteger("size of " + prefSizeName, 0));
-
-		if (isSquare) {
-			mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName, 100),
-					preferences.getInteger("size of " + prefSizeName, 100));
+		if (setSize) {
+			if (isSquare) {
+				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName, 100),
+						preferences.getInteger("size of " + prefSizeName, 100));
+			} else {
+				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName + " width"),
+						preferences.getInteger("size of " + prefSizeName + " height"));
+			}
+			mixOfImages.setPosition(position.x, position.y + 1);
 		} else {
-			mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName + " width"),
-					preferences.getInteger("size of " + prefSizeName + " height"));
+
+			float w = Math
+					.abs(mixOfImages.getWidth() / preferences.getInteger("size of " + prefSizeName + " width"));
+			float h = Math
+					.abs(mixOfImages.getHeight() / preferences.getInteger("size of " + prefSizeName + " height"));
+
+			if (w < h) {
+
+				mixOfImages.setSize(
+						preferences.getInteger("size of " + prefSizeName + " height") / mixOfImages.getHeight()
+								* mixOfImages.getWidth(),
+						preferences.getInteger("size of " + prefSizeName + " height"));
+			} else {
+
+				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName + " width"),
+						preferences.getInteger("size of " + prefSizeName + " width")
+								/ mixOfImages.getWidth() * mixOfImages.getHeight());
+			}
+
+			mixOfImages.setPosition(0, 0);
+
 		}
 
-		mixOfImages.setPosition(position.x, position.y + 1);
 		mixOfImages.addListener(new ClickListener() {
 
 			@Override
@@ -288,12 +303,9 @@ public class Main extends ApplicationAdapter {
 				}
 			}
 		});
+
 		if (inTable) {
-			// addd !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			placeImageTable.add(mixOfImages);
-			// placeImageTable.addActorAt(1, mixOfImages);
-			// placeImageTable.swapActor(0, 1);
-			// continue actor setting
 		} else {
 			if (isMainImage) {
 				if (ImageEdition.currentMainImage != null) {
@@ -301,9 +313,13 @@ public class Main extends ApplicationAdapter {
 
 				}
 				ImageEdition.currentMainImage = mixOfImages;
+				// ImageEdition.mainImageTable.pack();
+				ImageEdition.mainImageTable.add(mixOfImages).align(Align.center);
+			} else {
+				mainStage.addActor(mixOfImages);
+
 			}
 
-			mainStage.addActor(mixOfImages);
 		}
 
 	}
@@ -317,7 +333,7 @@ public class Main extends ApplicationAdapter {
 					System.out.println("closing");
 					dispose();
 					System.exit(0);
-				}, true, false, false, ImageEdition.table);// consumer en racourcis
+				}, true, false, false, ImageEdition.table, true);// consumer en racourcis
 	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
@@ -425,22 +441,14 @@ public class Main extends ApplicationAdapter {
 	public static void openImageInAFile(File dir) {
 		FileHandle from = Gdx.files.absolute(dir.toString());
 		byte[] data = from.readBytes();
-		// String fileName = ImageData.IMAGE_PATH + "/" + dir.getName();
-		// if (fileName.endsWith(".PNG")) {
-		// fileName = fileName.replace(".PNG", ".png");
-		// } else if (fileName.endsWith(".JPG")) {
-		// fileName = fileName.replace(".JPG", ".jpg");
-		// }
+
 		FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName());
 		to.writeBytes(data, false);
 
 		openImageExif(dir.getName());
-		// toSetSize150.add(to.toString());
-		// System.out.println(ImageData.IMAGE_PATH + "/" + dir.getName() + "---------" +
-		// dir.getName());
+
 		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName());
 
-		// setSize100(dir.getName());
 	}
 
 	public static void loadImagesForTheFirstTime() {
@@ -449,26 +457,14 @@ public class Main extends ApplicationAdapter {
 			String[] nameList = imagePath.split("/");
 			String name = nameList[nameList.length - 1];
 
-			// infoText = "Loding a folder : "
-			// + numberOfLoadedImages
-			// + " images load / total loaded : " + totalNumberOfLoadedImages;
-
 			FileHandle from = Gdx.files.absolute(imagePath);
 			byte[] data = from.readBytes();
 
-			// toSetSize150.add("");
-
-			// setSize150Int += 1;
-			// System.out.println(setSize150Int);
-			// infoTextSet("loaded images : " + setSize150Int);
 			FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name);
 			to.writeBytes(data, false);
 			openImageExif(name);
 			setSize150(ImageData.IMAGE_PATH + "/" + name, name);
-			// numberOfLoadedImages += 1;
-			// totalNumberOfLoadedImages += 1;
 			index += 1;
-			// toLoad.remove(imagePath);
 		}
 		toLoad = new ArrayList<String>();
 		infoTextSet("first loading done");
@@ -499,14 +495,11 @@ public class Main extends ApplicationAdapter {
 					}
 
 					else {
-						// System.out.println("fichier non lisible : " + item.getName());
 					}
 				} else if (item.isDirectory()) {
 
 					openImageOfAFile(item);
 
-					// nameOfFolderOfLoadedFolder = " / The folder : " + item.getName() + " have
-					// been load";
 				}
 			}
 			numberOfLoadedImages = 0;
@@ -554,7 +547,6 @@ public class Main extends ApplicationAdapter {
 		} catch (Exception e) {
 			System.out.println("Error" + e);
 		} finally {
-			// file.disp
 		}
 	}
 
@@ -568,12 +560,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void setSize150(String imagePath, String imageName) {
-		// System.out.println("setSize150");
 		FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + imageName);
 		if (!handlebis.exists()) {
-			// ImageData imageData = Main.getCurrentImageData(imageName);
 
-			// Texture texture =
 			MixOfImage.isInImageData(imagePath, false, "firstloading");
 		} else {
 			System.out.println(ImageData.IMAGE_PATH + "/150/" + imageName + " aready exist");
@@ -581,35 +570,19 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static Boolean setSize150AfterLoad(String imagePath) {
-		// System.out.println("setsize150 after load : " + imagePath);
 		if (MixOfImage.manager.isLoaded(imagePath, Texture.class)) {
-			// System.err.println("loaded");
 
 			String[] nameList = imagePath.split("/");
 			String imageName = nameList[nameList.length - 1];
 
 			Texture texture = MixOfImage.isInImageData(imagePath, true, "firstloading");
-			Integer size;
-			if (texture.getWidth() > texture.getHeight()) {
-				size = texture.getWidth();
-			} else if (texture.getWidth() < texture.getHeight()) {
-				size = texture.getHeight();
-			} else {
-				size = texture.getWidth();
 
-			}
-			// Pixmap pixmap = resize(textureToPixmap(texture), size, size);
-
-			Pixmap pixmap = resize(textureToPixmap(texture), 150, 150);
-			// Image image = new Image(texture);
-			// MixOfImage.loadImage(imageName);
-			// Texture textureEdited = MixOfImage.manager.get();
+			Pixmap pixmap = resize(textureToPixmap(texture), 150, 150, true);
 			FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150");
 
 			if (!handle.exists()) {
 				handle.mkdirs();
 			}
-			// String fileName = null;
 			String[] ListImageName = imageName.split("/");
 
 			String fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
@@ -657,9 +630,31 @@ public class Main extends ApplicationAdapter {
 	 * @param outheight new height
 	 * @return resized Pixmap
 	 */
-	public static Pixmap resize(Pixmap inPm, int outWidth, int outheight) {
+	public static Pixmap resize(Pixmap inPm, int outWidth, int outheight, boolean cut) {
 		Pixmap outPm = new Pixmap(outWidth, outheight, Pixmap.Format.RGBA8888);
-		outPm.drawPixmap(inPm, 0, 0, inPm.getWidth(), inPm.getHeight(), 0, 0, outWidth, outheight);
+		int srcWidth;
+		int srcHeigth;
+		int srcx = 0;
+		int srcy = 0;
+		if (cut) {
+			int size = Math.min(inPm.getWidth(), inPm.getHeight());
+			// if (inPm.getWidth() > inPm.getHeight()) {
+			// size = inPm.getWidth();
+			// } else if (inPm.getWidth() < inPm.getHeight()) {
+			// size = inPm.getHeight();
+			// } else {
+			// size = inPm.getWidth();
+			// }
+			srcWidth = size;
+			srcHeigth = size;
+			srcx = (inPm.getWidth() - size) / 2;
+			srcy = (inPm.getHeight() - size) / 2;
+
+		} else {
+			srcWidth = inPm.getWidth();
+			srcHeigth = inPm.getHeight();
+		}
+		outPm.drawPixmap(inPm, srcx, srcy, srcWidth, srcHeigth, 0, 0, outWidth, outheight);
 		inPm.dispose();
 		return outPm;
 	}
@@ -674,7 +669,6 @@ public class Main extends ApplicationAdapter {
 			if (!lookingFor.split("/")[ListImageName.length - 2].equals("images")
 					&& !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
 					&& !lookingFor.split("/")[ListImageName.length - 2].equals("places")) {
-				System.out.println(lookingFor);
 				MixOfImage.manager.unload(lookingFor);
 
 			}
@@ -683,16 +677,17 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void unLoadAnImage(String imagePath) {
-		System.out.println("unload ");
+		Set<String> toRemove = new HashSet<>();
 		if (!toUnload.isEmpty()) {
 			for (String unLoad : toUnload) {
 				if (MixOfImage.manager.isLoaded(unLoad)) {
 					MixOfImage.manager.unload(unLoad);
 					MixOfImage.notToReLoadList.remove(unLoad);
-					toUnload.remove(unLoad);
+					toRemove.add(unLoad);
 				}
 			}
 		}
+		toUnload.removeAll(toRemove);
 		if (MixOfImage.manager.isLoaded(imagePath)) {
 
 			MixOfImage.manager.unload(imagePath);
@@ -712,13 +707,56 @@ public class Main extends ApplicationAdapter {
 		} else {
 			toUnload.add(fileName);
 		}
-		System.out.println(MixOfImage.manager.getLoadedAssets());
 
 	}
 
+	public static void openPeopleData() {
+		FileHandle handle = Gdx.files.absolute(ImageData.PEOPLE_SAVE_PATH);
+
+		if (!handle.exists()) {
+			// return new ArrayList<>();
+			return;
+		} else {
+			InputStream infos = handle.read();
+			String infosString = new BufferedReader(new InputStreamReader(infos))
+					.lines().collect(Collectors.joining("\n"));
+			if (infosString.equals("") || infosString.equals("\n")) {
+				// return new ArrayList<>();
+				return;
+			}
+			String[] imagesInfo = infosString.split("\n");
+			// List<ImageData> imagesData = new ArrayList<>();
+			for (String imageInfo : imagesInfo) {
+				String[] inf = imageInfo.split(":");
+
+				peopleData.put(inf[0], Integer.parseInt(inf[1]));
+			}
+		}
+	}
+
+	public static void openPlaceData() {
+		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_SAVE_PATH);
+
+		if (!handle.exists()) {
+			// return new ArrayList<>();
+			return;
+		} else {
+			InputStream infos = handle.read();
+			String infosString = new BufferedReader(new InputStreamReader(infos))
+					.lines().collect(Collectors.joining("\n"));
+			if (infosString.equals("") || infosString.equals("\n")) {
+				// return new ArrayList<>();
+				return;
+			}
+			String[] imagesInfo = infosString.split("\n");
+			// List<ImageData> imagesData = new ArrayList<>();
+			for (String imageInfo : imagesInfo) {
+				String[] inf = imageInfo.split(":");
+
+				placeData.put(inf[0], Integer.parseInt(inf[1]));
+			}
+		}
+	}
 }
 
-// bug loading fait .finish done
-// bug infoText done
 // update image by cell and not all
-// dont load on menu

@@ -16,7 +16,13 @@ import photoapp.main.Main;
 
 public class ImageData {
     public final static String SAVE_PATH = System.getenv("APPDATA") + "/.photoApp/save.csv";
-    public final static String IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImage";
+    public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA") + "/.photoApp/people.csv";
+    public final static String PLACE_SAVE_PATH = System.getenv("APPDATA") + "/.photoApp/place.csv";
+
+    public final static String IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImages";
+    public final static String PEOPLE_IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImages/peoples";
+    public final static String PLACE_IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImages/places";
+
     private Map<String, Object> data;
 
     public ImageData() {
@@ -183,10 +189,7 @@ public class ImageData {
     }
 
     public static void saveImagesData() {
-        // System.out.println("------------------- WRITING IN FILE: " + Main.imagesData
-        // + "\n------------------\n\n");
 
-        // System.out.println(Main.imagesData + "imagesData2");
         String s = "";
         for (ImageData imageData : Main.imagesData) {
             s += imageData.toFileLine();
@@ -249,4 +252,5 @@ public class ImageData {
         return Main.imagesData.stream().filter(i -> i.getName().equals(imagePath)).findFirst()
                 .orElse(new ImageData());
     }
+
 }

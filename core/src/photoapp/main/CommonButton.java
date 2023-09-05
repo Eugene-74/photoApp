@@ -14,7 +14,7 @@ public class CommonButton {
                     Main.openFile();
                     Main.reload(false);
                 },
-                true, true, false, table);
+                true, true, false, table, true);
     }
 
     public static void createRefreshButton(Table table) {
@@ -26,7 +26,7 @@ public class CommonButton {
 
                     Main.reload(false);
                 },
-                true, true, false, table);
+                true, true, false, table, true);
     }
 
 }

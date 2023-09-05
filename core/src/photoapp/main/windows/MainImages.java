@@ -31,7 +31,7 @@ public class MainImages {
                 Main.mainStage,
                 (o) -> {
                     nextImages();
-                }, true, true, false, mainTable);
+                }, true, true, false, mainTable, true);
         Main.placeImage(List.of("images/previous up.png", "images/outline.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
@@ -39,7 +39,7 @@ public class MainImages {
                     // System.out.println("next image");
                     previousImages();
                 },
-                true, true, false, mainTable);
+                true, true, false, mainTable, true);
 
         createImagesTable();
         createImagesButton(imageI);
@@ -121,7 +121,7 @@ public class MainImages {
                             (o) -> {
                                 Main.unLoadAll();
                                 ImageEdition.iniImageEdition(imageName, true);
-                            }, true, true, false, imagesTable);
+                            }, true, true, false, imagesTable, true);
                     if (index >= column) {
                         imagesTable.row();
                         index = 0;

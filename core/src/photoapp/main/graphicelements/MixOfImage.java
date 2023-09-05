@@ -150,32 +150,24 @@ public class MixOfImage extends Group {
     }
 
     public MixOfImage(List<String> imageNames, boolean isSquare) {
-
         for (String imageName : imageNames) {
-            // System.out.println(ImageData.IMAGE_PATH + imageName + "\n" +
-            // Gdx.files.internal(imageName));
+
             if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
                     && !Gdx.files.internal(imageName).exists()) {
                 imageName = "images/error.png";
             }
-            // long startTimePlaceImageOfPeoples = TimeUtils.millis();
             Texture texture = isInImageData(imageName, false, "");
-            // long stopTimePlaceImageOfPeoples = TimeUtils.millis();
-            // System.out.println(
-            // "-----------------" + ImageData.IMAGE_PATH + imageName + "create mix of image
-            // done in : ");
-            // if (stopTimePlaceImageOfPeoples - startTimePlaceImageOfPeoples >= 50) {
-            // System.out.println("TO MUCH LAG !!!");
-            // }
-            // System.out.println(stopTimePlaceImageOfPeoples -
-            // startTimePlaceImageOfPeoples);
 
             Image image = new Image(texture);
             if (imageName.endsWith("outline.png")) {
-                // image.setSize(lastTime, lastTime);
                 image.setName("outline");
             } else {
                 image.setName("image");
+            }
+            if (imageNames.size() == 1) {
+                setWidth(image.getWidth());
+                setHeight(image.getHeight());
+
             }
 
             addActor(image);
