@@ -110,6 +110,10 @@ public class ImageEdition {
 	}
 
 	public static void reloadImageEdition(boolean returnToZero) {
+		if (plusTable != null) {
+			plusTable.clear();
+			plusTable = null;
+		}
 		Main.windowOpen = "Image Edition";
 		Main.toReload = "imageEdition";
 

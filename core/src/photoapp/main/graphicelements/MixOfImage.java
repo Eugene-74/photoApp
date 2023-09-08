@@ -181,10 +181,10 @@ public class MixOfImage extends Group {
             if (actor.getName().equals("image") && width == Main.preferences.getInteger("size of main images button")
                     && height == Main.preferences.getInteger("size of main images button")) {
 
-                actor.setSize(Main.preferences.getInteger("size of main images button") - 10,
-                        Main.preferences.getInteger("size of main images button") - 10);
+                actor.setSize(Main.preferences.getInteger("size of main images button") - 8,
+                        Main.preferences.getInteger("size of main images button") - 8);
 
-                actor.setPosition(10 / 2, 10 / 2);
+                actor.setPosition(8 / 2, 8 / 2);
             } else if (!actor.getName().endsWith("outline")
                     && width == Main.preferences.getInteger("size of basic button")
                     && height == Main.preferences.getInteger("size of basic button")) {
