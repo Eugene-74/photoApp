@@ -17,7 +17,7 @@ import javax.swing.JFrame;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
@@ -44,12 +44,14 @@ import com.drew.metadata.Tag;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.windows.ImageEdition;
+import photoapp.main.windows.Keybord;
 import photoapp.main.windows.MainImages;
 
 public class Main extends ApplicationAdapter {
 	public static Stage mainStage;
 	public static Preferences preferences;
 	public static Table infoTable;
+	public static Table linkTable;
 	static Integer numberOfLoadedImages = 0;
 	static String nameOfFolderOfLoadedImages = "";
 	static String nameOfFolderOfLoadedFolder = "";
@@ -70,7 +72,7 @@ public class Main extends ApplicationAdapter {
 	public static ArrayList<String> toLoad = new ArrayList<String>();
 	public static ArrayList<String> toSetSize150 = new ArrayList<String>();
 	static Thread thread = null;
-	Long lastTime = (long) 0;
+	public static Long lastTime = (long) 0;
 	static Integer setSize150Int = 0;
 	static List<String> toUnload = new ArrayList<String>();
 	static Long lastTimeImageEdition = (long) 0;
@@ -84,6 +86,12 @@ public class Main extends ApplicationAdapter {
 				preferences.getInteger("size of main images button", 150) * 9);
 		preferences.putInteger("size of close button", 50);
 		preferences.putInteger("border", 25);
+		preferences.putInteger("little border", 5);
+
+		preferences.putInteger("size of links button width", 50);
+		preferences.putInteger("size of links button height", 50);
+
+		preferences.putInteger("size of link button", 50);
 
 	}
 
@@ -91,16 +99,27 @@ public class Main extends ApplicationAdapter {
 	public void create() {
 		preferences = Gdx.app.getPreferences("graphic params");
 		iniPreferences();
+
 		MixOfImage.manager.load("images/loading button.png", Texture.class);
 		MixOfImage.manager.load("images/error.png", Texture.class);
 		MixOfImage.manager.finishLoading();
 
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
-		Gdx.input.setInputProcessor(mainStage);
-		// clear();
+
+		// Gdx.input.setInputProcessor(mainStage);
+		// // clear();
+		// InputAdapter inputProcessor = new InputAdapter();
+		// Gdx.input.setInputProcessor(inputProcessor);
+
+		InputMultiplexer multiplexer = new InputMultiplexer();
+		multiplexer.addProcessor(new Keybord());
+		multiplexer.addProcessor(mainStage);
+		Gdx.input.setInputProcessor(multiplexer);
+
 		createInfoTable();
 		createCloseButton();
+		createLinkButton();
 
 		ImageData.openDataOfImages();
 		openPlaceData();
@@ -124,32 +143,6 @@ public class Main extends ApplicationAdapter {
 		Integer progress = MixOfImage.manager.getAssetNames().size;
 		MixOfImage.manager.update();
 
-		if (ImageEdition.plusTable == null) {
-			if ((Gdx.input.isKeyPressed(Input.Keys.LEFT) || Gdx.input.isKeyPressed(Input.Keys.UP)
-					|| Gdx.input.isKeyPressed(Input.Keys.Z))
-					&& TimeUtils.millis() - lastTime >= 200) {
-				if (windowOpen.equals("Image Edition")) {
-					ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
-
-				} else if (windowOpen.equals("Main Images")) {
-					MainImages.previousImages();
-
-				}
-				lastTime = TimeUtils.millis();
-			} else if ((Gdx.input.isKeyPressed(Input.Keys.RIGHT) || Gdx.input.isKeyPressed(Input.Keys.DOWN)
-					|| Gdx.input.isKeyPressed(Input.Keys.S))
-					&& TimeUtils.millis() - lastTime >= 200) {
-				if (windowOpen.equals("Image Edition")) {
-					ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
-
-				} else if (windowOpen.equals("Main Images")) {
-					MainImages.nextImages();
-
-				}
-				lastTime = TimeUtils.millis();
-
-			}
-		}
 		ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
 		if (!infoText.equals(" ")) {
 			labelInfoText.setText(infoText);
@@ -753,6 +746,31 @@ public class Main extends ApplicationAdapter {
 				placeData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
+	}
+
+	public static void createLinkTable() {
+		linkTable = new Table();
+
+		linkTable.setSize(preferences.getInteger("size of links button width"),
+				preferences.getInteger("size of links button height"));
+		linkTable.setPosition(Gdx.graphics.getWidth() - linkTable.getWidth() - preferences.getInteger("little border"),
+				preferences.getInteger("little border"));
+		mainStage.addActor(linkTable);
+	}
+
+	public static void createLinkButton() {
+
+		createLinkTable();
+
+		placeImage(List.of("images/discordLink.png"), "link button",
+				new Vector2(0, 0),
+				mainStage,
+				(o) -> {
+					Gdx.net.openURI("https://discord.gg/Q2HhZucmxU");
+
+				},
+				true, true, false, linkTable, true);
+
 	}
 }
 

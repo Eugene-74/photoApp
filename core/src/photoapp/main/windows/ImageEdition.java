@@ -709,6 +709,7 @@ public class ImageEdition {
 									fileRessource.getName().lastIndexOf("."));
 							Main.peopleData.put(name, 0);
 							savePeopleToFile();
+
 							Main.reload(false);
 						}
 
@@ -727,6 +728,7 @@ public class ImageEdition {
 		byte[] data = from.readBytes();
 
 		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + dir.getName());
+
 		to.writeBytes(data, false);
 	}
 
