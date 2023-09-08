@@ -149,7 +149,7 @@ public class MixOfImage extends Group {
 
     }
 
-    public MixOfImage(List<String> imageNames, boolean isSquare) {
+    public MixOfImage(List<String> imageNames) {
         for (String imageName : imageNames) {
 
             if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()

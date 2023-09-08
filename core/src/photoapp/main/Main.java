@@ -265,7 +265,7 @@ public class Main extends ApplicationAdapter {
 			final Consumer<Object> onClicked,
 			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize) {
 
-		MixOfImage mixOfImages = new MixOfImage(imageNames, isSquare);
+		MixOfImage mixOfImages = new MixOfImage(imageNames);
 		if (setSize) {
 			if (isSquare) {
 				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName, 100),
@@ -332,7 +332,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public void createCloseButton() {
-		placeImage(List.of("images/outline.png", "images/close.png"), "close button",
+		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
 				new Vector2(Gdx.graphics.getWidth() - preferences.getInteger("size of " + "close button", 50),
 						Gdx.graphics.getHeight() - preferences.getInteger("size of " + "close button", 50)),
 				mainStage,
