@@ -7,8 +7,11 @@ import java.io.InputStreamReader;
 import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -32,7 +35,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -44,7 +46,6 @@ import com.drew.metadata.Tag;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.windows.ImageEdition;
-import photoapp.main.windows.Keybord;
 import photoapp.main.windows.MainImages;
 
 public class Main extends ApplicationAdapter {
@@ -60,8 +61,12 @@ public class Main extends ApplicationAdapter {
 	public static List<ImageData> imagesData;
 	// public static OrderedMap<String, Texture> imagesTextureData = new
 	// OrderedMap<>();
-	public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
-	public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
+
+	public static Map<String, Integer> peopleData = new TreeMap<>();
+	public static Map<String, Integer> placeData = new TreeMap<>();
+
+	// public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
+	// public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
 
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
@@ -168,23 +173,64 @@ public class Main extends ApplicationAdapter {
 			MixOfImage.firstLoading = false;
 		}
 
-		if (windowOpen.equals("Image Edition") &&
-				toReload.equals("imageEdition")) {
-			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
-				if (MixOfImage.manager.isFinished()) {
-					// System.out.println("reload image edi");
-					ImageEdition.reloadImageEdition(false);
-					MixOfImage.isLoading = false;
-					infoTextSet("done");
-					toReload = "";
-					return;
-				} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
-					lastTimeImageEdition = TimeUtils.millis();
+		if (windowOpen.equals("Image Edition")) {
+			if (toReload.equals("plusTablePeople")) {
+				if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
+					if (MixOfImage.manager.isFinished()) {
 
-					ImageEdition.reloadImageEdition(false);
-					MixOfImage.isLoading = true;
-					toReload = "imageEdition";
+						ImageEdition.openPlusPeople();
+						MixOfImage.isLoading = false;
+						infoTextSet("done");
+						toReload = "";
+						return;
+					} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+						lastTimeImageEdition = TimeUtils.millis();
 
+						ImageEdition.openPlusPeople();
+
+						MixOfImage.isLoading = true;
+						toReload = "plusTablePeople";
+
+					}
+				}
+			} else if (toReload.equals("plusTablePlace")) {
+				if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
+					if (MixOfImage.manager.isFinished()) {
+
+						ImageEdition.openPlusPlace();
+						MixOfImage.isLoading = false;
+						infoTextSet("done");
+						toReload = "";
+						return;
+					} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+						lastTimeImageEdition = TimeUtils.millis();
+
+						ImageEdition.openPlusPlace();
+
+						MixOfImage.isLoading = true;
+						toReload = "plusTablePlace";
+
+					}
+				}
+			}
+			if (toReload.equals("imageEdition")) {
+
+				if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
+					if (MixOfImage.manager.isFinished()) {
+						// System.out.println("reload image edi");
+						ImageEdition.reloadImageEdition(false);
+						MixOfImage.isLoading = false;
+						infoTextSet("done");
+						toReload = "";
+						return;
+					} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+						lastTimeImageEdition = TimeUtils.millis();
+
+						ImageEdition.reloadImageEdition(false);
+						MixOfImage.isLoading = true;
+						toReload = "imageEdition";
+
+					}
 				}
 			}
 		} else if (toReload.equals("mainImages")) {
@@ -722,6 +768,12 @@ public class Main extends ApplicationAdapter {
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
+		peopleData = peopleData.entrySet().stream()
+				.sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 	}
 
 	public static void openPlaceData() {
@@ -746,6 +798,12 @@ public class Main extends ApplicationAdapter {
 				placeData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
+		placeData = placeData.entrySet().stream()
+				.sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+				.collect(Collectors.toMap(
+						Map.Entry::getKey,
+						Map.Entry::getValue,
+						(oldValue, newValue) -> oldValue, LinkedHashMap::new));
 	}
 
 	public static void createLinkTable() {

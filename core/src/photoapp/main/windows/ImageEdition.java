@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -251,8 +252,11 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
-		for (FileHandle f : handle.list()) {
-			peopleNames.add(f.nameWithoutExtension());
+		Map<String, Integer> map = Main.peopleData;
+		// System.out.println(Entry.comparingByValue().reversed());
+		for (String name : map.keySet()) {
+			peopleNames.add(name);
+
 		}
 
 		if (!handle.exists()) {
@@ -300,8 +304,11 @@ public class ImageEdition {
 		List<String> placeNames = new ArrayList<String>();
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
-		for (FileHandle f : handle.list()) {
-			placeNames.add(f.nameWithoutExtension());
+
+		Map<String, Integer> map = Main.placeData;
+
+		for (String name : map.keySet()) {
+			placeNames.add(name);
 		}
 
 		if (!handle.exists()) {
@@ -415,6 +422,12 @@ public class ImageEdition {
 		List<String> peoples = imageData.getPeoples();
 		peoples = Main.addToList(peoples, peopleToAdd);
 
+		System.out.println(peopleToAdd);
+		int peopleInt = Main.peopleData.get(peopleToAdd);
+		peopleInt += 1;
+		Main.peopleData.put(peopleToAdd, peopleInt);
+		savePeopleToFile();
+
 		imageData.setPeoples(peoples);
 
 		if (isReloadImageEdition) {
@@ -427,6 +440,12 @@ public class ImageEdition {
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 		List<String> places = imageData.getPlaces();
 		places = Main.addToList(places, placeToAdd);
+
+		int placeInt = Main.placeData.get(placeToAdd);
+		placeInt += 1;
+		Main.placeData.put(placeToAdd, placeInt);
+		savePlaceToFile();
+
 		imageData.setPlaces(places);
 		if (isReloadImageEdition) {
 			iniImageEdition(currentImagePath, false);
@@ -670,6 +689,9 @@ public class ImageEdition {
 								|| fileRessource.toString().endsWith(".jpg")
 								|| fileRessource.toString().endsWith(".JPG")) {
 							movePlace(fileRessource);
+							String name = fileRessource.getName().substring(0,
+									fileRessource.getName().lastIndexOf("."));
+							Main.placeData.put(name, 0);
 							savePlaceToFile();
 							Main.reload(false);
 
@@ -762,9 +784,11 @@ public class ImageEdition {
 	}
 
 	public static void savePeopleToFile() {
-
+		// Main.peopleData.;
 		String s = "";
-		for (String people : Main.peopleData.keys()) {
+		// for (String people : Main.peopleData.keys()) {
+		for (String people : Main.peopleData.keySet()) {
+
 			s += people + ":" + Main.peopleData.get(people) + "\n";
 		}
 		FileHandle handle = Gdx.files.absolute(ImageData.PEOPLE_SAVE_PATH);
@@ -775,7 +799,7 @@ public class ImageEdition {
 	public static void savePlaceToFile() {
 
 		String s = "";
-		for (String place : Main.placeData.keys()) {
+		for (String place : Main.placeData.keySet()) {
 			s += place + ":" + Main.placeData.get(place);
 		}
 		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_SAVE_PATH);
@@ -814,6 +838,8 @@ public class ImageEdition {
 	}
 
 	public static void addAllPeopleToPlusTable() {
+		Main.toReload = "plusTablePeople";
+
 		// table.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
@@ -823,8 +849,11 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
-		for (FileHandle f : handle.list()) {
-			peopleNames.add(f.nameWithoutExtension());
+		Map<String, Integer> map = Main.peopleData;
+		// System.out.println(Entry.comparingByValue().reversed());
+		for (String name : map.keySet()) {
+			peopleNames.add(name);
+
 		}
 
 		if (!handle.exists()) {
@@ -876,6 +905,8 @@ public class ImageEdition {
 	}
 
 	public static void addAllPlaceToPlusTable() {
+		Main.toReload = "plusTablePlace";
+
 		// table.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
@@ -885,8 +916,11 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
 
-		for (FileHandle f : handle.list()) {
-			placeNames.add(f.nameWithoutExtension());
+		Map<String, Integer> map = Main.placeData;
+		// System.out.println(Entry.comparingByValue().reversed());
+		for (String name : map.keySet()) {
+			placeNames.add(name);
+
 		}
 
 		if (!handle.exists()) {
