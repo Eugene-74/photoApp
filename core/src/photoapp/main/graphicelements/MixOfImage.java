@@ -27,6 +27,13 @@ public class MixOfImage extends Group {
     // System.out.println("new HASH MAP ------------------------");
     // imagesData = new HashMap<>();
     // }
+    public static void stopLoading() {
+
+        firstLoading = false;
+        isLoading = false;
+        LoadingList = new ArrayList<String>();
+
+    }
 
     public static void loadImage(String lookingFor) {
         new Thread(new Runnable() {

@@ -45,6 +45,7 @@ import com.drew.metadata.Tag;
 
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.MainImages;
 
@@ -112,11 +113,6 @@ public class Main extends ApplicationAdapter {
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
-		// Gdx.input.setInputProcessor(mainStage);
-		// // clear();
-		// InputAdapter inputProcessor = new InputAdapter();
-		// Gdx.input.setInputProcessor(inputProcessor);
-
 		InputMultiplexer multiplexer = new InputMultiplexer();
 		multiplexer.addProcessor(new Keybord());
 		multiplexer.addProcessor(mainStage);
@@ -136,10 +132,11 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
-
+		FileChooser.createFileChooser();
 		MainImages.createMainWindow();
-		ImageEdition.imageEdtionCreate();
-		// ImageEdition.imageEdtionCreate();
+		ImageEdition.createImageEdition();
+
+		FileChooser.openFileChooser();
 	}
 
 	@Override
@@ -154,7 +151,7 @@ public class Main extends ApplicationAdapter {
 		}
 		mainStage.draw();
 
-		if (progress != newProgress && !MixOfImage.LoadingList.isEmpty()) {
+		if (progress != newProgress && !MixOfImage.LoadingList.isEmpty() && MixOfImage.firstLoading) {
 			// Long start = TimeUtils.millis();
 			for (String imagePath : MixOfImage.LoadingList) {
 				// Long startbis = TimeUtils.millis();
@@ -833,3 +830,4 @@ public class Main extends ApplicationAdapter {
 }
 
 // update image by cell and not all
+// link place not count

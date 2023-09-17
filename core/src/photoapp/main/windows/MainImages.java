@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
+import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 
 public class MainImages {
@@ -18,11 +19,16 @@ public class MainImages {
     public static Integer nextToNotLoad = 0;
 
     public static void createMainWindow() {
-        Main.windowOpen = "Main Images";
         createMainTable();
 
-        CommonButton.createAddImagesButton(mainTable);
+    }
 
+    public static void openMainImages() {
+        Main.windowOpen = "Main Images";
+
+        Main.mainStage.addActor(mainTable);
+
+        CommonButton.createAddImagesButton(mainTable);
         CommonButton.createRefreshButton(mainTable);
 
         mainTable.row();
@@ -40,9 +46,29 @@ public class MainImages {
                     previousImages();
                 },
                 true, true, false, mainTable, true);
+        mainTable.row();
+
+        Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    Main.toReload = "File Chooser";
+                    clearMainImages();
+                    FileChooser.openFileChooser();
+
+                },
+                true, true, false, mainTable, true);
 
         createImagesTable();
         createImagesButton(imageI);
+    }
+
+    public static void clearMainImages() {
+
+        MixOfImage.stopLoading();
+        mainTable.clear();
+        imagesTable.clear();
+
     }
 
     public static void reloadMainImages() {
@@ -216,7 +242,6 @@ public class MainImages {
                 Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
                 Main.preferences.getInteger("border"));
 
-        Main.mainStage.addActor(mainTable);
     }
 
     public static void previousImages() {

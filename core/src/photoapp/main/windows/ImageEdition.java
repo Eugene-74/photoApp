@@ -43,7 +43,7 @@ public class ImageEdition {
 	public static String theCurrentImagePath;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 
-	public static void imageEdtionCreate() {
+	public static void createImageEdition() {
 		// Main.preferences = Gdx.app.getPreferences("graphic params");
 
 		Main.preferences.putInteger("size of main image width", 1200);
@@ -82,14 +82,7 @@ public class ImageEdition {
 		// + preferences.getInteger("size of preview image height"));
 
 		table = new Table();
-		// table.setSize(
-		// Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main image
-		// width")
-		// - Main.preferences.getInteger("border"),
-		// Gdx.graphics.getHeight());
-		// table.setPosition(
-		// Main.preferences.getInteger("size of main image width") +
-		// Main.preferences.getInteger("border"), 0);
+
 		table.setSize(
 				Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main images width")
 						- Main.preferences.getInteger("border") * 3,
@@ -317,9 +310,6 @@ public class ImageEdition {
 		Integer maxPlace = 5;
 		Integer i = 0;
 
-		if (!handle.exists()) {
-			handle.mkdirs();
-		}
 		for (String place : placeNames) {
 			if (i < maxPlace) {
 				i += 1;
@@ -590,7 +580,8 @@ public class ImageEdition {
 					table.clear();
 					previewTable.clear();
 
-					MainImages.createMainWindow();
+					MainImages.openMainImages();
+
 				},
 				true, true, false, table, true);
 
@@ -800,7 +791,7 @@ public class ImageEdition {
 
 		String s = "";
 		for (String place : Main.placeData.keySet()) {
-			s += place + ":" + Main.placeData.get(place);
+			s += place + ":" + Main.placeData.get(place) + "\n";
 		}
 		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_SAVE_PATH);
 		InputStream text = new ByteArrayInputStream(s.getBytes());
