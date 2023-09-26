@@ -1,12 +1,11 @@
-package photoapp.main;
+package photoapp.main.windows;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import photoapp.main.windows.ImageEdition;
-import photoapp.main.windows.MainImages;
+import photoapp.main.Main;
 
 public class Keybord implements InputProcessor {
     @Override

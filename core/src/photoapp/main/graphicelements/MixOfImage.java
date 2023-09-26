@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.Main;
 import photoapp.main.storage.ImageData;
@@ -27,39 +27,14 @@ public class MixOfImage extends Group {
     // System.out.println("new HASH MAP ------------------------");
     // imagesData = new HashMap<>();
     // }
-    public static void stopLoading() {
-
-        firstLoading = false;
-        isLoading = false;
-        LoadingList = new ArrayList<String>();
-
-    }
 
     public static void loadImage(String lookingFor) {
         new Thread(new Runnable() {
             @Override
             public void run() {
 
-                if (Main.infoText == " " || Main.infoText == "done") {
+                if (Main.infoText == " " || Main.infoText == Main.preferences.getString("text.done")) {
                     Main.infoTextSet("loading .");
-                    // System.out.println(".");
-                }
-                if (Main.infoText == "loading ." && TimeUtils.millis() - lastTime >= 500) {
-                    Main.infoTextSet("loading ..");
-                    // System.out.println("..");
-                    lastTime = TimeUtils.millis();
-
-                } else if (Main.infoText == "loading .." && TimeUtils.millis() - lastTime >= 500) {
-                    Main.infoTextSet("loading ...");
-
-                    // System.out.println("...");
-
-                    lastTime = TimeUtils.millis();
-
-                } else if (Main.infoText == "loading ..." && TimeUtils.millis() - lastTime >= 500) {
-                    Main.infoTextSet("loading .");
-
-                    lastTime = TimeUtils.millis();
                 }
 
                 isLoading = true;
@@ -68,6 +43,14 @@ public class MixOfImage extends Group {
 
             }
         }).start();
+    }
+
+    public static void stopLoading() {
+
+        firstLoading = false;
+        isLoading = false;
+        LoadingList = new ArrayList<String>();
+
     }
 
     public static Texture isInImageData(String lookingFor, boolean wait, String type) {
@@ -89,6 +72,7 @@ public class MixOfImage extends Group {
         } else {
             String fileName = "";
             String[] ListImageName = lookingFor.split("/");
+
             if (ListImageName.length > 2) {
 
                 // System.out.println(lookingFor.split("/")[ListImageName.length - 2] +
@@ -111,22 +95,27 @@ public class MixOfImage extends Group {
                             && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
                         isLoading = true;
                         fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
-                        if (!notToReLoadList.contains(fileName)) {
+                        FileHandle handle = Gdx.files
+                                .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
+                        if (handle.exists()) {
 
-                            manager.load(fileName, Texture.class);
-                            notToReLoadList.add(fileName);
+                            if (!notToReLoadList.contains(fileName)) {
+
+                                manager.load(fileName, Texture.class);
+                                notToReLoadList.add(fileName);
+                            }
+
+                            manager.finishLoadingAsset(fileName);
+                            manager.update();
+                            // return isInImageData(fileName, true, "");
+                            return manager.get(fileName, Texture.class);
+                        } else {
+                            Main.setSize150Force(lookingFor, ListImageName[ListImageName.length - 1]);
                         }
-
-                        manager.finishLoadingAsset(fileName);
-                        manager.update();
-                        // return isInImageData(fileName, true, "");
-                        return manager.get(fileName, Texture.class);
                     }
 
                 }
 
-                // manager.finishLoading();
-                // manager.update();
             } else {
                 fileName = lookingFor;
             }
@@ -158,6 +147,25 @@ public class MixOfImage extends Group {
 
     public MixOfImage(List<String> imageNames) {
         for (String imageName : imageNames) {
+            imageName = imageName.replace("\\", "/");
+            String[] ListImageName = imageName.split("/");
+            if (imageName.split("/")[ListImageName.length - 2].equals("150")) {
+                System.out.println("150 : " + imageName);
+
+                FileHandle handle = Gdx.files
+                        .absolute(imageName);
+                if (!handle.exists()) {
+                    Main.infoTextSet("need to load image due to an error of loading");
+                    String nameWithout150 = "";
+                    for (int i = 0; i < ListImageName.length - 2; i++) {
+                        nameWithout150 += ListImageName[i] + "/";
+                    }
+                    nameWithout150 += ListImageName[ListImageName.length - 1];
+
+                    Main.setSize150Force(nameWithout150, ListImageName[ListImageName.length - 1]);
+
+                }
+            }
 
             if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
                     && !Gdx.files.internal(imageName).exists()) {

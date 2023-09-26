@@ -23,6 +23,36 @@ public class MainImages {
 
     }
 
+    // public static void createMainWindow() {
+    // Main.windowOpen = "Main Images";
+    // createMainTable();
+
+    // CommonButton.createAddImagesButton(mainTable);
+
+    // CommonButton.createRefreshButton(mainTable);
+
+    // mainTable.row();
+    // Main.placeImage(List.of("images/next down.png", "images/outline.png"), "basic
+    // button",
+    // new Vector2(0, 0),
+    // Main.mainStage,
+    // (o) -> {
+    // nextImages();
+    // }, true, true, false, mainTable, true);
+    // Main.placeImage(List.of("images/previous up.png", "images/outline.png"),
+    // "basic button",
+    // new Vector2(0, 0),
+    // Main.mainStage,
+    // (o) -> {
+    // // System.out.println("next image");
+    // previousImages();
+    // },
+    // true, true, false, mainTable, true);
+
+    // createImagesTable();
+    // createImagesButton(imageI);
+    // }
+
     public static void openMainImages() {
         Main.windowOpen = "Main Images";
 
@@ -242,6 +272,7 @@ public class MainImages {
                 Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
                 Main.preferences.getInteger("border"));
 
+        Main.mainStage.addActor(mainTable);
     }
 
     public static void previousImages() {
