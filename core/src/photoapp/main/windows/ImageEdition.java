@@ -266,7 +266,7 @@ public class ImageEdition {
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
 				} else {
-					peopleList.add("images/no.png");
+					peopleList.add("imagefffs/no.png");
 				}
 
 				Main.placeImage(peopleList,

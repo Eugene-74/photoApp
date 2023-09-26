@@ -524,6 +524,8 @@ public class Main extends ApplicationAdapter {
 							|| item.getName().endsWith(".jpg") || item.getName().endsWith(".JPG")) {
 
 						toLoad.add(dir + "/" + item.getName());
+						// prob conteur + load after
+						// totalNumberOfLoadedImages += 1;
 
 					}
 
