@@ -21,17 +21,20 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Cursor.SystemCursor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -80,6 +83,7 @@ public class Main extends ApplicationAdapter {
 	static Integer setSize150Int = 0;
 	static List<String> toUnload = new ArrayList<String>();
 	static Long lastTimeImageEdition = (long) 0;
+	static InputMultiplexer multiplexer = new InputMultiplexer();
 
 	public void iniPreferences() {
 
@@ -113,10 +117,8 @@ public class Main extends ApplicationAdapter {
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
-		InputMultiplexer multiplexer = new InputMultiplexer();
-		multiplexer.addProcessor(new Keybord());
-		multiplexer.addProcessor(mainStage);
-		Gdx.input.setInputProcessor(multiplexer);
+		Gdx.graphics.setSystemCursor(SystemCursor.Hand);
+		createMultiplexer();
 
 		createInfoTable();
 		createCloseButton();
@@ -143,6 +145,15 @@ public class Main extends ApplicationAdapter {
 		Parameter.createParameter();
 
 		FileChooser.openFileChooser();
+	}
+
+	public static void createMultiplexer() {
+
+		multiplexer.addProcessor(new Keybord());
+		multiplexer.addProcessor(mainStage);
+
+		Gdx.input.setInputProcessor(multiplexer);
+
 	}
 
 	public static void updateLoadingText() {
@@ -175,6 +186,7 @@ public class Main extends ApplicationAdapter {
 		if (!infoText.equals(" ")) {
 			labelInfoText.setText(infoText);
 		}
+		mainStage.act();
 		mainStage.draw();
 
 		updateLoadingText();
@@ -293,7 +305,7 @@ public class Main extends ApplicationAdapter {
 
 	public static void placeImage(List<String> imageNames, String prefSizeName,
 			Vector2 position, Stage mainStage,
-			final Consumer<Object> onClicked,
+			final Consumer<Object> onClicked, final Consumer<Object> onEnter, final Consumer<Object> onExit,
 			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize) {
 
 		MixOfImage mixOfImages = new MixOfImage(imageNames);
@@ -334,13 +346,61 @@ public class Main extends ApplicationAdapter {
 
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
-				// System.out.println("closing");
+
+				System.out.println("click");
 				// System.exit(0);
 				if (onClicked != null) {
 					onClicked.accept(null);
 				}
 			}
+
 		});
+		mixOfImages.addListener(new ClickListener() {
+
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
+				super.enter(event, x, y, pointer, fromActor);
+				// System.out.println("enter");
+				if (onEnter != null) {
+					onEnter.accept(null);
+				}
+			}
+
+		});
+
+		mixOfImages.addListener(new ClickListener() {
+
+			@Override
+			public void exit(InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
+
+				// System.out.println("exit");
+
+				if (onExit != null) {
+					onExit.accept(null);
+				}
+			}
+
+		});
+		// multiplexer.addProcessor(mainStage);
+		// Gdx.input.setInputProcessor(multiplexer);
+
+		// createMultiplexer();
+		// ClickListener enterExitListener = new ClickListener() {
+		// @Override
+		// public void enter(InputEvent event, float x, float y, int pointer, Actor
+		// fromActor) {
+		// super.enter(event, x, y, pointer, fromActor);
+		// System.out.println("enter");
+		// }
+
+		// public void exit(InputEvent event, float x, float y, int pointer, Actor
+		// toActor) {
+		// super.exit(event, x, y, pointer, toActor);
+		// System.out.println("close");
+
+		// }
+		// };
+		// mixOfImages.addListener(enterExitListener);
 
 		if (inTable) {
 			placeImageTable.add(mixOfImages);
@@ -371,7 +431,7 @@ public class Main extends ApplicationAdapter {
 					System.out.println("closing");
 					dispose();
 					System.exit(0);
-				}, true, false, false, ImageEdition.table, true);
+				}, null, null, true, false, false, ImageEdition.table, true);
 	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
@@ -811,7 +871,7 @@ public class Main extends ApplicationAdapter {
 				(o) -> {
 					Gdx.net.openURI("https://discord.gg/Q2HhZucmxU");
 
-				},
+				}, null, null,
 				true, true, false, linkTable, true);
 
 	}

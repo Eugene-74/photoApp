@@ -37,14 +37,14 @@ public class MainImages {
                 Main.mainStage,
                 (o) -> {
                     nextImages();
-                }, true, true, false, mainTable, true);
+                }, null, null, true, true, false, mainTable, true);
         Main.placeImage(List.of("images/previous up.png", "images/outline.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
                     // System.out.println("next image");
                     previousImages();
-                },
+                }, null, null,
                 true, true, false, mainTable, true);
         mainTable.row();
 
@@ -56,7 +56,7 @@ public class MainImages {
                     clearMainImages();
                     FileChooser.openFileChooser();
 
-                },
+                }, null, null,
                 true, true, false, mainTable, true);
 
         createImagesTable();
@@ -126,7 +126,7 @@ public class MainImages {
                             (o) -> {
                                 Main.unLoadAll();
                                 ImageEdition.iniImageEdition(imageName, true);
-                            }, true, true, false, imagesTable, true);
+                            }, null, null, true, true, false, imagesTable, true);
                     if (index >= column) {
                         imagesTable.row();
                         index = 0;

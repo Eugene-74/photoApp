@@ -13,7 +13,7 @@ public class CommonButton {
                 (o) -> {
                     Main.openFile();
                     Main.reload(false);
-                },
+                }, null, null,
                 true, true, false, table, true);
     }
 
@@ -25,7 +25,7 @@ public class CommonButton {
                     // infoTextSet("test");
 
                     Main.reload(false);
-                },
+                }, null, null,
                 true, true, false, table, true);
     }
 

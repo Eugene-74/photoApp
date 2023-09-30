@@ -120,7 +120,7 @@ public class ImageEdition {
 		Main.placeImage(List.of(ImageData.IMAGE_PATH + "/" + imageName), "main image", new Vector2(
 				0, 0),
 				Main.mainStage,
-				null, false, false, true, table, false);
+				null, null, null, false, false, true, table, false);
 	}
 
 	public static void placePreviewImage(String currentImagePath) {
@@ -260,6 +260,11 @@ public class ImageEdition {
 						(o) -> {
 							iniImageEdition(preview, true);
 						},
+						(o) -> {
+							showBigPreview(preview);
+						}, (o) -> {
+							closeBigPreview(currentImagePath);
+						},
 						false, true, false, previewTable, true);
 
 				index += 1;
@@ -270,6 +275,17 @@ public class ImageEdition {
 				nbr += 1;
 			}
 		}
+	}
+
+	public static void showBigPreview(String preview) {
+		// System.out.println(preview);
+		openMainImage(preview);
+		Main.toReload = "imageEdition";
+
+	}
+
+	public static void closeBigPreview(String initialImage) {
+		openMainImage(initialImage);
 	}
 
 	public static void placeImageOfPeoples(String currentImagePath) {
@@ -309,7 +325,7 @@ public class ImageEdition {
 
 							addPeople(people, currentImagePath, true);
 
-						},
+						}, null, null,
 						true, true, false, table, true);
 
 				index += 1;
@@ -360,7 +376,7 @@ public class ImageEdition {
 						Main.mainStage,
 						(o) -> {
 							addPlace(place, currentImagePath, true);
-						},
+						}, null, null,
 						true, true, false, table, true);
 
 				index += 1;
@@ -500,7 +516,7 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					previousImage(currentImagePath);
-				},
+				}, null, null,
 				true, true, false, table, true);
 
 		List<String> deletImages = new ArrayList<>();
@@ -541,7 +557,7 @@ public class ImageEdition {
 					} else {
 						System.out.println("error null ----------------------------------------------");
 					}
-				},
+				}, null, null,
 				true, true, false, table, true);
 
 		Main.placeImage(List.of("images/next.png", "images/outline.png"), "basic button",
@@ -549,7 +565,7 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					nextImage(currentImagePath);
-				}, true, true, false, table, true);
+				}, null, null, true, true, false, table, true);
 		table.row();
 		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
@@ -561,12 +577,12 @@ public class ImageEdition {
 							rotateAnImage(90, imageData.getName());
 						}
 					}
-				},
+				}, null, null,
 				true, true, false, table, true);
 		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
-				null,
+				null, null, null,
 				true, true, false, table, true);
 		table.row();
 		Main.placeImage(List.of("images/save.png", "images/outline.png"), "basic button",
@@ -574,7 +590,7 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					save();
-				},
+				}, null, null,
 				true, true, false, table, true);
 
 		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
@@ -583,14 +599,14 @@ public class ImageEdition {
 				(o) -> {
 					addAPeople();
 
-				},
+				}, null, null,
 				true, true, false, table, true);
 		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
 					addAPlace();
-				},
+				}, null, null,
 				true, true, false, table, true);
 		table.row();
 		CommonButton.createAddImagesButton(table);
@@ -606,7 +622,7 @@ public class ImageEdition {
 					previewTable.clear();
 
 					MainImages.openMainImages();
-				},
+				}, null, null,
 				true, true, false, table, true);
 
 	}
@@ -780,7 +796,7 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					openPlusPeople();
-				},
+				}, null, null,
 				true, true, false, table, true);
 	}
 
@@ -791,7 +807,7 @@ public class ImageEdition {
 				(o) -> {
 					openPlusPlace();
 
-				},
+				}, null, null,
 				true, true, false, table, true);
 	}
 
@@ -885,7 +901,7 @@ public class ImageEdition {
 						(o) -> {
 							addPeople(people, theCurrentImagePath, false);
 							addAllPeopleToPlusTable();
-						},
+						}, null, null,
 						true, true, false, plusTable, true);
 
 				index += 1;
@@ -904,7 +920,7 @@ public class ImageEdition {
 					plusTable.clear();
 					plusTable = null;
 					Main.reload(false);
-				},
+				}, null, null,
 				true, true, false, plusTable, true);
 
 	}
@@ -952,7 +968,7 @@ public class ImageEdition {
 							addPlace(place, theCurrentImagePath, false);
 							addAllPlaceToPlusTable();
 
-						},
+						}, null, null,
 						true, true, false, plusTable, true);
 
 				index += 1;
@@ -971,7 +987,7 @@ public class ImageEdition {
 					plusTable.clear();
 					plusTable = null;
 					Main.reload(false);
-				},
+				}, null, null,
 				true, true, false, plusTable, true);
 
 	}

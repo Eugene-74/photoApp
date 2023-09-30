@@ -12,19 +12,36 @@ import photoapp.main.graphicelements.MixOfImage;
 
 public class Parameter {
     static Table mainTableParameter;
+    static Table parameterTable;
 
     public static void createParameter() {
         createMainTable();
+        createParameterTable();
     }
 
     public static void openParameter() {
         placeParameterButton();
+        placeMainParameterButton();
     }
 
     public static void reloadParameter() {
-        mainTableParameter.clear();
+        parameterTable.clear();
         placeParameterButton();
+        // placeMainParameterButton();
 
+    }
+
+    public static void placeMainParameterButton() {
+        Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    Main.toReload = "File Chooser";
+                    clearParameter();
+                    FileChooser.openFileChooser();
+
+                }, null, null,
+                true, true, false, mainTableParameter, true);
     }
 
     public static void placeParameterButton() {
@@ -52,20 +69,9 @@ public class Parameter {
 
                     }
                     Main.preferences.flush();
-                },
-                true, true, false, mainTableParameter, true);
-        mainTableParameter.row();
+                }, null, null,
+                true, true, false, parameterTable, true);
 
-        Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    Main.toReload = "File Chooser";
-                    clearParameter();
-                    FileChooser.openFileChooser();
-
-                },
-                true, true, false, mainTableParameter, true);
     }
 
     public static void createMainTable() {
@@ -81,10 +87,24 @@ public class Parameter {
         Main.mainStage.addActor(mainTableParameter);
     }
 
+    private static void createParameterTable() {
+        parameterTable = new Table();
+        parameterTable.setSize(
+                Main.preferences.getInteger("size of main images width"),
+                Main.preferences.getInteger("size of main images height"));
+        parameterTable.setPosition(
+                Main.preferences.getInteger("border"),
+                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - parameterTable.getHeight());
+
+        Main.mainStage.addActor(parameterTable);
+
+    }
+
     public static void clearParameter() {
 
         MixOfImage.stopLoading();
         mainTableParameter.clear();
+        parameterTable.clear();
 
     }
 }

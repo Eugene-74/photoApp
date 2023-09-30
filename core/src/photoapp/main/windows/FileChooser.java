@@ -82,7 +82,7 @@ public class FileChooser {
                 Main.mainStage,
                 (o) -> {
                     addAFile();
-                },
+                }, null, null,
                 true, true, false, buttonTable, true);
 
         buttonTable.row();
@@ -93,7 +93,7 @@ public class FileChooser {
                 (o) -> {
                     Parameter.openParameter();
                     clearFileChooser();
-                },
+                }, null, null,
                 true, true, false, buttonTable, true);
     }
 
@@ -137,7 +137,7 @@ public class FileChooser {
                 Main.mainStage,
                 (o) -> {
                     openFile("");
-                },
+                }, null, null,
                 true, true, false, fileTable, true);
 
         for (File name : handle.listFiles()) {
@@ -172,7 +172,7 @@ public class FileChooser {
                         Main.mainStage,
                         (o) -> {
                             openFile(name);
-                        },
+                        }, null, null,
                         true, true, false, fileTable, true);
 
                 index += 1;
