@@ -137,7 +137,7 @@ public class ImageEdition {
 				index += 1;
 			}
 
-			Integer max = 7;
+			Integer max = 9;
 			index = 0;
 			List<String> previewNames = new ArrayList<String>();
 			Integer maxImageIndex = Main.imagesData.size() - 1;
@@ -145,16 +145,20 @@ public class ImageEdition {
 			// maxImageIndex);
 			// System.out.println(imageIndex.equals(maxImageIndex));
 			if (imageIndex == 0) {
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
 
 			} else if (imageIndex == 1) {
-
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
@@ -164,9 +168,10 @@ public class ImageEdition {
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
 
 			} else if (imageIndex == 2) {
-
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
@@ -176,8 +181,10 @@ public class ImageEdition {
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
 
 			} else if (imageIndex == 3) {
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
@@ -187,21 +194,11 @@ public class ImageEdition {
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
 
-			} else if (imageIndex.equals(maxImageIndex - 2)) {
+			} else if (imageIndex.equals(maxImageIndex - 3)) {
 				// System.out.println("MAX -1 -----------------");
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(0).getName());
-
-			} else if (imageIndex.equals(maxImageIndex - 1)) {
-				// System.out.println("MAX -1 -----------------");
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
@@ -211,9 +208,39 @@ public class ImageEdition {
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(0).getName());
 				previewNames.add(Main.imagesData.get(1).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(2).getName());
+
+			} else if (imageIndex.equals(maxImageIndex - 2)) {
+				// System.out.println("MAX -1 -----------------");
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(0).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(1).getName());
+
+			} else if (imageIndex.equals(maxImageIndex - 1)) {
+				// System.out.println("MAX -1 -----------------");
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(0).getName());
+				previewNames.add(Main.imagesData.get(1).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(2).getName());
 
 			} else if (imageIndex.equals(maxImageIndex)) {
 				// System.out.println("MAX -----------------");
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
@@ -223,16 +250,18 @@ public class ImageEdition {
 				previewNames.add(Main.imagesData.get(0).getName());
 				previewNames.add(Main.imagesData.get(1).getName());
 				previewNames.add(Main.imagesData.get(2).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(3).getName());
 
 			} else if (imageIndex >= 3) {
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
 
 			}
 

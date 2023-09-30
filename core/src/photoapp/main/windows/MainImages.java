@@ -156,6 +156,8 @@ public class MainImages {
     public static void previousImages() {
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
+        Integer row = Main.preferences.getInteger("size of main images height")
+                / Main.preferences.getInteger("size of main images button");
         imageI -= column;
         if (imageI < 0) {
             imageI += column;
@@ -163,6 +165,15 @@ public class MainImages {
         }
         imagesTable.clear();
         createImagesButton(imageI);
+        for (int i = 0; i < column; i++) {
+            int index = imageI + i + column * row + column;
+            if (index < Main.imagesData.size()
+                    && index >= 0) {
+
+                Main.unLoadAnImage(
+                        ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index).getName());
+            }
+        }
     }
 
     public static void nextImages() {
@@ -177,5 +188,15 @@ public class MainImages {
         }
         imagesTable.clear();
         createImagesButton(imageI);
+        // System.out.println("iamgeI : " + imageI);
+        for (int i = 0; i < column; i++) {
+            int index = imageI - column * 2 + i;
+            if (index < Main.imagesData.size()
+                    && index >= 0) {
+
+                Main.unLoadAnImage(
+                        ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index).getName());
+            }
+        }
     }
 }

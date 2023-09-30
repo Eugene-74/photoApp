@@ -347,7 +347,6 @@ public class Main extends ApplicationAdapter {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 
-				System.out.println("click");
 				// System.exit(0);
 				if (onClicked != null) {
 					onClicked.accept(null);
