@@ -15,13 +15,15 @@ import com.badlogic.gdx.files.FileHandle;
 import photoapp.main.Main;
 
 public class ImageData {
-    public final static String SAVE_PATH = System.getenv("APPDATA") + "/.photoApp/save.csv";
-    public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA") + "/.photoApp/people.csv";
-    public final static String PLACE_SAVE_PATH = System.getenv("APPDATA") + "/.photoApp/place.csv";
+    public final static String SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/save.csv";
+    public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/people.csv";
+    public final static String PLACE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/place.csv";
 
-    public final static String IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImages";
-    public final static String PEOPLE_IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImages/peoples";
-    public final static String PLACE_IMAGE_PATH = System.getenv("APPDATA") + "/.photoApp/userImages/places";
+    public final static String IMAGE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/userImages";
+    public final static String PEOPLE_IMAGE_PATH = System.getenv("APPDATA").replace("\\", "/")
+            + "/.photoApp/userImages/peoples";
+    public final static String PLACE_IMAGE_PATH = System.getenv("APPDATA").replace("\\", "/")
+            + "/.photoApp/userImages/places";
 
     private Map<String, Object> data;
 

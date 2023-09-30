@@ -124,7 +124,7 @@ public class ImageEdition {
 	}
 
 	public static void placePreviewImage(String currentImagePath) {
-		if (Main.imagesData.size() >= 5) {
+		if (Main.imagesData.size() >= 7) {
 
 			Integer index = 0;
 			Integer imageIndex = 0;
@@ -137,7 +137,7 @@ public class ImageEdition {
 				index += 1;
 			}
 
-			Integer max = 5;
+			Integer max = 7;
 			index = 0;
 			List<String> previewNames = new ArrayList<String>();
 			Integer maxImageIndex = Main.imagesData.size() - 1;
@@ -145,43 +145,95 @@ public class ImageEdition {
 			// maxImageIndex);
 			// System.out.println(imageIndex.equals(maxImageIndex));
 			if (imageIndex == 0) {
+				previewNames.add(Main.imagesData.get(maxImageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+
 			} else if (imageIndex == 1) {
+
+				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+
 			} else if (imageIndex == 2) {
+
+				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+
+			} else if (imageIndex == 3) {
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+
+			} else if (imageIndex.equals(maxImageIndex - 2)) {
+				// System.out.println("MAX -1 -----------------");
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
+				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
+				previewNames.add(Main.imagesData.get(0).getName());
+
 			} else if (imageIndex.equals(maxImageIndex - 1)) {
 				// System.out.println("MAX -1 -----------------");
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(0).getName());
+				previewNames.add(Main.imagesData.get(1).getName());
+
 			} else if (imageIndex.equals(maxImageIndex)) {
 				// System.out.println("MAX -----------------");
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
+
 				previewNames.add(Main.imagesData.get(0).getName());
 				previewNames.add(Main.imagesData.get(1).getName());
+				previewNames.add(Main.imagesData.get(2).getName());
+
 			} else if (imageIndex >= 3) {
+				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
+
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
 				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
+				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
+
 			}
 
 			Integer nbr = 0;
@@ -190,7 +242,7 @@ public class ImageEdition {
 				List<String> previewList = new ArrayList<>();
 				previewList.add(ImageData.IMAGE_PATH + "/150/" + preview);
 
-				if (nbr == 2) {
+				if (nbr == 3) {
 					previewList.add("images/outlineSelectedPreview.png");
 				} else {
 					previewList.add("images/outlinePreview.png");
@@ -328,11 +380,14 @@ public class ImageEdition {
 					.equals(currentImagePath)) {
 				next = true;
 			} else if (next) {
+				// System.err.println("unload an image");
 				iniImageEdition(imageData.getName(), true);
-				Integer i = -3;
+				Integer i = -4;
+				// 3333
 				if (Main.imagesData.indexOf(imageData) + i < 0) {
 					i = Main.imagesData.size() + i;
 				}
+				// System.out.println(Main.imagesData.indexOf(imageData) + i);
 				Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
 						+ Main.imagesData.get(Main.imagesData.indexOf(imageData) + i).getName());
 
@@ -360,23 +415,25 @@ public class ImageEdition {
 				if (previous == null) {
 					iniImageEdition(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
-					if (Main.imagesData.size() > 3) {
+					if (Main.imagesData.size() > 4) {
 
 						Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
 								+ Main.imagesData.get(2).getName());
 					}
 				} else {
 					iniImageEdition(previous.getName(), true);
-					Integer i = 3;
-					if (Main.imagesData.indexOf(previous) + 3 >= Main.imagesData.size()) {
-						i = Main.imagesData.indexOf(previous) + i - Main.imagesData.size();
+					Integer i = 4;
+					if (Main.imagesData.indexOf(previous) + 4 >= Main.imagesData.size()) {
+						// i = Main.imagesData.size()-i;
+						System.out.println("i : " + (Main.imagesData.indexOf(previous) + i - Main.imagesData.size()));
+						i = i - Main.imagesData.size();
 					}
 					Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
 							+ Main.imagesData.get(Main.imagesData.indexOf(previous) + i).getName());
 
-					if (imageData.getName().equals(previous.getName())) {
+					// if (imageData.getName().equals(previous.getName())) {
 
-					}
+					// }
 
 				}
 

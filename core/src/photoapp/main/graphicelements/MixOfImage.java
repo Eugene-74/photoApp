@@ -34,7 +34,7 @@ public class MixOfImage extends Group {
             public void run() {
 
                 if (Main.infoText == " " || Main.infoText == Main.preferences.getString("text.done")) {
-                    Main.infoTextSet("loading .");
+                    Main.infoTextSet("loading .", false);
                 }
 
                 isLoading = true;
@@ -75,9 +75,6 @@ public class MixOfImage extends Group {
 
             if (ListImageName.length > 2) {
 
-                // System.out.println(lookingFor.split("/")[ListImageName.length - 2] +
-                // "--------------" + lookingFor);
-
                 if (type.equals("firstloading")) {
 
                     fileName = ImageData.IMAGE_PATH + "/" + ListImageName[ListImageName.length -
@@ -95,23 +92,24 @@ public class MixOfImage extends Group {
                             && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
                         isLoading = true;
                         fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
-                        FileHandle handle = Gdx.files
-                                .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
-                        if (handle.exists()) {
+                        // FileHandle handle = Gdx.files
+                        // .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length
+                        // - 1]);
+                        // if (handle.exists()) {
 
-                            if (!notToReLoadList.contains(fileName)) {
+                        if (!notToReLoadList.contains(fileName)) {
 
-                                manager.load(fileName, Texture.class);
-                                notToReLoadList.add(fileName);
-                            }
-
-                            manager.finishLoadingAsset(fileName);
-                            manager.update();
-                            // return isInImageData(fileName, true, "");
-                            return manager.get(fileName, Texture.class);
-                        } else {
-                            Main.setSize150Force(lookingFor, ListImageName[ListImageName.length - 1]);
+                            manager.load(fileName, Texture.class);
+                            notToReLoadList.add(fileName);
                         }
+
+                        manager.finishLoadingAsset(fileName);
+                        manager.update();
+                        // return isInImageData(fileName, true, "");
+                        return manager.get(fileName, Texture.class);
+                        // } else {
+                        // Main.setSize150Force(lookingFor, ListImageName[ListImageName.length - 1]);
+                        // }
                     }
 
                 }
@@ -128,20 +126,11 @@ public class MixOfImage extends Group {
                     return new Texture("images/loading button.png");
                 }
 
-                // manager.load(fileName, Texture.class);
-                // System.out.println("not loaded");
-                // return isInImageData(fileName, false);
             } else {
                 return manager.get(fileName, Texture.class);
             }
 
         }
-
-        // imagesTextureData.put(lookingFor, texture);
-
-        // System.out.println(lookingFor + "----------" + texture);
-        // imagesData.keySet(lookingFor).entrySet(texture);
-        // System.out.println(imagesData);
 
     }
 
@@ -150,12 +139,11 @@ public class MixOfImage extends Group {
             imageName = imageName.replace("\\", "/");
             String[] ListImageName = imageName.split("/");
             if (imageName.split("/")[ListImageName.length - 2].equals("150")) {
-                System.out.println("150 : " + imageName);
 
                 FileHandle handle = Gdx.files
                         .absolute(imageName);
                 if (!handle.exists()) {
-                    Main.infoTextSet("need to load image due to an error of loading");
+                    Main.infoTextSet("need to load image due to an error of loading", false);
                     String nameWithout150 = "";
                     for (int i = 0; i < ListImageName.length - 2; i++) {
                         nameWithout150 += ListImageName[i] + "/";

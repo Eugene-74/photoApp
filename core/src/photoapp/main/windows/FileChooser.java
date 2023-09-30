@@ -84,6 +84,17 @@ public class FileChooser {
                     addAFile();
                 },
                 true, true, false, buttonTable, true);
+
+        buttonTable.row();
+
+        Main.placeImage(List.of("images/openParameter.png", "images/outline.png"), "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    Parameter.openParameter();
+                    clearFileChooser();
+                },
+                true, true, false, buttonTable, true);
     }
 
     public static void addAFile() {

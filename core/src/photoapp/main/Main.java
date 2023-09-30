@@ -47,6 +47,7 @@ import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.Keybord;
 import photoapp.main.windows.MainImages;
+import photoapp.main.windows.Parameter;
 
 public class Main extends ApplicationAdapter {
 	public static Stage mainStage;
@@ -139,25 +140,26 @@ public class Main extends ApplicationAdapter {
 		FileChooser.createFileChooser();
 		MainImages.createMainWindow();
 		ImageEdition.createImageEdition();
+		Parameter.createParameter();
 
 		FileChooser.openFileChooser();
 	}
 
 	public static void updateLoadingText() {
 		if (Main.infoText == "loading ." && TimeUtils.millis() - lastTimebis >= 500) {
-			Main.infoTextSet("loading ..");
+			Main.infoTextSet("loading ..", false);
 			// System.out.println("..");
 			lastTimebis = TimeUtils.millis();
 
 		} else if (Main.infoText == "loading .." && TimeUtils.millis() - lastTimebis >= 500) {
-			Main.infoTextSet("loading ...");
+			Main.infoTextSet("loading ...", false);
 
 			// System.out.println("...");
 
 			lastTimebis = TimeUtils.millis();
 
 		} else if (Main.infoText == "loading ..." && TimeUtils.millis() - lastTimebis >= 500) {
-			Main.infoTextSet("loading .");
+			Main.infoTextSet("loading .", false);
 
 			lastTimebis = TimeUtils.millis();
 		}
@@ -176,8 +178,9 @@ public class Main extends ApplicationAdapter {
 		mainStage.draw();
 
 		updateLoadingText();
+
 		if (MixOfImage.manager.isFinished()) {
-			infoTextSet(preferences.getString("text.done"));
+			infoTextSet(preferences.getString("text.done"), true);
 		}
 
 		if (progress != newProgress && !MixOfImage.LoadingList.isEmpty()) {
@@ -189,9 +192,9 @@ public class Main extends ApplicationAdapter {
 					setSize150Int += 1;
 					MixOfImage.manager.unload(imagePath);
 					// System.out.println("Pease wait ! Loaded images : " + setSize150Int);
-					infoTextSet("Please wait ! Loaded images : " + setSize150Int);
+					infoTextSet("Please wait ! Loaded images : " + setSize150Int, true);
 					if (toLoad.isEmpty()) {
-						infoTextSet(setSize150Int + " images have been load / " + numberOfLoadedImages);
+						infoTextSet(setSize150Int + " images have been load / " + numberOfLoadedImages, true);
 						reload(true);
 					}
 				}
@@ -207,7 +210,7 @@ public class Main extends ApplicationAdapter {
 					ImageEdition.reloadImageEdition(false);
 					MixOfImage.isLoading = false;
 
-					infoTextSet(preferences.getString("text.done"));
+					infoTextSet(preferences.getString("text.done"), true);
 					toReload = "";
 					return;
 				} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
@@ -225,7 +228,7 @@ public class Main extends ApplicationAdapter {
 				if (MixOfImage.manager.isFinished()) {
 					MainImages.reloadMainImages();
 					MixOfImage.isLoading = false;
-					infoTextSet(preferences.getString("text.done"));
+					infoTextSet(preferences.getString("text.done"), true);
 					toReload = "";
 					return;
 
@@ -250,9 +253,12 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-	public static void infoTextSet(String info) {
-		labelInfoText.setText(info);
-		infoText = info;
+	public static void infoTextSet(String info, Boolean force) {
+		if (Main.preferences.getBoolean("infoIsOn", true) || force) {
+
+			labelInfoText.setText(info);
+			infoText = info;
+		}
 
 	}
 
@@ -442,7 +448,7 @@ public class Main extends ApplicationAdapter {
 							openImageInAFile(fileRessource);
 						} else {
 							openImageOfAFile(fileRessource);
-							infoTextSet("All files loaded");
+							infoTextSet("All files loaded", true);
 							// nameOfFolderOfLoadedImages = "All files loaded";
 
 							// reload(false);
@@ -576,12 +582,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void setSize150Force(String imagePath, String imageName) {
-		System.out.println("1 : " + imagePath + "-- and --" + imageName);
 		setSize150(imagePath, imageName);
-		System.out.println("2");
 
-		MixOfImage.manager.finishLoading();
-		System.out.println("3");
+		// MixOfImage.manager.finishLoading();
 
 		setSize150AfterLoad(imagePath);
 		// MixOfImage.manager.update();
@@ -593,8 +596,7 @@ public class Main extends ApplicationAdapter {
 
 			MixOfImage.isInImageData(imagePath, false, "firstloading");
 		} else {
-			// System.out.println(ImageData.IMAGE_PATH + "/150/" + imageName + " aready
-			// exist");
+
 			numberOfLoadedImages += 1;
 		}
 	}
@@ -707,6 +709,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void unLoadAnImage(String imagePath) {
+		imagePath = imagePath.replace("\\", "/");
 		Set<String> toRemove = new HashSet<>();
 		if (!toUnload.isEmpty()) {
 			for (String unLoad : toUnload) {
@@ -726,12 +729,12 @@ public class Main extends ApplicationAdapter {
 		} else {
 			toUnload.add(imagePath);
 		}
-		// String fileName = "";
 		String[] ListImageName = imagePath.split("/");
 		String fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
 
 		if (MixOfImage.manager.isLoaded(fileName, Texture.class)) {
-			MixOfImage.manager.unload(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
+
+			MixOfImage.manager.unload(fileName);
 			MixOfImage.notToReLoadList.remove(fileName);
 
 		} else {
