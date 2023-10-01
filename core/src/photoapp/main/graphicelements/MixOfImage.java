@@ -162,7 +162,7 @@ public class MixOfImage extends Group {
             Texture texture = isInImageData(imageName, false, "");
 
             Image image = new Image(texture);
-            if (imageName.endsWith("outline.png")) {
+            if (imageName.endsWith("outline.png") || imageName.endsWith("redOutline.png")) {
                 image.setName("outline");
             } else {
                 image.setName("image");

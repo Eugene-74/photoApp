@@ -308,13 +308,18 @@ public class ImageEdition {
 
 	public static void showBigPreview(String preview) {
 		// System.out.println(preview);
+		// iniImageEdition(preview, true);
 		openMainImage(preview);
 		Main.toReload = "imageEdition";
 
 	}
 
 	public static void closeBigPreview(String initialImage) {
+		// iniImageEdition(initialImage, true);
+
 		openMainImage(initialImage);
+		Main.toReload = "imageEdition";
+
 	}
 
 	public static void placeImageOfPeoples(String currentImagePath) {
@@ -427,6 +432,7 @@ public class ImageEdition {
 			} else if (next) {
 				// System.err.println("unload an image");
 				iniImageEdition(imageData.getName(), true);
+				MainImages.imageI = Main.imagesData.indexOf(imageData);
 				Integer i = -4;
 				// 3333
 				if (Main.imagesData.indexOf(imageData) + i < 0) {
@@ -460,6 +466,8 @@ public class ImageEdition {
 				if (previous == null) {
 					iniImageEdition(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
+					MainImages.imageI = Main.imagesData.indexOf(imageData);
+
 					if (Main.imagesData.size() > 4) {
 
 						Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
@@ -469,16 +477,10 @@ public class ImageEdition {
 					iniImageEdition(previous.getName(), true);
 					Integer i = 4;
 					if (Main.imagesData.indexOf(previous) + 4 >= Main.imagesData.size()) {
-						// i = Main.imagesData.size()-i;
-						System.out.println("i : " + (Main.imagesData.indexOf(previous) + i - Main.imagesData.size()));
 						i = i - Main.imagesData.size();
 					}
 					Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
 							+ Main.imagesData.get(Main.imagesData.indexOf(previous) + i).getName());
-
-					// if (imageData.getName().equals(previous.getName())) {
-
-					// }
 
 				}
 
@@ -614,13 +616,7 @@ public class ImageEdition {
 				null, null, null,
 				true, true, false, table, true);
 		table.row();
-		Main.placeImage(List.of("images/save.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					save();
-				}, null, null,
-				true, true, false, table, true);
+		CommonButton.createSaveButton(table);
 
 		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
@@ -646,9 +642,10 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					currentMainImage.clear();
-					table.clear();
-					previewTable.clear();
+					clearImageEdition();
+					// currentMainImage.clear();
+					// table.clear();
+					// previewTable.clear();
 
 					MainImages.openMainImages();
 				}, null, null,
@@ -709,7 +706,8 @@ public class ImageEdition {
 			deletAnImage(imageData);
 		}
 		toDelete = new Array<ImageData>();
-		reloadImageEdition(true);
+		Main.reload(true);
+		// reloadImageEdition(true);
 
 	}
 
@@ -946,11 +944,22 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					plusTable.clear();
-					plusTable = null;
-					Main.reload(false);
+					clearImageEdition();
+					MainImages.openMainImages();
+					// plusTable = null;
+					// Main.reload(false);
 				}, null, null,
 				true, true, false, plusTable, true);
+
+	}
+
+	public static void clearImageEdition() {
+		MixOfImage.stopLoading();
+		plusTable.clear();
+		previewTable.clear();
+		if (table != null)
+			table.clear();
+		mainImageTable.clear();
 
 	}
 
