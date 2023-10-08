@@ -11,6 +11,7 @@ public class Keybord implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        System.out.println(keycode);
         if ((keycode == Keys.LEFT) || keycode == Keys.UP
                 || keycode == Input.Keys.Z) {
             previous();
@@ -19,22 +20,37 @@ public class Keybord implements InputProcessor {
             next();
 
         }
+
         return false;
     }
 
     public boolean keyUp(int keycode) {
+
         return false;
     }
 
     public boolean keyTyped(char character) {
+
         return false;
     }
 
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        // System.out.println("down " + pointer);
+        if ((button == 0)) {
+            Main.isOnClick = true;
+            System.out.println("true");
+
+        }
+
         return false;
     }
 
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if ((button == 0)) {
+            Main.isOnClick = false;
+            System.out.println("false");
+
+        }
         return false;
     }
 

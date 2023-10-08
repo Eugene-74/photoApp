@@ -453,6 +453,8 @@ public class ImageEdition {
 							open(preview, true);
 						},
 						(o) -> {
+							// les ouvre infiniment c'est pas ouf
+
 							showBigPreview(preview);
 						}, (o) -> {
 							closeBigPreview(currentImagePath);

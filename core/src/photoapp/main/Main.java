@@ -93,6 +93,8 @@ public class Main extends ApplicationAdapter {
 	static float lastX = 0;
 	public static Boolean isOnClick = false;
 
+	public static ImageData lastImageData = null;
+
 	public void iniPreferences() {
 
 		preferences.putString("text.done", " ");
@@ -361,46 +363,31 @@ public class Main extends ApplicationAdapter {
 
 				if (onClicked != null) {
 					onClicked.accept(null);
-				}
-			}
+					System.out.println("on click");
 
-			public void touchDragged(InputEvent event, float x, float y, int pointerIndex) {
-
-				if (onClicked != null) {
-					onClicked.accept(null);
 				}
 			}
 
 			@Override
 			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
-				System.out.println(x + "lastX : " + lastX);
-				if (pointer == 0) {
-					isOnClick = true;
 
-				} else {
-					isOnClick = false;
-				}
-				if (onEnter != null && (((x - lastX) >= 10) || ((x - lastX) <= 10))) {
-					// marche pas
+				if (onEnter != null) {
+					System.out.println("on enter");
 
-					// if (lastX == x) {
-					// } else {
-					lastX = x;
-
-					// }
-					// System.err.println("do");
 					onEnter.accept(null);
+					System.out.println("off enter");
 				}
+				// }
 			}
 
 			@Override
 			public void exit(InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
 
-				// System.out.println("exit");
-
 				if (onExit != null) {
 					onExit.accept(null);
 				}
+				// }
+
 			}
 
 		});
