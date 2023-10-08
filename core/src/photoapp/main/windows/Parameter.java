@@ -14,20 +14,28 @@ public class Parameter {
     static Table mainTableParameter;
     static Table parameterTable;
 
-    public static void createParameter() {
+    public static void create() {
         createMainTable();
         createParameterTable();
     }
 
-    public static void openParameter() {
+    public static void open() {
         placeParameterButton();
         placeMainParameterButton();
     }
 
-    public static void reloadParameter() {
+    public static void reload() {
         parameterTable.clear();
         placeParameterButton();
         // placeMainParameterButton();
+
+    }
+
+    public static void clear() {
+
+        MixOfImage.stopLoading();
+        mainTableParameter.clear();
+        parameterTable.clear();
 
     }
 
@@ -37,8 +45,8 @@ public class Parameter {
                 Main.mainStage,
                 (o) -> {
                     Main.toReload = "File Chooser";
-                    clearParameter();
-                    FileChooser.openFileChooser();
+                    clear();
+                    FileChooser.open();
 
                 }, null, null,
                 true, true, false, mainTableParameter, true);
@@ -62,10 +70,10 @@ public class Parameter {
                     System.out.println("edit param");
                     if (Main.preferences.getBoolean("infoIsOn", true)) {
                         Main.preferences.putBoolean("infoIsOn", false);
-                        reloadParameter();
+                        reload();
                     } else {
                         Main.preferences.putBoolean("infoIsOn", true);
-                        reloadParameter();
+                        reload();
 
                     }
                     Main.preferences.flush();
@@ -100,11 +108,4 @@ public class Parameter {
 
     }
 
-    public static void clearParameter() {
-
-        MixOfImage.stopLoading();
-        mainTableParameter.clear();
-        parameterTable.clear();
-
-    }
 }

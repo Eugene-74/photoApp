@@ -8,17 +8,16 @@ import com.badlogic.gdx.utils.TimeUtils;
 import photoapp.main.Main;
 
 public class Keybord implements InputProcessor {
+
     @Override
     public boolean keyDown(int keycode) {
-        if (ImageEdition.plusTable == null) {
-            if ((keycode == Keys.LEFT) || keycode == Keys.UP
-                    || keycode == Input.Keys.Z) {
-                previous();
-            } else if ((keycode == Keys.RIGHT || keycode == Keys.DOWN
-                    || keycode == Keys.S)) {
-                next();
+        if ((keycode == Keys.LEFT) || keycode == Keys.UP
+                || keycode == Input.Keys.Z) {
+            previous();
+        } else if ((keycode == Keys.RIGHT || keycode == Keys.DOWN
+                || keycode == Keys.S)) {
+            next();
 
-            }
         }
         return false;
     }

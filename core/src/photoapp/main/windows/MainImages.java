@@ -19,13 +19,42 @@ public class MainImages {
     public static Integer nextToNotLoad = 0;
     public static Boolean deleteModeIsOn = false;
 
-    public static void createMainWindow() {
+    public static void create() {
         createMainTable();
         createImagesTable();
 
     }
 
-    public static void createMainImagesButton() {
+    public static void open() {
+        Main.windowOpen = "Main Images";
+
+        createButton();
+        createImagesButton(imageI);
+    }
+
+    public static void reload() {
+
+        imagesTable.clear();
+        createImagesButton(imageI);
+
+        mainTable.clear();
+        createButton();
+
+    }
+
+    public static void clearMainImages() {
+
+        MixOfImage.stopLoading();
+        mainTable.clear();
+        imagesTable.clear();
+
+    }
+
+    public static void load() {
+        createImagesButton(imageI);
+    }
+
+    public static void createButton() {
         if (!deleteModeIsOn) {
             CommonButton.createAddImagesButton(mainTable);
         }
@@ -53,9 +82,9 @@ public class MainImages {
                     new Vector2(0, 0),
                     Main.mainStage,
                     (o) -> {
-                        ImageEdition.save();
+                        // ImageEdition.save();
                         deleteModeIsOn = false;
-                        reloadMainImages();
+                        reload();
 
                     }, null, null,
                     true, true, false, mainTable, true);
@@ -66,7 +95,7 @@ public class MainImages {
                     (o) -> {
                         Main.toReload = "File Chooser";
                         clearMainImages();
-                        FileChooser.openFileChooser();
+                        FileChooser.open();
 
                     }, null, null,
                     true, true, false, mainTable, true);
@@ -80,11 +109,11 @@ public class MainImages {
                     if (deleteModeIsOn) {
                         ImageEdition.save();
                         deleteModeIsOn = false;
-                        reloadMainImages();
+                        reload();
                     } else {
                         deleteModeIsOn = true;
                         // createImagesButton(imageI);
-                        reloadMainImages();
+                        reload();
 
                     }
 
@@ -94,30 +123,6 @@ public class MainImages {
         if (deleteModeIsOn) {
             CommonButton.createSaveButton(mainTable);
         }
-
-    }
-
-    public static void openMainImages() {
-        Main.windowOpen = "Main Images";
-
-        createMainImagesButton();
-        createImagesButton(imageI);
-    }
-
-    public static void clearMainImages() {
-
-        MixOfImage.stopLoading();
-        mainTable.clear();
-        imagesTable.clear();
-
-    }
-
-    public static void reloadMainImages() {
-
-        imagesTable.clear();
-        mainTable.clear();
-        createMainImagesButton();
-        createImagesButton(imageI);
 
     }
 
@@ -159,10 +164,15 @@ public class MainImages {
 
             for (int i = 0; i < max; i++) {
                 Integer imageInteger = firstI + i;
+                // System.out.println(
+                // "alreday load -- " + Main.isInTable(imagesTable,
+                // Main.imagesData.get(imageInteger).getName()));
 
                 if (imageInteger < Main.imagesData.size()) {
+
                     ImageData imageData = Main.imagesData.get(imageInteger);
                     String imageName = imageData.getName();
+
                     List<String> placeImageList = new ArrayList<String>();
                     placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
                     if (deleteModeIsOn) {
@@ -188,7 +198,7 @@ public class MainImages {
 
                                                 ImageEdition.toDelete.removeIndex(indexBis);
                                                 System.out.println("removed");
-                                                reloadMainImages();
+                                                reload();
                                                 return;
 
                                             }
@@ -196,8 +206,26 @@ public class MainImages {
                                         }
                                     }
                                     ImageEdition.toDelete.add(imageData);
-                                    MainImages.reloadMainImages();
-                                }, null, null, true, true, false, imagesTable, true);
+                                    MainImages.reload();
+                                }, (o) -> {
+                                    if (deleteModeIsOn && Main.isOnClick) {
+                                        Integer indexBis = 0;
+                                        if (!ImageEdition.toDelete.isEmpty()) {
+                                            for (ImageData delet : ImageEdition.toDelete) {
+                                                if (delet.equals(imageData)) {
+
+                                                    ImageEdition.toDelete.removeIndex(indexBis);
+                                                    System.out.println("removed");
+                                                    reload();
+                                                    return;
+
+                                                }
+                                                indexBis += 1;
+                                            }
+                                        }
+                                        ImageEdition.toDelete.add(imageData);
+                                    }
+                                }, null, true, true, false, imagesTable, true);
                     } else {
 
                         Main.placeImage(placeImageList,
@@ -207,18 +235,18 @@ public class MainImages {
                                 (o) -> {
                                     clearMainImages();
                                     Main.unLoadAll();
-                                    ImageEdition.iniImageEdition(imageName, true);
+                                    ImageEdition.open(imageName, true);
                                 }, null, null, true, true, false, imagesTable, true);
                     }
                     if (index >= column) {
                         imagesTable.row();
                         index = 0;
                     }
+
+                    index += 1;
                 }
-                index += 1;
 
             }
-
         }
 
     }

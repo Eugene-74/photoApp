@@ -30,6 +30,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -85,6 +86,13 @@ public class Main extends ApplicationAdapter {
 	static Long lastTimeImageEdition = (long) 0;
 	static InputMultiplexer multiplexer = new InputMultiplexer();
 
+	// static String lastActor = "";
+
+	// public static List<String> isPlaced = new ArrayList<String>();
+
+	static float lastX = 0;
+	public static Boolean isOnClick = false;
+
 	public void iniPreferences() {
 
 		preferences.putString("text.done", " ");
@@ -135,16 +143,16 @@ public class Main extends ApplicationAdapter {
 			handle.mkdirs();
 		}
 
-		// MainImages.createMainWindow();
+		// MainImages.create();
 		// ImageEdition.imageEdtionCreate();
 		// ImageEdition.imageEdtionCreate();
 
-		FileChooser.createFileChooser();
-		MainImages.createMainWindow();
-		ImageEdition.createImageEdition();
-		Parameter.createParameter();
+		FileChooser.create();
+		MainImages.create();
+		ImageEdition.create();
+		Parameter.create();
 
-		FileChooser.openFileChooser();
+		FileChooser.open();
 	}
 
 	public static void createMultiplexer() {
@@ -196,14 +204,11 @@ public class Main extends ApplicationAdapter {
 		}
 
 		if (progress != newProgress && !MixOfImage.LoadingList.isEmpty()) {
-			// Long start = TimeUtils.millis();
 			for (String imagePath : MixOfImage.LoadingList) {
-				// Long startbis = TimeUtils.millis();
 
 				if (setSize150AfterLoad(imagePath)) {
 					setSize150Int += 1;
 					MixOfImage.manager.unload(imagePath);
-					// System.out.println("Pease wait ! Loaded images : " + setSize150Int);
 					infoTextSet("Please wait ! Loaded images : " + setSize150Int, true);
 					if (toLoad.isEmpty()) {
 						infoTextSet(setSize150Int + " images have been load / " + numberOfLoadedImages, true);
@@ -219,38 +224,42 @@ public class Main extends ApplicationAdapter {
 			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
 				if (MixOfImage.manager.isFinished()) {
 					// System.out.println("reload image edi");
-					ImageEdition.reloadImageEdition(false);
+					ImageEdition.load();
 					MixOfImage.isLoading = false;
 
 					infoTextSet(preferences.getString("text.done"), true);
 					toReload = "";
 					return;
-				} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
-					lastTimeImageEdition = TimeUtils.millis();
-
-					ImageEdition.reloadImageEdition(false);
-					MixOfImage.isLoading = true;
-					toReload = "imageEdition";
-
 				}
+				// else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+				lastTimeImageEdition = TimeUtils.millis();
+
+				ImageEdition.load();
+				MixOfImage.isLoading = true;
+				toReload = "imageEdition";
+
+				// }
 			}
 		} else if (toReload.equals("mainImages")) {
 			// System.out.println("try --------");
 			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
 				if (MixOfImage.manager.isFinished()) {
-					MainImages.reloadMainImages();
+					// MainImages.reload();
+					MainImages.load();
 					MixOfImage.isLoading = false;
 					infoTextSet(preferences.getString("text.done"), true);
 					toReload = "";
 					return;
 
-				} else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
-					lastTimeImageEdition = TimeUtils.millis();
-					MainImages.reloadMainImages();
-					MixOfImage.isLoading = true;
-					toReload = "mainImages";
-
 				}
+				// else if (TimeUtils.millis() - lastTimeImageEdition >= 500) {
+				lastTimeImageEdition = TimeUtils.millis();
+				// MainImages.reload();
+				MainImages.load();
+				MixOfImage.isLoading = true;
+				toReload = "mainImages";
+
+				// }
 			}
 
 		}
@@ -262,6 +271,9 @@ public class Main extends ApplicationAdapter {
 				loadImagesForTheFirstTime();
 			}
 		}
+		// if (MixOfImage.manager.isFinished()) {
+		// MixOfImage.isLoading = false;
+		// }
 
 	}
 
@@ -347,27 +359,39 @@ public class Main extends ApplicationAdapter {
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 
-				// System.exit(0);
 				if (onClicked != null) {
 					onClicked.accept(null);
 				}
 			}
 
-		});
-		mixOfImages.addListener(new ClickListener() {
+			public void touchDragged(InputEvent event, float x, float y, int pointerIndex) {
 
-			@Override
-			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
-				super.enter(event, x, y, pointer, fromActor);
-				// System.out.println("enter");
-				if (onEnter != null) {
-					onEnter.accept(null);
+				if (onClicked != null) {
+					onClicked.accept(null);
 				}
 			}
 
-		});
+			@Override
+			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
+				System.out.println(x + "lastX : " + lastX);
+				if (pointer == 0) {
+					isOnClick = true;
 
-		mixOfImages.addListener(new ClickListener() {
+				} else {
+					isOnClick = false;
+				}
+				if (onEnter != null && (((x - lastX) >= 10) || ((x - lastX) <= 10))) {
+					// marche pas
+
+					// if (lastX == x) {
+					// } else {
+					lastX = x;
+
+					// }
+					// System.err.println("do");
+					onEnter.accept(null);
+				}
+			}
 
 			@Override
 			public void exit(InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
@@ -380,30 +404,37 @@ public class Main extends ApplicationAdapter {
 			}
 
 		});
-		// multiplexer.addProcessor(mainStage);
-		// Gdx.input.setInputProcessor(multiplexer);
-
-		// createMultiplexer();
-		// ClickListener enterExitListener = new ClickListener() {
-		// @Override
-		// public void enter(InputEvent event, float x, float y, int pointer, Actor
-		// fromActor) {
-		// super.enter(event, x, y, pointer, fromActor);
-		// System.out.println("enter");
-		// }
-
-		// public void exit(InputEvent event, float x, float y, int pointer, Actor
-		// toActor) {
-		// super.exit(event, x, y, pointer, toActor);
-		// System.out.println("close");
-
-		// }
-		// };
-		// mixOfImages.addListener(enterExitListener);
 
 		if (inTable) {
+			for (Cell cell : placeImageTable.getCells()) {
+				String[] imageNameList = imageNames.get(0).split("/");
+				if (cell.getActor().getName().equals(imageNameList[imageNameList.length - 1])) {
+					// le faire que si c'est pas deja charger !!!
+					String path;
+					if (preferences.getInteger("size of " + prefSizeName, 0) == 150) {
+						path = "/150/";
+
+					} else {
+						path = "/";
+					}
+					// if (MixOfImage.manager
+					// .isLoaded(ImageData.IMAGE_PATH + path + imageNameList[imageNameList.length -
+					// 1])
+					// && !Main.isPlaced
+					// .contains(ImageData.IMAGE_PATH + path + imageNameList[imageNameList.length -
+					// 1])) {
+
+					cell.setActor(mixOfImages);
+					// Main.isPlaced.add(ImageData.IMAGE_PATH + path +
+					// imageNameList[imageNameList.length - 1]);
+					// }
+					return;
+				}
+			}
 			placeImageTable.add(mixOfImages);
-		} else {
+		} else
+
+		{
 			if (isMainImage) {
 				if (ImageEdition.currentMainImage != null) {
 					ImageEdition.currentMainImage.remove();
@@ -419,6 +450,17 @@ public class Main extends ApplicationAdapter {
 
 		}
 
+	}
+
+	public static Boolean isInTable(Table table, String ImageName) {
+
+		for (Cell cell : table.getCells()) {
+			if (cell.getActor().getName().equals(ImageName)) {
+
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void createCloseButton() {
@@ -448,10 +490,10 @@ public class Main extends ApplicationAdapter {
 
 	public static void reload(boolean returnToZero) {
 		if (windowOpen.equals("Image Edition")) {
-			ImageEdition.reloadImageEdition(returnToZero);
+			ImageEdition.reload(returnToZero);
 		}
 		if (windowOpen.equals("Main Images")) {
-			MainImages.reloadMainImages();
+			MainImages.reload();
 		}
 	}
 

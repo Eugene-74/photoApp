@@ -27,6 +27,7 @@ import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 
 public class ImageEdition {
+	final static String fileName = "ImageEdition";
 	public static Actor currentMainImage;
 	public static Table table;
 	public static Table mainImageTable;
@@ -42,16 +43,212 @@ public class ImageEdition {
 	public static String theCurrentImagePath;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 
-	public static void createImageEdition() {
-		// Main.preferences = Gdx.app.getPreferences("graphic params");
+	public static void create() {
+		Gdx.app.log(fileName, "create");
 
 		Main.preferences.putInteger("size of main image width", 1200);
 		Main.preferences.putInteger("size of main image height", 800);
 		Main.preferences.putInteger("size of preview image width", 150);
 		Main.preferences.putInteger("size of preview image height", 150);
 		Main.preferences.flush();
-		// batch = new SpriteBatch();
 
+		createMainImageTable();
+		createPreviewTable();
+		createTable();
+		createPlusTable();
+
+	}
+
+	public static void open(String currentImagePath, boolean OpenMain) {
+
+		Gdx.app.log(fileName, "open");
+
+		Main.toReload = "imageEdition";
+		Main.windowOpen = "Image Edition";
+
+		theCurrentImagePath = currentImagePath;
+		table.clear();
+		previewTable.clear();
+		plusTable.clear();
+
+		if (MainImages.imagesTable != null) {
+			MainImages.imagesTable.clear();
+		}
+		if (MainImages.mainTable != null) {
+			MainImages.mainTable.clear();
+		}
+		if (OpenMain) {
+			openMainImage(currentImagePath);
+
+		}
+
+		placePreviewImage(currentImagePath);
+
+		placeImageOfPeoples(currentImagePath);
+		placePlusPeople();
+		table.row();
+		placeImageOfPlaces(currentImagePath);
+		placePlusPlace();
+
+		table.row();
+		Main.placeImage(List.of("images/previous.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					previousImage(currentImagePath);
+				}, null, null,
+				true, true, false, table, true);
+
+		List<String> deletImages = new ArrayList<>();
+		deletImages.add("images/delete.png");
+		deletImages.add("images/outline.png");
+
+		if (toDelete.contains(Main.getCurrentImageData(currentImagePath), false)) {
+			deletImages.add("images/yes.png");
+		}
+		Main.placeImage(deletImages, "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					ImageData imageData = Main.getCurrentImageData(currentImagePath);
+					if (imageData != null) {
+
+						Integer index = 0;
+						if (!toDelete.isEmpty()) {
+							for (ImageData delet : toDelete) {
+								if (delet.equals(imageData)) {
+
+									toDelete.removeIndex(index);
+									open(currentImagePath, true);
+									return;
+
+								}
+								index += 1;
+							}
+							toDelete.add(imageData);
+
+						}
+
+						if (index == 0) {
+							toDelete.add(imageData);
+
+						}
+						open(currentImagePath, true);
+					} else {
+						Gdx.app.error(fileName, "error null");
+					}
+				}, null, null,
+				true, true, false, table, true);
+
+		Main.placeImage(List.of("images/next.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					nextImage(currentImagePath);
+				}, null, null, true, true, false, table, true);
+		table.row();
+		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					for (ImageData imageData : Main.imagesData) {
+						if ((imageData.getName())
+								.equals(currentImagePath)) {
+							rotateAnImage(90, imageData.getName());
+						}
+					}
+				}, null, null,
+				true, true, false, table, true);
+		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				null, null, null,
+				true, true, false, table, true);
+		table.row();
+		CommonButton.createSaveButton(table);
+
+		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					addAPeople();
+
+				}, null, null,
+				true, true, false, table, true);
+		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					addAPlace();
+				}, null, null,
+				true, true, false, table, true);
+		table.row();
+		CommonButton.createAddImagesButton(table);
+
+		CommonButton.createRefreshButton(table);
+
+		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					clear();
+					// currentMainImage.clear();
+					// table.clear();
+					// previewTable.clear();
+
+					MainImages.open();
+				}, null, null,
+				true, true, false, table, true);
+
+	}
+
+	public static void reload(boolean returnToZero) {
+		Gdx.app.log(fileName, "reload");
+
+		plusTable.clear();
+		Main.windowOpen = "Image Edition";
+		Main.toReload = "imageEdition";
+
+		ImageData.openDataOfImages();
+
+		if (returnToZero) {
+			open(Main.imagesData.get(0).getName(), true);
+		} else {
+
+			open(theCurrentImagePath, true);
+
+		}
+
+	}
+
+	public static void clear() {
+		Gdx.app.log(fileName, "clear");
+
+		MixOfImage.stopLoading();
+		plusTable.clear();
+		previewTable.clear();
+		// if (table != null)
+		table.clear();
+		mainImageTable.clear();
+
+	}
+
+	public static void load() {
+		Gdx.app.log(fileName, "load");
+
+		open(theCurrentImagePath, true);
+
+	}
+
+	public static void openMainImage(String imageName) {
+		Main.mainStage.getActors().get(0);
+		Main.placeImage(List.of(ImageData.IMAGE_PATH + "/" + imageName), "main image", new Vector2(
+				0, 0),
+				Main.mainStage,
+				null, null, null, false, false, true, table, false);
+	}
+
+	public static void createMainImageTable() {
 		mainImageTable = new Table();
 
 		mainImageTable.setSize(Main.preferences.getInteger("size of main image width"),
@@ -61,6 +258,10 @@ public class ImageEdition {
 				Main.preferences.getInteger("border"),
 				Gdx.graphics.getHeight() - mainImageTable.getHeight() - Main.preferences.getInteger("border"));
 
+		Main.mainStage.addActor(mainImageTable);
+	}
+
+	public static void createPreviewTable() {
 		previewTable = new Table();
 		previewTable.setSize(Main.preferences.getInteger("size of preview image width") * 5,
 				Main.preferences.getInteger("size of preview image height"));
@@ -71,8 +272,9 @@ public class ImageEdition {
 						- Main.preferences.getInteger("border") * 2);
 
 		Main.mainStage.addActor(previewTable);
-		Main.mainStage.addActor(mainImageTable);
+	}
 
+	public static void createTable() {
 		table = new Table();
 
 		table.setSize(
@@ -84,43 +286,6 @@ public class ImageEdition {
 				Main.preferences.getInteger("border"));
 
 		Main.mainStage.addActor(table);
-
-	}
-
-	public static void reloadImageEdition(boolean returnToZero) {
-		if (plusTable != null) {
-			plusTable.clear();
-			plusTable = null;
-		}
-		Main.windowOpen = "Image Edition";
-		Main.toReload = "imageEdition";
-
-		ImageData.openDataOfImages();
-
-		// System.out.println(imagesData.get(0).getName() + "0 name ----------");
-		// System.out.println("return to zero : ? : " + returnToZero);
-		if (returnToZero) {
-			// System.out.println("return to zero" + imagesData.get(0).getName());
-			// infoTextSet("in reload");
-			iniImageEdition(Main.imagesData.get(0).getName(), true);
-			// infoTextSet("in reload 2");
-		} else {
-			// System.out.println("go to : " + theCurrentImagePath);
-
-			// infoTextSet("in reload");
-
-			iniImageEdition(theCurrentImagePath, true);
-
-		}
-
-	}
-
-	public static void openMainImage(String imageName) {
-		Main.mainStage.getActors().get(0);
-		Main.placeImage(List.of(ImageData.IMAGE_PATH + "/" + imageName), "main image", new Vector2(
-				0, 0),
-				Main.mainStage,
-				null, null, null, false, false, true, table, false);
 	}
 
 	public static void placePreviewImage(String currentImagePath) {
@@ -141,9 +306,7 @@ public class ImageEdition {
 			index = 0;
 			List<String> previewNames = new ArrayList<String>();
 			Integer maxImageIndex = Main.imagesData.size() - 1;
-			// System.out.println(imageIndex + "IMAGE INDEX ------------------" +
-			// maxImageIndex);
-			// System.out.println(imageIndex.equals(maxImageIndex));
+
 			if (imageIndex == 0) {
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(maxImageIndex - 2).getName());
@@ -197,7 +360,7 @@ public class ImageEdition {
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
 
 			} else if (imageIndex.equals(maxImageIndex - 3)) {
-				// System.out.println("MAX -1 -----------------");
+
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
@@ -211,7 +374,7 @@ public class ImageEdition {
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(2).getName());
 
 			} else if (imageIndex.equals(maxImageIndex - 2)) {
-				// System.out.println("MAX -1 -----------------");
+
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
@@ -225,7 +388,7 @@ public class ImageEdition {
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(1).getName());
 
 			} else if (imageIndex.equals(maxImageIndex - 1)) {
-				// System.out.println("MAX -1 -----------------");
+
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
@@ -239,7 +402,7 @@ public class ImageEdition {
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(2).getName());
 
 			} else if (imageIndex.equals(maxImageIndex)) {
-				// System.out.println("MAX -----------------");
+
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
 				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
@@ -287,7 +450,7 @@ public class ImageEdition {
 						new Vector2(0, 0),
 						Main.mainStage,
 						(o) -> {
-							iniImageEdition(preview, true);
+							open(preview, true);
 						},
 						(o) -> {
 							showBigPreview(preview);
@@ -307,15 +470,14 @@ public class ImageEdition {
 	}
 
 	public static void showBigPreview(String preview) {
-		// System.out.println(preview);
-		// iniImageEdition(preview, true);
+
 		openMainImage(preview);
 		Main.toReload = "imageEdition";
 
 	}
 
 	public static void closeBigPreview(String initialImage) {
-		// iniImageEdition(initialImage, true);
+		// open(initialImage, true);
 
 		openMainImage(initialImage);
 		Main.toReload = "imageEdition";
@@ -430,15 +592,15 @@ public class ImageEdition {
 					.equals(currentImagePath)) {
 				next = true;
 			} else if (next) {
-				// System.err.println("unload an image");
-				iniImageEdition(imageData.getName(), true);
+
+				open(imageData.getName(), true);
 				MainImages.imageI = Main.imagesData.indexOf(imageData);
 				Integer i = -4;
-				// 3333
+
 				if (Main.imagesData.indexOf(imageData) + i < 0) {
 					i = Main.imagesData.size() + i;
 				}
-				// System.out.println(Main.imagesData.indexOf(imageData) + i);
+
 				Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
 						+ Main.imagesData.get(Main.imagesData.indexOf(imageData) + i).getName());
 
@@ -446,7 +608,7 @@ public class ImageEdition {
 			}
 		}
 		if (next) {
-			iniImageEdition(Main.imagesData.get(0).getName(), true);
+			open(Main.imagesData.get(0).getName(), true);
 			if (Main.imagesData.size() > 3) {
 
 				Main.unLoadAnImage(
@@ -464,7 +626,7 @@ public class ImageEdition {
 					.equals(currentImagePath)) {
 
 				if (previous == null) {
-					iniImageEdition(
+					open(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
 					MainImages.imageI = Main.imagesData.indexOf(imageData);
 
@@ -474,7 +636,7 @@ public class ImageEdition {
 								+ Main.imagesData.get(2).getName());
 					}
 				} else {
-					iniImageEdition(previous.getName(), true);
+					open(previous.getName(), true);
 					Integer i = 4;
 					if (Main.imagesData.indexOf(previous) + 4 >= Main.imagesData.size()) {
 						i = i - Main.imagesData.size();
@@ -499,7 +661,7 @@ public class ImageEdition {
 		imageData.setPeoples(peoples);
 
 		if (isReloadImageEdition) {
-			iniImageEdition(currentImagePath, false);
+			open(currentImagePath, false);
 
 		}
 	}
@@ -510,147 +672,9 @@ public class ImageEdition {
 		places = Main.addToList(places, placeToAdd);
 		imageData.setPlaces(places);
 		if (isReloadImageEdition) {
-			iniImageEdition(currentImagePath, false);
+			open(currentImagePath, false);
 
 		}
-	}
-
-	public static void iniImageEdition(String currentImagePath, boolean OpenMain) {
-		Main.toReload = "imageEdition";
-		Main.windowOpen = "Image Edition";
-
-		theCurrentImagePath = currentImagePath;
-		table.clear();
-		previewTable.clear();
-		if (MainImages.imagesTable != null) {
-			MainImages.imagesTable.clear();
-		}
-		if (MainImages.mainTable != null) {
-			MainImages.mainTable.clear();
-		}
-		if (OpenMain) {
-			openMainImage(currentImagePath);
-
-		}
-
-		placePreviewImage(currentImagePath);
-
-		placeImageOfPeoples(currentImagePath);
-		placePlusPeople();
-		table.row();
-		placeImageOfPlaces(currentImagePath);
-		placePlusPlace();
-
-		table.row();
-		Main.placeImage(List.of("images/previous.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					previousImage(currentImagePath);
-				}, null, null,
-				true, true, false, table, true);
-
-		List<String> deletImages = new ArrayList<>();
-		deletImages.add("images/delete.png");
-		deletImages.add("images/outline.png");
-
-		if (toDelete.contains(Main.getCurrentImageData(currentImagePath), false)) {
-			deletImages.add("images/yes.png");
-		}
-		Main.placeImage(deletImages, "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					ImageData imageData = Main.getCurrentImageData(currentImagePath);
-					if (imageData != null) {
-
-						Integer index = 0;
-						if (!toDelete.isEmpty()) {
-							for (ImageData delet : toDelete) {
-								if (delet.equals(imageData)) {
-
-									toDelete.removeIndex(index);
-									iniImageEdition(currentImagePath, true);
-									return;
-
-								}
-								index += 1;
-							}
-							toDelete.add(imageData);
-
-						}
-						System.out.println("index : " + index);
-						if (index == 0) {
-							toDelete.add(imageData);
-
-						}
-						iniImageEdition(currentImagePath, true);
-					} else {
-						System.out.println("error null ----------------------------------------------");
-					}
-				}, null, null,
-				true, true, false, table, true);
-
-		Main.placeImage(List.of("images/next.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					nextImage(currentImagePath);
-				}, null, null, true, true, false, table, true);
-		table.row();
-		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					for (ImageData imageData : Main.imagesData) {
-						if ((imageData.getName())
-								.equals(currentImagePath)) {
-							rotateAnImage(90, imageData.getName());
-						}
-					}
-				}, null, null,
-				true, true, false, table, true);
-		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				null, null, null,
-				true, true, false, table, true);
-		table.row();
-		CommonButton.createSaveButton(table);
-
-		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					addAPeople();
-
-				}, null, null,
-				true, true, false, table, true);
-		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					addAPlace();
-				}, null, null,
-				true, true, false, table, true);
-		table.row();
-		CommonButton.createAddImagesButton(table);
-
-		CommonButton.createRefreshButton(table);
-
-		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					clearImageEdition();
-					// currentMainImage.clear();
-					// table.clear();
-					// previewTable.clear();
-
-					MainImages.openMainImages();
-				}, null, null,
-				true, true, false, table, true);
-
 	}
 
 	public static void rotateAnImage(Integer degree, String imagePath) {
@@ -666,7 +690,7 @@ public class ImageEdition {
 
 		PixmapIO.writePNG(fh, pixmap);
 		pixmap.dispose();
-		ImageEdition.reloadImageEdition(false);
+		ImageEdition.reload(false);
 	}
 
 	public static Pixmap rotatePixmap(Pixmap src, float angle) {
@@ -707,7 +731,7 @@ public class ImageEdition {
 		}
 		toDelete = new Array<ImageData>();
 		Main.reload(true);
-		// reloadImageEdition(true);
+		// reload(true);
 
 	}
 
@@ -871,27 +895,18 @@ public class ImageEdition {
 	}
 
 	public static void createPlusTable() {
-		// ColorDrawable background = new ColorDrawable(0.7f, 0.9f, 0.9f, 1f);
-		// backgroundColor.setColor(2, 179, 228, 255);
-		if (plusTable != null) {
-			plusTable.clear();
-			plusTable = null;
-		}
+
 		plusTable = new Table();
 		plusTable.setSize(table.getWidth(), table.getHeight());
 		plusTable.setPosition(table.getX(), table.getY());
-		// plusTable.setPosition(
-		// Main.preferences.getInteger("size of main image width") +
-		// Main.preferences.getInteger("border"), 0);
-
-		// plusTable.setBackground(backgroundColor);
 		plusTable.setColor(Color.BLUE);
 		Main.mainStage.addActor(plusTable);
 
 	}
 
 	public static void addAllPeopleToPlusTable() {
-		// table.clear();
+		// table.clear();$
+		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
 		float max = plusTable.getWidth() / Main.preferences.getInteger("size of basic button");
@@ -944,27 +959,14 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					clearImageEdition();
-					MainImages.openMainImages();
-					// plusTable = null;
-					// Main.reload(false);
+					Main.reload(false);
 				}, null, null,
 				true, true, false, plusTable, true);
 
 	}
 
-	public static void clearImageEdition() {
-		MixOfImage.stopLoading();
-		plusTable.clear();
-		previewTable.clear();
-		if (table != null)
-			table.clear();
-		mainImageTable.clear();
-
-	}
-
 	public static void addAllPlaceToPlusTable() {
-		// table.clear();
+		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
 		float max = plusTable.getWidth() / Main.preferences.getInteger("size of basic button");
@@ -1023,7 +1025,7 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					plusTable.clear();
-					plusTable = null;
+					// plusTable = null;
 					Main.reload(false);
 				}, null, null,
 				true, true, false, plusTable, true);

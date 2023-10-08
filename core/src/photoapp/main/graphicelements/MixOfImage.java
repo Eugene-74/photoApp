@@ -135,13 +135,13 @@ public class MixOfImage extends Group {
     }
 
     public MixOfImage(List<String> imageNames) {
+        FileHandle handle = null;
         for (String imageName : imageNames) {
             imageName = imageName.replace("\\", "/");
             String[] ListImageName = imageName.split("/");
             if (imageName.split("/")[ListImageName.length - 2].equals("150")) {
 
-                FileHandle handle = Gdx.files
-                        .absolute(imageName);
+                handle = Gdx.files.absolute(imageName);
                 if (!handle.exists()) {
                     Main.infoTextSet("need to load image due to an error of loading", false);
                     String nameWithout150 = "";
@@ -175,6 +175,16 @@ public class MixOfImage extends Group {
 
             addActor(image);
         }
+        if (handle != null) {
+            // super.setName(handle.name());
+            // System.out.println("name : " + getName());
+            setName(handle.name());
+
+        } else {
+            setName("noName");
+
+        }
+
     }
 
     @Override

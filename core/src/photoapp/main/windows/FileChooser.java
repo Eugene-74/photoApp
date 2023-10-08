@@ -18,12 +18,30 @@ public class FileChooser {
     public static Table addFileTable;
     public static Table buttonTable;
 
-    public static void createFileChooser() {
+    public static void create() {
 
         setPref();
         createFileTable();
         createButtonTable();
 
+    }
+
+    public static void open() {
+        Main.windowOpen = "File Chooser";
+
+        Main.mainStage.addActor(fileTable);
+        Main.mainStage.addActor(buttonTable);
+        placeFileChooserButton();
+
+    }
+
+    public static void reload() {
+
+    }
+
+    public static void clear() {
+        fileTable.clear();
+        buttonTable.clear();
     }
 
     public static void createFileTable() {
@@ -49,15 +67,6 @@ public class FileChooser {
                 Main.preferences.getInteger("border"));
     }
 
-    public static void openFileChooser() {
-        Main.windowOpen = "File Chooser";
-
-        Main.mainStage.addActor(fileTable);
-        Main.mainStage.addActor(buttonTable);
-        placeFileChooserButton();
-
-    }
-
     public static void setPref() {
         Main.preferences.putInteger("size of file table width", 1200);
         Main.preferences.putInteger("size of file table height", 800);
@@ -65,14 +74,9 @@ public class FileChooser {
 
     public static void openFile(String name) {
         if (name.equals("")) {
-            MainImages.openMainImages();
-            clearFileChooser();
+            MainImages.open();
+            clear();
         }
-    }
-
-    public static void clearFileChooser() {
-        fileTable.clear();
-        buttonTable.clear();
     }
 
     public static void placeButton() {
@@ -91,8 +95,8 @@ public class FileChooser {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    Parameter.openParameter();
-                    clearFileChooser();
+                    Parameter.open();
+                    clear();
                 }, null, null,
                 true, true, false, buttonTable, true);
     }
@@ -106,19 +110,6 @@ public class FileChooser {
 
         Main.mainStage.addActor(addFileTable);
 
-        // Skin skin = new Skin();
-        // skin.addRegions(app.assets.get("skin/uiskin.atlas", TextureAtlas.class));
-        // skin.add("default-font", app.font24);
-        // skin.load(Gdx.files.internal("skin/uiskin.json"));
-
-        // SKIN !!!!!!!!
-        // Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-        // skin.add("outline", new Texture("images/outline.png"));
-        // skin.get("font-label",
-        // BitmapFont.class).getRegion().getTexture().setFilter(Texture.TextureFilter.Linear,
-        // Texture.TextureFilter.Linear);
-        // TextField fileNameField = new TextField("", skin);
-        // addFileTable.add(fileNameField);
     }
 
     public static void placeFileChooserButton() {
