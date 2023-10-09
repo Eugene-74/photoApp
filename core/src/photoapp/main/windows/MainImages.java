@@ -38,10 +38,13 @@ public class MainImages {
     public static void reload() {
         Gdx.app.log(fileName, "reload");
 
-        MixOfImage.toPlaceList.removeAll(null);
+        if (MixOfImage.toPlaceList != null && !MixOfImage.toPlaceList.isEmpty()) {
+
+            MixOfImage.toPlaceList.clear();
+        }
 
         imagesTable.clear();
-        createImagesButton(imageI, false);
+        createImagesButton(imageI, true);
 
         mainTable.clear();
         createButton();
