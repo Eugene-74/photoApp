@@ -16,6 +16,7 @@ import photoapp.main.storage.ImageData;
 
 public class MixOfImage extends Group {
     public static List<String> LoadingList = new ArrayList<String>();
+    public static List<String> toPlaceList = new ArrayList<String>();
     public static List<String> notToReLoadList = new ArrayList<String>();
 
     public static AssetManager manager = new AssetManager();
@@ -62,16 +63,22 @@ public class MixOfImage extends Group {
                 while (!manager.isLoaded(lookingFor)) {
                     manager.update();
                 }
+                // System.out.println("load : " + lookingFor);
                 return manager.get(lookingFor, Texture.class);
 
             }
         }
+        String fileName = "";
+        String[] ListImageName = lookingFor.split("/");
         if (manager.isLoaded(lookingFor)) {
+            if (lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
+
+                // toPlaceList.add(ListImageName[ListImageName.length - 1]);
+            }
+            // System.out.println("load : " + lookingFor);
 
             return manager.get(lookingFor, Texture.class);
         } else {
-            String fileName = "";
-            String[] ListImageName = lookingFor.split("/");
 
             if (ListImageName.length > 2) {
 
@@ -81,6 +88,8 @@ public class MixOfImage extends Group {
                             1];
                     firstLoading = true;
                     LoadingList.add(fileName);
+                    System.out.println("load null: " + lookingFor);
+
                     return null;
                     // isLoading = true;
                     // manager.load(fileName, Texture.class);
@@ -92,6 +101,7 @@ public class MixOfImage extends Group {
                             && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
                         isLoading = true;
                         fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
+                        // toPlaceList.add(ListImageName[ListImageName.length - 1]);
                         // FileHandle handle = Gdx.files
                         // .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length
                         // - 1]);
@@ -106,6 +116,8 @@ public class MixOfImage extends Group {
                         manager.finishLoadingAsset(fileName);
                         manager.update();
                         // return isInImageData(fileName, true, "");
+                        // System.out.println("load 150: " + lookingFor);
+
                         return manager.get(fileName, Texture.class);
                         // } else {
                         // Main.setSize150Force(lookingFor, ListImageName[ListImageName.length - 1]);
@@ -119,14 +131,20 @@ public class MixOfImage extends Group {
             }
 
             if (!manager.isLoaded(fileName, Texture.class)) {
-                if (manager.isLoaded("images/loading button.png", Texture.class)) {
-                    return manager.get("images/loading button.png", Texture.class);
+                String loadingFile = "images/loading button.png";
+                // String loadingFile = "video/loading.mp4";
+                if (manager.isLoaded(loadingFile, Texture.class)) {
+
+                    toPlaceList.add(ListImageName[ListImageName.length - 1]);
+
+                    return manager.get(loadingFile, Texture.class);
                 } else {
 
-                    return new Texture("images/loading button.png");
+                    return new Texture(loadingFile);
                 }
 
             } else {
+
                 return manager.get(fileName, Texture.class);
             }
 

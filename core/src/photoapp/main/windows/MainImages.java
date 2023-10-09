@@ -32,14 +32,16 @@ public class MainImages {
         Main.windowOpen = "Main Images";
 
         createButton();
-        createImagesButton(imageI);
+        createImagesButton(imageI, true);
     }
 
     public static void reload() {
         Gdx.app.log(fileName, "reload");
 
+        MixOfImage.toPlaceList.removeAll(null);
+
         imagesTable.clear();
-        createImagesButton(imageI);
+        createImagesButton(imageI, false);
 
         mainTable.clear();
         createButton();
@@ -58,7 +60,7 @@ public class MainImages {
     public static void load() {
         Gdx.app.log(fileName, "load");
 
-        createImagesButton(imageI);
+        createImagesButton(imageI, false);
     }
 
     public static void createButton() {
@@ -146,9 +148,7 @@ public class MainImages {
 
     }
 
-    public static void createImagesButton(Integer firstI) {
-        // imagesTable.clear();
-        // System.out.println("first image : " + firstI);
+    public static void createImagesButton(Integer firstI, Boolean isFirstLoading) {
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
         firstI = firstI - firstI % column;
@@ -158,7 +158,6 @@ public class MainImages {
             Main.imagesData = new ArrayList<>();
         } else {
             Main.toReload = "mainImages";
-            // System.out.println("create images button");
             Integer row = Main.preferences.getInteger("size of main images height")
                     / Main.preferences.getInteger("size of main images button");
             Integer max;
@@ -171,72 +170,49 @@ public class MainImages {
 
             for (int i = 0; i < max; i++) {
                 Integer imageInteger = firstI + i;
-                // System.out.println(
-                // "alreday load -- " + Main.isInTable(imagesTable,
-                // Main.imagesData.get(imageInteger).getName()));
 
                 if (imageInteger < Main.imagesData.size()) {
 
                     ImageData imageData = Main.imagesData.get(imageInteger);
                     String imageName = imageData.getName();
 
-                    List<String> placeImageList = new ArrayList<String>();
-                    placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
-                    if (deleteModeIsOn) {
-                        placeImageList.add("images/redOutline.png");
+                    if (MixOfImage.toPlaceList.contains(imageData.getName())
+                            && MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/" + imageData.getName())
+                            || isFirstLoading) {
+                        MixOfImage.toPlaceList.remove(imageData.getName());
+                        // System.err.println("place a button");
 
-                    } else {
-                        placeImageList.add("images/outline.png");
+                        List<String> placeImageList = new ArrayList<String>();
+                        placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
+                        if (deleteModeIsOn) {
+                            placeImageList.add("images/redOutline.png");
 
-                    }
-                    if (ImageEdition.toDelete.contains(imageData, false)) {
-                        placeImageList.add("images/deleted preview.png");
-                    }
-                    if (deleteModeIsOn) {
-                        Main.placeImage(placeImageList,
-                                "main images button",
-                                new Vector2(0, 0),
-                                Main.mainStage,
-                                (o) -> {
-                                    // if (!Main.isOnClick) {
-                                    // System.out.println(1);
+                        } else {
+                            placeImageList.add("images/outline.png");
 
-                                    // Integer indexBis = 0;
-                                    // if (!ImageEdition.toDelete.isEmpty()) {
-                                    // for (ImageData delet : ImageEdition.toDelete) {
-                                    // if (delet.equals(imageData)) {
+                        }
+                        if (ImageEdition.toDelete.contains(imageData, false)) {
+                            placeImageList.add("images/deleted preview.png");
+                        }
+                        if (deleteModeIsOn) {
+                            Main.placeImage(placeImageList,
+                                    "main images button",
+                                    new Vector2(0, 0),
+                                    Main.mainStage,
 
-                                    // ImageEdition.toDelete.removeIndex(indexBis);
-                                    // System.out.println("removed 1");
-                                    // System.out.println("rl");
+                                    // selection multiple prend pas le
+                                    (o) -> {
 
-                                    // reload();
-                                    // return;
+                                        if (deleteModeIsOn) {
 
-                                    // }
-                                    // indexBis += 1;
-                                    // }
-                                    // }
-                                    // // }
-                                    // ImageEdition.toDelete.add(imageData);
-                                    // System.out.println("rl");
-                                    // MainImages.reload();
-                                }, (o) -> {
-                                    System.out.println(2);
-                                    if (imageData != Main.lastImageData) {
-
-                                        Main.lastImageData = imageData;
-                                        if (deleteModeIsOn && Main.isOnClick) {
-                                            // System.out.println("is click on");
                                             Integer indexBis = 0;
                                             if (!ImageEdition.toDelete.isEmpty()) {
                                                 for (ImageData delet : ImageEdition.toDelete) {
                                                     if (delet.equals(imageData)) {
 
                                                         ImageEdition.toDelete.removeIndex(indexBis);
-                                                        System.out.println("removed 2");
                                                         reload();
-                                                        // Main.stopReload = true;
+                                                        Main.lastImageData = imageData;
 
                                                         return;
 
@@ -246,28 +222,51 @@ public class MainImages {
                                             }
                                             ImageEdition.toDelete.add(imageData);
                                             reload();
-                                            // Main.stopReload = true;
+                                            Main.lastImageData = imageData;
                                         }
-                                    }
-                                }, null, true, true, false, imagesTable, true);
-                    } else {
+                                    }, (o) -> {
+                                        if (imageData != Main.lastImageData) {
 
-                        Main.placeImage(placeImageList,
-                                "main images button",
-                                new Vector2(0, 0),
-                                Main.mainStage,
-                                (o) -> {
-                                    clearMainImages();
-                                    Main.unLoadAll();
-                                    ImageEdition.open(imageName, true);
-                                }, null, null, true, true, false, imagesTable, true);
-                    }
-                    if (index >= column) {
-                        imagesTable.row();
-                        index = 0;
-                    }
+                                            Main.lastImageData = imageData;
+                                            if (deleteModeIsOn && Main.isOnClick) {
+                                                Integer indexBis = 0;
+                                                if (!ImageEdition.toDelete.isEmpty()) {
+                                                    for (ImageData delet : ImageEdition.toDelete) {
+                                                        if (delet.equals(imageData)) {
 
-                    index += 1;
+                                                            ImageEdition.toDelete.removeIndex(indexBis);
+                                                            reload();
+
+                                                            return;
+
+                                                        }
+                                                        indexBis += 1;
+                                                    }
+                                                }
+                                                ImageEdition.toDelete.add(imageData);
+                                                reload();
+                                            }
+                                        }
+                                    }, null, true, true, false, imagesTable, true);
+                        } else {
+
+                            Main.placeImage(placeImageList,
+                                    "main images button",
+                                    new Vector2(0, 0),
+                                    Main.mainStage,
+                                    (o) -> {
+                                        clearMainImages();
+                                        Main.unLoadAll();
+                                        ImageEdition.open(imageName, true);
+                                    }, null, null, true, true, false, imagesTable, true);
+                        }
+                        if (index >= column) {
+                            imagesTable.row();
+                            index = 0;
+                        }
+
+                        index += 1;
+                    }
                 }
 
             }
@@ -299,7 +298,7 @@ public class MainImages {
             return;
         }
         imagesTable.clear();
-        createImagesButton(imageI);
+        createImagesButton(imageI, true);
 
         for (int i = 0; i < column; i++) {
             int index = imageI - column * 3 + i;
@@ -333,7 +332,7 @@ public class MainImages {
             return;
         }
         imagesTable.clear();
-        createImagesButton(imageI);
+        createImagesButton(imageI, true);
 
         for (int i = 0; i < column; i++) {
             int index = imageI + i + column * row + column * 2;

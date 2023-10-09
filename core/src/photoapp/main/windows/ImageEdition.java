@@ -245,7 +245,10 @@ public class ImageEdition {
 		Main.placeImage(List.of(ImageData.IMAGE_PATH + "/" + imageName), "main image", new Vector2(
 				0, 0),
 				Main.mainStage,
-				null, null, null, false, false, true, table, false);
+				(o) -> {
+					clear();
+					BigPreview.open(imageName);
+				}, null, null, false, false, true, table, false);
 	}
 
 	public static void createMainImageTable() {

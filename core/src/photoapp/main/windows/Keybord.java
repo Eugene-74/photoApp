@@ -3,7 +3,6 @@ package photoapp.main.windows;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.Main;
 
@@ -11,7 +10,7 @@ public class Keybord implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println(keycode);
+
         if ((keycode == Keys.LEFT) || keycode == Keys.UP
                 || keycode == Input.Keys.Z) {
             previous();
@@ -38,7 +37,7 @@ public class Keybord implements InputProcessor {
         // System.out.println("down " + pointer);
         if ((button == 0)) {
             Main.isOnClick = true;
-            System.out.println("true");
+            // System.out.println("true");
 
         }
 
@@ -48,7 +47,7 @@ public class Keybord implements InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if ((button == 0)) {
             Main.isOnClick = false;
-            System.out.println("false");
+            // System.out.println("false");
 
         }
         return false;
@@ -83,8 +82,11 @@ public class Keybord implements InputProcessor {
         } else if (Main.windowOpen.equals("Main Images")) {
             MainImages.previousImages();
 
+        } else if (Main.windowOpen.equals("BigPreview")) {
+            BigPreview.clear();
+            ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+
         }
-        Main.lastTime = TimeUtils.millis();
     }
 
     public void next() {
@@ -93,6 +95,10 @@ public class Keybord implements InputProcessor {
 
         } else if (Main.windowOpen.equals("Main Images")) {
             MainImages.nextImages();
+
+        } else if (Main.windowOpen.equals("BigPreview")) {
+            BigPreview.clear();
+            ImageEdition.open(ImageEdition.theCurrentImagePath, true);
 
         }
 

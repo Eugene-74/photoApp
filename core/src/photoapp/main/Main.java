@@ -47,6 +47,7 @@ import com.drew.metadata.Tag;
 
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.BigPreview;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.Keybord;
@@ -113,6 +114,11 @@ public class Main extends ApplicationAdapter {
 
 		preferences.putInteger("size of link button", 50);
 
+		preferences.putInteger("size of big preview width",
+				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
+		preferences.putInteger("size of big preview height",
+				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+
 	}
 
 	@Override
@@ -153,6 +159,7 @@ public class Main extends ApplicationAdapter {
 		MainImages.create();
 		ImageEdition.create();
 		Parameter.create();
+		BigPreview.create();
 
 		FileChooser.open();
 	}
@@ -363,7 +370,7 @@ public class Main extends ApplicationAdapter {
 
 				if (onClicked != null) {
 					onClicked.accept(null);
-					System.out.println("on click");
+					// System.out.println("on click");
 
 				}
 			}
@@ -372,10 +379,10 @@ public class Main extends ApplicationAdapter {
 			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
 
 				if (onEnter != null) {
-					System.out.println("on enter");
+					// System.out.println("on enter");
 
 					onEnter.accept(null);
-					System.out.println("off enter");
+					// System.out.println("off enter");
 				}
 				// }
 			}
