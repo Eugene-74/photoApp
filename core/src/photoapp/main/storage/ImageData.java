@@ -28,7 +28,6 @@ public class ImageData {
     private Map<String, Object> data;
 
     public ImageData() {
-        // System.out.println("new HASH MAP ------------------------ BIS");
         data = new HashMap<>(6);
     }
 
@@ -75,7 +74,6 @@ public class ImageData {
     }
 
     public List<String> getPeoples() {
-        // System.out.println((List<String>) data.get("peoples") + "get people");
         return (List<String>) data.get("peoples");
     }
 
@@ -150,18 +148,15 @@ public class ImageData {
         FileHandle handle = Gdx.files.absolute(SAVE_PATH);
 
         if (!handle.exists()) {
-            // return new ArrayList<>();
             return;
         } else {
             InputStream infos = handle.read();
             String infosString = new BufferedReader(new InputStreamReader(infos))
                     .lines().collect(Collectors.joining("\n"));
             if (infosString.equals("") || infosString.equals("\n")) {
-                // return new ArrayList<>();
                 return;
             }
             String[] imagesInfo = infosString.split("\n");
-            // List<ImageData> imagesData = new ArrayList<>();
             for (String imageInfo : imagesInfo) {
 
                 String[] category = imageInfo.split(";");
@@ -178,13 +173,10 @@ public class ImageData {
                         .setPlaces(List.of(category[3].split(",")))
                         .setCoords(coords)
                         .setLoved(Boolean.parseBoolean(category[5]));
-                // System.out.println(imageData);
 
                 Main.addImageData(imageData);
 
             }
-            // System.out.println(imagesData + "imagesData start");
-            // return imagesData;
 
         }
 
@@ -195,7 +187,6 @@ public class ImageData {
         String s = "";
         for (ImageData imageData : Main.imagesData) {
             s += imageData.toFileLine();
-            // imageData.saveDataOfImage();
         }
         FileHandle handle = Gdx.files.absolute(SAVE_PATH);
         InputStream text = new ByteArrayInputStream(s.getBytes());
@@ -204,12 +195,9 @@ public class ImageData {
 
     public String toFileLine() {
         String s = "";
-        // s += "Name=";
         s += data.get("name");
-        // s += ";date=";
         s += ";";
         s += data.get("date");
-        // s += ";peoples=";
         s += ";";
         if (data.get("peoples") == null) {
             s += data.get("peoples");
@@ -218,7 +206,6 @@ public class ImageData {
                 s += people + ",";
             }
         }
-        // s += ";places=";
         s += ";";
         if (data.get("places") == null) {
             s += data.get("places");
@@ -227,14 +214,12 @@ public class ImageData {
                 s += place + ",";
             }
         }
-        // s += ";Coords=";
         s += ";";
         if (data.get("coords") == null) {
             s += data.get("coords");
         } else {
             List<Integer> coords = (List<Integer>) data.get("coords");
             for (int coord : coords) {
-                // s += coord + ",";
             }
         }
         s += ";";

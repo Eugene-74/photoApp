@@ -24,7 +24,6 @@ public class CommonButton {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    // infoTextSet("test");
 
                     Main.reload(false);
                 }, null, null,

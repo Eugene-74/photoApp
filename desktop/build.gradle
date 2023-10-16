@@ -16,7 +16,6 @@ tasks.register('run', JavaExec) {
     ignoreExitValue = true
 
     if (OperatingSystem.current() == OperatingSystem.MAC_OS) {
-        // Required to run on macOS
         jvmArgs += "-XstartOnFirstThread"
     }
 }

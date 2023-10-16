@@ -42,6 +42,9 @@ public class ImageEdition {
 	static Array<ImageData> toDelete = new Array<ImageData>();
 	public static String theCurrentImagePath;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
+	static String lastPreview = "";
+	public static Boolean doNotLoad = false;
+	public static Boolean reloadOnce = false;
 
 	public static void create() {
 		Gdx.app.log(fileName, "create");
@@ -64,7 +67,7 @@ public class ImageEdition {
 		Gdx.app.log(fileName, "open");
 
 		Main.toReload = "imageEdition";
-		Main.windowOpen = "Image Edition";
+		Main.windowOpen = "ImageEdition";
 
 		theCurrentImagePath = currentImagePath;
 		table.clear();
@@ -192,9 +195,6 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					clear();
-					// currentMainImage.clear();
-					// table.clear();
-					// previewTable.clear();
 
 					MainImages.open();
 				}, null, null,
@@ -206,7 +206,7 @@ public class ImageEdition {
 		Gdx.app.log(fileName, "reload");
 
 		plusTable.clear();
-		Main.windowOpen = "Image Edition";
+		Main.windowOpen = "ImageEdition";
 		Main.toReload = "imageEdition";
 
 		ImageData.openDataOfImages();
@@ -227,7 +227,6 @@ public class ImageEdition {
 		MixOfImage.stopLoading();
 		plusTable.clear();
 		previewTable.clear();
-		// if (table != null)
 		table.clear();
 		mainImageTable.clear();
 
@@ -236,7 +235,25 @@ public class ImageEdition {
 	public static void load() {
 		Gdx.app.log(fileName, "load");
 
-		open(theCurrentImagePath, true);
+		if (doNotLoad) {
+			doNotLoad = false;
+			return;
+		}
+		if (reloadOnce) {
+
+			doNotLoad = true;
+			reloadOnce = false;
+
+		}
+
+		Main.toReload = "imageEdition";
+		Main.windowOpen = "ImageEdition";
+
+		placePreviewImage(theCurrentImagePath);
+
+		placeImageOfPeoples(theCurrentImagePath);
+		placeImageOfPlaces(theCurrentImagePath);
+		openMainImage(theCurrentImagePath);
 
 	}
 
@@ -310,125 +327,22 @@ public class ImageEdition {
 			List<String> previewNames = new ArrayList<String>();
 			Integer maxImageIndex = Main.imagesData.size() - 1;
 
-			if (imageIndex == 0) {
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(maxImageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
-				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
-
-			} else if (imageIndex == 1) {
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(maxImageIndex - 1).getName());
-				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
-
-			} else if (imageIndex == 2) {
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex - 1).getName());
-				previewNames.add(Main.imagesData.get(maxImageIndex).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
-
-			} else if (imageIndex == 3) {
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(maxImageIndex).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
-
-			} else if (imageIndex.equals(maxImageIndex - 3)) {
-
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(0).getName());
-				previewNames.add(Main.imagesData.get(1).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(2).getName());
-
-			} else if (imageIndex.equals(maxImageIndex - 2)) {
-
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(0).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(1).getName());
-
-			} else if (imageIndex.equals(maxImageIndex - 1)) {
-
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(0).getName());
-				previewNames.add(Main.imagesData.get(1).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(2).getName());
-
-			} else if (imageIndex.equals(maxImageIndex)) {
-
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-
-				previewNames.add(Main.imagesData.get(0).getName());
-				previewNames.add(Main.imagesData.get(1).getName());
-				previewNames.add(Main.imagesData.get(2).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(3).getName());
-
-			} else if (imageIndex >= 3) {
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex - 4).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 3).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex - 1).getName());
-				previewNames.add(Main.imagesData.get(imageIndex).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 1).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 2).getName());
-				previewNames.add(Main.imagesData.get(imageIndex + 3).getName());
-				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(imageIndex + 4).getName());
-
+			// Code de Yann
+			Integer increment = 0;
+			for (int i = -4; i <= 4; i++) {
+				if (i + imageIndex > maxImageIndex) {
+					increment = -maxImageIndex - 1;
+				} else if (i + imageIndex < 0) {
+					increment = maxImageIndex + 1;
+				} else {
+					increment = 0;
+				}
+				if (i == 4 || i == -4) {
+					MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" +
+							Main.imagesData.get(i + imageIndex + increment).getName());
+				} else {
+					previewNames.add(Main.imagesData.get(i + imageIndex + increment).getName());
+				}
 			}
 
 			Integer nbr = 0;
@@ -454,13 +368,32 @@ public class ImageEdition {
 						Main.mainStage,
 						(o) -> {
 							open(preview, true);
+
+							// ne s'ouvre pas toujours a cause de
+							// a cause du load pour la grande qualite
+							// ||
+							// \/
 						},
 						(o) -> {
 							// les ouvre infiniment c'est pas ouf
+							// if (!preview.equals(lastPreview)) {
+							System.out.println("enter !!!");
 
 							showBigPreview(preview);
+							// reloadOnce = true;
+							// lastPreview = preview;
+
+							// }
+
 						}, (o) -> {
+							System.out.println("leave !!!");
+
+							// if (!preview.equals(lastPreview)) {
+							// lastPreview = null;
+							// }
+
 							closeBigPreview(currentImagePath);
+							// reloadOnce = true;
 						},
 						false, true, false, previewTable, true);
 
@@ -472,19 +405,25 @@ public class ImageEdition {
 				nbr += 1;
 			}
 		}
+
 	}
 
 	public static void showBigPreview(String preview) {
-
+		// theCurrentImagePath = preview;
+		// load();
 		openMainImage(preview);
+
+		reloadOnce = true;
 		Main.toReload = "imageEdition";
 
 	}
 
 	public static void closeBigPreview(String initialImage) {
-		// open(initialImage, true);
 
+		// theCurrentImagePath = initialImage;
 		openMainImage(initialImage);
+		reloadOnce = true;
+		// openMainImage(initialImage);
 		Main.toReload = "imageEdition";
 
 	}
@@ -599,28 +538,25 @@ public class ImageEdition {
 			} else if (next) {
 
 				open(imageData.getName(), true);
-				MainImages.imageI = Main.imagesData.indexOf(imageData);
+
+				// MainImages.imageI = Main.imagesData.indexOf(imageData);
+
 				Integer i = -4;
 
 				if (Main.imagesData.indexOf(imageData) + i < 0) {
 					i = Main.imagesData.size() + i;
 				}
 
-				Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
-						+ Main.imagesData.get(Main.imagesData.indexOf(imageData) + i).getName());
-
 				next = false;
 			}
 		}
 		if (next) {
 			open(Main.imagesData.get(0).getName(), true);
-			if (Main.imagesData.size() > 3) {
-
-				Main.unLoadAnImage(
-						ImageData.IMAGE_PATH + "/" + Main.imagesData.get(Main.imagesData.size() - 3).getName());
-			}
 
 		}
+		MainImages.imageI = Main.getImageDataIndex(currentImagePath);
+		Main.checkToUnload(null);
+
 	}
 
 	public static void previousImage(String currentImagePath) {
@@ -633,21 +569,15 @@ public class ImageEdition {
 				if (previous == null) {
 					open(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
-					MainImages.imageI = Main.imagesData.indexOf(imageData);
+					// MainImages.imageI = Main.imagesData.indexOf(imageData);
 
-					if (Main.imagesData.size() > 4) {
-
-						Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
-								+ Main.imagesData.get(2).getName());
-					}
 				} else {
 					open(previous.getName(), true);
 					Integer i = 4;
 					if (Main.imagesData.indexOf(previous) + 4 >= Main.imagesData.size()) {
 						i = i - Main.imagesData.size();
 					}
-					Main.unLoadAnImage(ImageData.IMAGE_PATH + "/"
-							+ Main.imagesData.get(Main.imagesData.indexOf(previous) + i).getName());
+					// MainImages.imageI = Main.imagesData.indexOf(imageData);
 
 				}
 
@@ -655,6 +585,9 @@ public class ImageEdition {
 			previous = imageData;
 
 		}
+		MainImages.imageI = Main.getImageDataIndex(currentImagePath);
+
+		Main.checkToUnload(null);
 	}
 
 	public static void addPeople(String peopleToAdd, String currentImagePath, boolean isReloadImageEdition) {
@@ -666,7 +599,8 @@ public class ImageEdition {
 		imageData.setPeoples(peoples);
 
 		if (isReloadImageEdition) {
-			open(currentImagePath, false);
+			load();
+			theCurrentImagePath = currentImagePath;
 
 		}
 	}
@@ -677,18 +611,15 @@ public class ImageEdition {
 		places = Main.addToList(places, placeToAdd);
 		imageData.setPlaces(places);
 		if (isReloadImageEdition) {
-			open(currentImagePath, false);
+			load();
+			theCurrentImagePath = currentImagePath;
 
 		}
 	}
 
 	public static void rotateAnImage(Integer degree, String imagePath) {
 		Texture texture = MixOfImage.isInImageData(ImageData.IMAGE_PATH + "/" + imagePath, true, "");
-		// Image img = new Image(texture);
-		// img.rotateBy(degree);
 
-		// Texture texture = new Texture(imagePath);
-		// Texture texture = MixOfImage.manager.get(imageName, Texture.class);
 		Pixmap pixmap = Main.textureToPixmap(texture);
 		pixmap = rotatePixmap(pixmap, degree);
 		FileHandle fh = new FileHandle(ImageData.IMAGE_PATH + "/" + imagePath);
@@ -736,7 +667,6 @@ public class ImageEdition {
 		}
 		toDelete = new Array<ImageData>();
 		Main.reload(true);
-		// reload(true);
 
 	}
 
@@ -910,7 +840,6 @@ public class ImageEdition {
 	}
 
 	public static void addAllPeopleToPlusTable() {
-		// table.clear();$
 		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
@@ -1030,7 +959,6 @@ public class ImageEdition {
 				Main.mainStage,
 				(o) -> {
 					plusTable.clear();
-					// plusTable = null;
 					Main.reload(false);
 				}, null, null,
 				true, true, false, plusTable, true);

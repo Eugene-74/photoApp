@@ -29,7 +29,7 @@ public class MainImages {
     public static void open() {
         Gdx.app.log(fileName, "open");
 
-        Main.windowOpen = "Main Images";
+        Main.windowOpen = "MainImages";
 
         createButton();
         createImagesButton(imageI, true);
@@ -83,7 +83,6 @@ public class MainImages {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    // System.out.println("next image");
                     previousImages();
                 }, null, null,
                 true, true, false, mainTable, true);
@@ -94,7 +93,6 @@ public class MainImages {
                     new Vector2(0, 0),
                     Main.mainStage,
                     (o) -> {
-                        // ImageEdition.save();
                         deleteModeIsOn = false;
                         reload();
 
@@ -117,14 +115,12 @@ public class MainImages {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    // clearMainImages();
                     if (deleteModeIsOn) {
                         ImageEdition.save();
                         deleteModeIsOn = false;
                         reload();
                     } else {
                         deleteModeIsOn = true;
-                        // createImagesButton(imageI);
                         reload();
 
                     }
@@ -183,7 +179,6 @@ public class MainImages {
                             && MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/" + imageData.getName())
                             || isFirstLoading) {
                         MixOfImage.toPlaceList.remove(imageData.getName());
-                        // System.err.println("place a button");
 
                         List<String> placeImageList = new ArrayList<String>();
                         placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
@@ -203,7 +198,6 @@ public class MainImages {
                                     new Vector2(0, 0),
                                     Main.mainStage,
 
-                                    // selection multiple prend pas le
                                     (o) -> {
 
                                         if (deleteModeIsOn) {
@@ -318,10 +312,10 @@ public class MainImages {
             if (index < Main.imagesData.size()
                     && index >= 0) {
 
-                Main.unLoadAnImage(
-                        ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index).getName());
             }
         }
+        Main.checkToUnload(null);
+
     }
 
     public static void nextImages() {
@@ -346,15 +340,14 @@ public class MainImages {
                         ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(index).getName());
             }
         }
-        // System.out.println("iamgeI : " + imageI);
         for (int i = 0; i < column; i++) {
             int index = imageI - column * 2 + i;
             if (index < Main.imagesData.size()
                     && index >= 0) {
 
-                Main.unLoadAnImage(
-                        ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index).getName());
             }
         }
+        Main.checkToUnload(null);
+
     }
 }

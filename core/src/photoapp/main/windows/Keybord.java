@@ -34,10 +34,8 @@ public class Keybord implements InputProcessor {
     }
 
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        // System.out.println("down " + pointer);
         if ((button == 0)) {
             Main.isOnClick = true;
-            // System.out.println("true");
 
         }
 
@@ -47,7 +45,6 @@ public class Keybord implements InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if ((button == 0)) {
             Main.isOnClick = false;
-            // System.out.println("false");
 
         }
         return false;
@@ -76,10 +73,10 @@ public class Keybord implements InputProcessor {
     }
 
     public void previous() {
-        if (Main.windowOpen.equals("Image Edition")) {
+        if (Main.windowOpen.equals("ImageEdition")) {
             ImageEdition.previousImage(ImageEdition.theCurrentImagePath);
 
-        } else if (Main.windowOpen.equals("Main Images")) {
+        } else if (Main.windowOpen.equals("MainImages")) {
             MainImages.previousImages();
 
         } else if (Main.windowOpen.equals("BigPreview")) {
@@ -90,10 +87,10 @@ public class Keybord implements InputProcessor {
     }
 
     public void next() {
-        if (Main.windowOpen.equals("Image Edition")) {
+        if (Main.windowOpen.equals("ImageEdition")) {
             ImageEdition.nextImage(ImageEdition.theCurrentImagePath);
 
-        } else if (Main.windowOpen.equals("Main Images")) {
+        } else if (Main.windowOpen.equals("MainImages")) {
             MainImages.nextImages();
 
         } else if (Main.windowOpen.equals("BigPreview")) {

@@ -27,7 +27,6 @@ public class Parameter {
     public static void reload() {
         parameterTable.clear();
         placeParameterButton();
-        // placeMainParameterButton();
 
     }
 

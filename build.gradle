@@ -35,9 +35,7 @@ allprojects {
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         maven { url "https://oss.sonatype.org/content/repositories/releases/" }
         maven { url "https://jitpack.io" }
-        // maven {
-        //     url "https://repository.groupdocs.com/repo/"
-        // }
+     
     }
 
 }
@@ -60,7 +58,6 @@ project(":core") {
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
-        // api 'com.groupdocs:groupdocs-metadata:23.6'
         api 'com.drewnoakes:metadata-extractor:2.18.0'
     }
 }
