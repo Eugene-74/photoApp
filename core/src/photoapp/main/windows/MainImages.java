@@ -302,7 +302,7 @@ public class MainImages {
             if (index < Main.imagesData.size()
                     && index >= 0) {
 
-                MixOfImage.loadImage(
+                MixOfImage.startToLoadImage(
                         ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(index).getName());
             }
         }
@@ -336,7 +336,7 @@ public class MainImages {
             if (index < Main.imagesData.size()
                     && index >= 0) {
 
-                MixOfImage.loadImage(
+                MixOfImage.startToLoadImage(
                         ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(index).getName());
             }
         }

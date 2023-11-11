@@ -86,6 +86,7 @@ public class Main extends ApplicationAdapter {
 	public static ImageData lastImageData = null;
 
 	public void iniPreferences() {
+		preferences.putInteger("image load at the same time", 20);
 
 		preferences.putString("text.done", " ");
 		preferences.putInteger("size of main images button", 150);
@@ -177,8 +178,9 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+		// System.out.println("render");
 
-		Integer progress = MixOfImage.manager.getAssetNames().size;
+		Integer progress = MixOfImage.willBeLoad.size();
 		MixOfImage.manager.update();
 
 		ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
@@ -210,46 +212,48 @@ public class Main extends ApplicationAdapter {
 			MixOfImage.firstLoading = false;
 		}
 
-		if (windowOpen.equals("ImageEdition") &&
-				toReload.equals("imageEdition")) {
-			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
-				if (MixOfImage.manager.isFinished()) {
-					System.out.println("finish");
-					// ImageEdition.doNotLoad = false;
-					ImageEdition.reloadOnce = true;
+		// if (windowOpen.equals("ImageEdition") &&
+		// toReload.equals("imageEdition")) {
+		// if (progress != newProgress || MixOfImage.manager.isFinished() &&
+		// MixOfImage.isLoading) {
+		// if (MixOfImage.manager.isFinished()) {
+		// System.out.println("finish");
+		// // ImageEdition.doNotLoad = false;
+		// ImageEdition.reloadOnce = true;
 
-					ImageEdition.load();
-					MixOfImage.isLoading = false;
+		// ImageEdition.load();
+		// MixOfImage.isLoading = false;
 
-					infoTextSet(preferences.getString("text.done"), true);
-					toReload = "";
-					return;
-				}
-				lastTimeImageEdition = TimeUtils.millis();
-				ImageEdition.reloadOnce = true;
-				ImageEdition.load();
-				MixOfImage.isLoading = true;
-				toReload = "imageEdition";
+		// infoTextSet(preferences.getString("text.done"), true);
+		// toReload = "";
+		// return;
+		// }
+		// lastTimeImageEdition = TimeUtils.millis();
+		// ImageEdition.reloadOnce = true;
+		// ImageEdition.load();
+		// MixOfImage.isLoading = true;
+		// toReload = "imageEdition";
 
-			}
-		} else if (toReload.equals("mainImages")) {
-			if (progress != newProgress || MixOfImage.manager.isFinished() && MixOfImage.isLoading) {
-				if (MixOfImage.manager.isFinished()) {
-					MainImages.load();
-					MixOfImage.isLoading = false;
-					infoTextSet(preferences.getString("text.done"), true);
-					toReload = "";
-					return;
+		// }
+		// } else if (toReload.equals("mainImages")) {
+		// if (progress != newProgress || MixOfImage.manager.isFinished() &&
+		// MixOfImage.isLoading) {
+		// if (MixOfImage.manager.isFinished()) {
+		// MainImages.load();
+		// MixOfImage.isLoading = false;
+		// infoTextSet(preferences.getString("text.done"), true);
+		// toReload = "";
+		// return;
 
-				}
-				lastTimeImageEdition = TimeUtils.millis();
-				MainImages.load();
-				MixOfImage.isLoading = true;
-				toReload = "mainImages";
+		// }
+		// lastTimeImageEdition = TimeUtils.millis();
+		// MainImages.load();
+		// MixOfImage.isLoading = true;
+		// toReload = "mainImages";
 
-			}
+		// }
 
-		}
+		// }
 
 		newProgress = progress;
 		if (thread != null) {
@@ -258,18 +262,42 @@ public class Main extends ApplicationAdapter {
 				loadImagesForTheFirstTime();
 			}
 		}
-
+		if (!MixOfImage.willBeLoad.isEmpty()
+				&& MixOfImage.isOnLoading.size() < preferences.getInteger("image load at the same time")) {
+			Integer placeInLoad = preferences.getInteger("image load at the same time") - MixOfImage.isOnLoading.size();
+			if (placeInLoad > 0) {
+				if (placeInLoad > MixOfImage.willBeLoad.size()) {
+					placeInLoad = MixOfImage.willBeLoad.size();
+				}
+				for (int i = 0; i < placeInLoad; i++) {
+					MixOfImage.loadImage(MixOfImage.willBeLoad.get(0));
+					MixOfImage.willBeLoad.remove(0);
+				}
+			}
+		}
+		// System.out.println("will be " + MixOfImage.willBeLoad);
 		List<String> toRemoveFromIsOnLoading = new ArrayList<String>();
-
+		Boolean loadToDo = false;
 		for (String imagePath : MixOfImage.isOnLoading) {
 			if (MixOfImage.manager.isLoaded(imagePath)) {
 				toRemoveFromIsOnLoading.add(imagePath);
+
 			}
 		}
 		for (String imagePath : toRemoveFromIsOnLoading) {
+
 			MixOfImage.isOnLoading.remove(imagePath);
+
 			MixOfImage.isLoaded.put(imagePath,
 					getImageDataIndex(imagePath.split("/")[imagePath.split("/").length - 1]));
+			loadToDo = true;
+		}
+		if (loadToDo) {
+			if (windowOpen.equals("MainImages")) {
+				MainImages.load();
+			} else if (windowOpen.equals("ImageEdition")) {
+				ImageEdition.load();
+			}
 		}
 
 	}
@@ -457,14 +485,17 @@ public class Main extends ApplicationAdapter {
 
 	public static Integer getImageDataIndex(String imageName) {
 		int i = 0;
-		for (ImageData imageData : imagesData) {
+		if (imagesData != null) {
 
-			if ((imageData.getName())
-					.equals(imageName)) {
-				return i;
+			for (ImageData imageData : imagesData) {
+
+				if ((imageData.getName())
+						.equals(imageName)) {
+					return i;
+				}
+				i += 1;
+
 			}
-			i += 1;
-
 		}
 		return null;
 	}
@@ -768,7 +799,6 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static Integer distance(Integer nbr, Integer range, Integer addRange) {
-		// System.out.println(MainImages.imageI);
 		return Math.abs(MainImages.imageI + addRange - nbr);
 
 	}
@@ -789,12 +819,12 @@ public class Main extends ApplicationAdapter {
 			}
 
 			ArrayList<String> toUnput = new ArrayList<String>();
+			ArrayList<String> toUnputbis = new ArrayList<String>();
 
 			for (ObjectMap.Entry<String, Integer> imageNameI : MixOfImage.isLoaded.entries()) {
 				if (imageNameI.value != null) {
 
 					if (distance(imageNameI.value, range, addRange) > range) {
-
 						unLoadAnImage(imageNameI.key);
 						toUnput.add(imageNameI.key);
 
@@ -803,8 +833,19 @@ public class Main extends ApplicationAdapter {
 				}
 
 			}
+			for (String imagePath : MixOfImage.willBeLoad) {
+				if (distance(getImageDataIndex(imagePath.split("/")[imagePath.split("/").length - 1]), range,
+						addRange) > range) {
+					toUnputbis.add(imagePath);
+
+				}
+
+			}
 			for (String imageNameI : toUnput) {
 				MixOfImage.isLoaded.remove(imageNameI);
+			}
+			for (String imageNameI : toUnputbis) {
+				MixOfImage.willBeLoad.remove(imageNameI);
 			}
 		}
 

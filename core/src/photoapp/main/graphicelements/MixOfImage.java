@@ -25,8 +25,16 @@ public class MixOfImage extends Group {
     public static boolean firstLoading = false;
     public static long lastTime = 0;
 
+    public static List<String> willBeLoad = new ArrayList<String>();
     public static List<String> isOnLoading = new ArrayList<String>();
     public static OrderedMap<String, Integer> isLoaded = new OrderedMap<>();
+
+    public static void startToLoadImage(String lookingFor) {
+        // System.out.println("start to load an image");
+        willBeLoad.add(lookingFor);
+        // System.out.println(willBeLoad);
+        isLoading = true;
+    }
 
     public static void loadImage(String lookingFor) {
         isOnLoading.add(lookingFor);
@@ -56,15 +64,20 @@ public class MixOfImage extends Group {
     }
 
     public static Texture isInImageData(String lookingFor, boolean wait, String type) {
+        // System.out.println("isInImageData");
 
         if (!manager.isLoaded(lookingFor) && !notToReLoadList.contains(lookingFor)) {
-            loadImage(lookingFor);
+
             if (lookingFor.startsWith("images/") || wait) {
+                loadImage(lookingFor);
+
                 while (!manager.isLoaded(lookingFor)) {
                     manager.update();
                 }
                 return manager.get(lookingFor, Texture.class);
 
+            } else {
+                startToLoadImage(lookingFor);
             }
         }
         String fileName = "";
@@ -98,7 +111,8 @@ public class MixOfImage extends Group {
 
                         if (!notToReLoadList.contains(fileName)) {
 
-                            manager.load(fileName, Texture.class);
+                            // manager.load(fileName, Texture.class);
+                            loadImage(fileName);
                             notToReLoadList.add(fileName);
                         }
 

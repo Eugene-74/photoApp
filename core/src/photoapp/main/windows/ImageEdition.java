@@ -338,8 +338,10 @@ public class ImageEdition {
 					increment = 0;
 				}
 				if (i == 4 || i == -4) {
-					MixOfImage.loadImage(ImageData.IMAGE_PATH + "/150/" +
-							Main.imagesData.get(i + imageIndex + increment).getName());
+					// MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/150/" +
+					// Main.imagesData.get(i + imageIndex + increment).getName());
+					// SHOULD LOAD THE 2 NEXT IMAGE
+					// BUT LOAD THEM ALL THE TIME
 				} else {
 					previewNames.add(Main.imagesData.get(i + imageIndex + increment).getName());
 				}
@@ -367,6 +369,7 @@ public class ImageEdition {
 						new Vector2(0, 0),
 						Main.mainStage,
 						(o) -> {
+							// System.out.println("click");
 							open(preview, true);
 
 							// ne s'ouvre pas toujours a cause de
@@ -377,7 +380,7 @@ public class ImageEdition {
 						(o) -> {
 							// les ouvre infiniment c'est pas ouf
 							// if (!preview.equals(lastPreview)) {
-							System.out.println("enter !!!");
+							// System.out.println("enter !!!");
 
 							showBigPreview(preview);
 							// reloadOnce = true;
@@ -655,7 +658,7 @@ public class ImageEdition {
 	}
 
 	public static void save() {
-
+		MainImages.imageI = 0;
 		ImageData.saveImagesData();
 		deleteImageTodelete();
 
