@@ -338,10 +338,11 @@ public class ImageEdition {
 					increment = 0;
 				}
 				if (i == 4 || i == -4) {
-					// MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/150/" +
-					// Main.imagesData.get(i + imageIndex + increment).getName());
-					// SHOULD LOAD THE 2 NEXT IMAGE
-					// BUT LOAD THEM ALL THE TIME
+					if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/"
+							+ Main.imagesData.get(i + imageIndex + increment).getName())) {
+						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/150/" +
+								Main.imagesData.get(i + imageIndex + increment).getName());
+					}
 				} else {
 					previewNames.add(Main.imagesData.get(i + imageIndex + increment).getName());
 				}
