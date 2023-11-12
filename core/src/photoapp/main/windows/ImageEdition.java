@@ -63,8 +63,8 @@ public class ImageEdition {
 	}
 
 	public static void open(String currentImagePath, boolean OpenMain) {
-
 		Gdx.app.log(fileName, "open");
+		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 
 		Main.toReload = "imageEdition";
 		Main.windowOpen = "ImageEdition";
@@ -106,14 +106,13 @@ public class ImageEdition {
 		deletImages.add("images/delete.png");
 		deletImages.add("images/outline.png");
 
-		if (toDelete.contains(Main.getCurrentImageData(currentImagePath), false)) {
+		if (toDelete.contains(imageData, false)) {
 			deletImages.add("images/yes.png");
 		}
 		Main.placeImage(deletImages, "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					ImageData imageData = Main.getCurrentImageData(currentImagePath);
 					if (imageData != null) {
 
 						Integer index = 0;
@@ -154,10 +153,10 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					for (ImageData imageData : Main.imagesData) {
-						if ((imageData.getName())
+					for (ImageData anImageData : Main.imagesData) {
+						if ((anImageData.getName())
 								.equals(currentImagePath)) {
-							rotateAnImage(90, imageData.getName());
+							rotateAnImage(90, anImageData.getName());
 						}
 					}
 				}, null, null,
@@ -185,6 +184,18 @@ public class ImageEdition {
 					addAPlace();
 				}, null, null,
 				true, true, false, table, true);
+		if (imageData.getCoords() != null) {
+
+			Main.placeImage(List.of("images/map.png", "images/outline.png"), "basic button",
+					new Vector2(0, 0),
+					Main.mainStage,
+					(o) -> {
+						List<Float> coords = imageData.getCoords();
+						Main.openInAMap(coords);
+					}, null, null,
+					true, true, false, table, true);
+		}
+
 		table.row();
 		CommonButton.createAddImagesButton(table);
 
@@ -384,20 +395,11 @@ public class ImageEdition {
 							// System.out.println("enter !!!");
 
 							showBigPreview(preview);
-							// reloadOnce = true;
-							// lastPreview = preview;
 
 							// }
 
 						}, (o) -> {
-							System.out.println("leave !!!");
-
-							// if (!preview.equals(lastPreview)) {
-							// lastPreview = null;
-							// }
-
 							closeBigPreview(currentImagePath);
-							// reloadOnce = true;
 						},
 						false, true, false, previewTable, true);
 

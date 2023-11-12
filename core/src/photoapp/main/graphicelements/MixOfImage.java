@@ -30,10 +30,23 @@ public class MixOfImage extends Group {
     public static OrderedMap<String, Integer> isLoaded = new OrderedMap<>();
 
     public static void startToLoadImage(String lookingFor) {
-        // System.out.println("start to load an image");
-        willBeLoad.add(lookingFor);
-        // System.out.println(willBeLoad);
-        isLoading = true;
+        FileHandle fileName = Gdx.files.absolute(lookingFor);
+        String[] ListImageName = lookingFor.split("/");
+
+        if (fileName.exists()) {
+            willBeLoad.add(lookingFor);
+            isLoading = true;
+        } else {
+            Gdx.app.error(fileName.path(), "Do not exist");
+            if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                Gdx.app.error(fileName.path(), "Creating ...");
+
+                forceCreation(fileName);
+                return;
+            }
+
+        }
+
     }
 
     public static void loadImage(String lookingFor) {
@@ -64,89 +77,71 @@ public class MixOfImage extends Group {
     }
 
     public static Texture isInImageData(String lookingFor, boolean wait, String type) {
-        // System.out.println("isInImageData");
-
-        if (!manager.isLoaded(lookingFor) && !notToReLoadList.contains(lookingFor)) {
-
-            if (lookingFor.startsWith("images/") || wait) {
-                loadImage(lookingFor);
-
-                while (!manager.isLoaded(lookingFor)) {
-                    manager.update();
-                }
-                return manager.get(lookingFor, Texture.class);
-
-            } else {
-                startToLoadImage(lookingFor);
-            }
-        }
-        String fileName = "";
+        FileHandle fileName = Gdx.files.absolute(lookingFor);
         String[] ListImageName = lookingFor.split("/");
-        if (manager.isLoaded(lookingFor)) {
-            if (lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
+        if (manager.isLoaded(fileName.path())) {
 
-            }
-
-            return manager.get(lookingFor, Texture.class);
+            return manager.get(fileName.path(), Texture.class);
         } else {
+            isLoading = true;
+            String errorImagePath = "images/loading button.png";
+            if (!manager.isLoaded(errorImagePath, Texture.class)) {
+                manager.load(errorImagePath, Texture.class);
+                manager.finishLoading();
+            }
+            if (fileName.path().split("/")[ListImageName.length - 2].equals("images")) {
+                manager.load(fileName.path(), Texture.class);
+                manager.finishLoading();
+                return manager.get(fileName.path(), Texture.class);
 
-            if (ListImageName.length > 2) {
+            }
+            if (fileName.path().split("/")[ListImageName.length - 2].equals("peoples")
+                    && fileName.path().split("/")[ListImageName.length - 2].equals("places")
+                    && fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                loadImage(fileName.path());
+            } else {
+                startToLoadImage(fileName.path());
+                fileName = Gdx.files
+                        .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
+                ListImageName = fileName.path().split("/");
 
-                if (type.equals("firstloading")) {
+            }
 
-                    fileName = ImageData.IMAGE_PATH + "/" + ListImageName[ListImageName.length -
-                            1];
-                    firstLoading = true;
-                    LoadingList.add(fileName);
-
-                    return null;
-
-                } else {
-                    if (!lookingFor.split("/")[ListImageName.length - 2].equals("images")
-                            && !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
-                            && !lookingFor.split("/")[ListImageName.length - 2].equals("places")
-                            && !lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
-                        isLoading = true;
-                        fileName = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
-
-                        if (!notToReLoadList.contains(fileName)) {
-
-                            // manager.load(fileName, Texture.class);
-                            loadImage(fileName);
-                            notToReLoadList.add(fileName);
-                        }
-
-                        manager.finishLoadingAsset(fileName);
-                        manager.update();
-
-                        return manager.get(fileName, Texture.class);
+            if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                if (fileName.exists()) {
+                    if (!manager.isLoaded(fileName.path())) {
+                        manager.load(fileName.path(), Texture.class);
+                        manager.finishLoading();
                     }
-
-                }
-
-            } else {
-                fileName = lookingFor;
-            }
-
-            if (!manager.isLoaded(fileName, Texture.class)) {
-                String loadingFile = "images/loading button.png";
-                if (manager.isLoaded(loadingFile, Texture.class)) {
-
-                    toPlaceList.add(ListImageName[ListImageName.length - 1]);
-
-                    return manager.get(loadingFile, Texture.class);
+                    return manager.get(fileName.path(), Texture.class);
                 } else {
-
-                    return new Texture(loadingFile);
+                    forceCreation(fileName);
+                    if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
+                        toPlaceList.add(ListImageName[ListImageName.length - 1]);
+                    }
                 }
-
-            } else {
-
-                return manager.get(fileName, Texture.class);
             }
-
+            if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
+                toPlaceList.add(ListImageName[ListImageName.length - 1]);
+            }
+            return manager.get(errorImagePath, Texture.class);
         }
 
+    }
+
+    public static void forceCreation(FileHandle fileName) {
+        String[] ListImageName = fileName.path().split("/");
+        if (!fileName.exists()) {
+            Main.infoTextSet("need to load image due to an error of loading", true);
+            String nameWithout150 = "";
+            for (int i = 0; i < ListImageName.length - 2; i++) {
+                nameWithout150 += ListImageName[i] + "/";
+            }
+            nameWithout150 += ListImageName[ListImageName.length - 1];
+
+            Main.setSize150Force(nameWithout150, ListImageName[ListImageName.length - 1]);
+
+        }
     }
 
     public MixOfImage(List<String> imageNames) {
@@ -159,17 +154,7 @@ public class MixOfImage extends Group {
                     || imageName.split("/")[ListImageName.length - 2].equals("places")) {
 
                 handle = Gdx.files.absolute(imageName);
-                if (!handle.exists()) {
-                    Main.infoTextSet("need to load image due to an error of loading", false);
-                    String nameWithout150 = "";
-                    for (int i = 0; i < ListImageName.length - 2; i++) {
-                        nameWithout150 += ListImageName[i] + "/";
-                    }
-                    nameWithout150 += ListImageName[ListImageName.length - 1];
-
-                    Main.setSize150Force(nameWithout150, ListImageName[ListImageName.length - 1]);
-
-                }
+                forceCreation(handle);
             }
 
             if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()

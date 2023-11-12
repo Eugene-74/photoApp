@@ -1,11 +1,18 @@
 package photoapp.main;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.Thread.State;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -211,49 +218,6 @@ public class Main extends ApplicationAdapter {
 			}
 			MixOfImage.firstLoading = false;
 		}
-
-		// if (windowOpen.equals("ImageEdition") &&
-		// toReload.equals("imageEdition")) {
-		// if (progress != newProgress || MixOfImage.manager.isFinished() &&
-		// MixOfImage.isLoading) {
-		// if (MixOfImage.manager.isFinished()) {
-		// System.out.println("finish");
-		// // ImageEdition.doNotLoad = false;
-		// ImageEdition.reloadOnce = true;
-
-		// ImageEdition.load();
-		// MixOfImage.isLoading = false;
-
-		// infoTextSet(preferences.getString("text.done"), true);
-		// toReload = "";
-		// return;
-		// }
-		// lastTimeImageEdition = TimeUtils.millis();
-		// ImageEdition.reloadOnce = true;
-		// ImageEdition.load();
-		// MixOfImage.isLoading = true;
-		// toReload = "imageEdition";
-
-		// }
-		// } else if (toReload.equals("mainImages")) {
-		// if (progress != newProgress || MixOfImage.manager.isFinished() &&
-		// MixOfImage.isLoading) {
-		// if (MixOfImage.manager.isFinished()) {
-		// MainImages.load();
-		// MixOfImage.isLoading = false;
-		// infoTextSet(preferences.getString("text.done"), true);
-		// toReload = "";
-		// return;
-
-		// }
-		// lastTimeImageEdition = TimeUtils.millis();
-		// MainImages.load();
-		// MixOfImage.isLoading = true;
-		// toReload = "mainImages";
-
-		// }
-
-		// }
 
 		newProgress = progress;
 		if (thread != null) {
@@ -585,6 +549,14 @@ public class Main extends ApplicationAdapter {
 
 		openImageExif(dir.getName());
 
+		FileHandle fromJson = Gdx.files.absolute(dir.toString() + ".json");
+		if (fromJson.exists()) {
+			byte[] dataJson = fromJson.readBytes();
+
+			FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName() + ".json");
+			toJson.writeBytes(dataJson, false);
+		}
+
 		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName());
 
 	}
@@ -600,6 +572,15 @@ public class Main extends ApplicationAdapter {
 
 			FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name);
 			to.writeBytes(data, false);
+
+			FileHandle fromJson = Gdx.files.absolute(imagePath + ".json");
+			if (fromJson.exists()) {
+				byte[] dataJson = fromJson.readBytes();
+
+				FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name + ".json");
+				toJson.writeBytes(dataJson, false);
+			}
+
 			openImageExif(name);
 			setSize150(ImageData.IMAGE_PATH + "/" + name, name);
 			index += 1;
@@ -642,21 +623,66 @@ public class Main extends ApplicationAdapter {
 		FileHandle file;
 		try {
 			file = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imagePath);
+			FileHandle fileJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imagePath + ".json");
+
+			if (fileJson.exists()) {
+				System.out.println("google image");
+			}
 
 			Metadata metadata = ImageMetadataReader.readMetadata(file.read());
 			ImageData imageData = ImageData.getImageDataIfExist(imagePath);
+			List<Float> coords = new ArrayList<Float>();
 			for (Directory dir : metadata.getDirectories()) {
-				if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")
-						|| dir.getName().equals("GPS")) {
-
+				if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
 					for (Tag tag : dir.getTags()) {
 						if (tag.getTagName().equals("Date/Time Original")) {
 							imageData.setDate(tag.getDescription());
 						}
 					}
+				} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
+					Float lat = (float) 0;
+					Float lon = (float) 0;
+					Boolean minusLat = false;
+					Boolean minusLon = false;
+
+					for (Tag tag : dir.getTags()) {
+						if (tag.getTagName().equals("GPS Latitude")) {
+							String[] latitude = tag.getDescription().replace("°", "").replace("'", "").replace("\"", "")
+									.replace(",", ".")
+									.split(" ");
+							lat = Math.abs(Float.parseFloat(latitude[0])) + Math.abs(Float.parseFloat(latitude[1]) / 60)
+									+ Math.abs(Float.parseFloat(latitude[2]) / 3600);
+
+						} else if (tag.getTagName().equals("GPS Longitude")) {
+							String[] longitude = tag.getDescription().replace("°", "").replace("'", "")
+									.replace("\"", "").replace(",", ".").split(" ");
+							lon = Math.abs(Float.parseFloat(longitude[0]))
+									+ Math.abs(Float.parseFloat(longitude[1]) / 60)
+									+ Math.abs(Float.parseFloat(longitude[2]) / 3600);
+						} else if (tag.getTagName().equals("GPS Latitude Ref")) {
+							if (tag.getDescription().equals("S")) {
+								minusLat = true;
+							}
+						} else if (tag.getTagName().equals("GPS Longitude Ref")) {
+							if (tag.getDescription().equals("W")) {
+								minusLon = true;
+
+							}
+						}
+					}
+					if (minusLat) {
+						lat = -lat;
+					}
+					if (minusLon) {
+						lon = -lon;
+					}
+					coords = List.of(lat, lon);
 				}
 			}
-			imageData.setCoords(List.of());
+			if (imageData.getCoords() == null) {
+				System.out.println(coords);
+				imageData.setCoords(coords);
+			}
 			if (imageData.getName() == null) {
 				imageData.setName(imagePath);
 			}
@@ -670,6 +696,7 @@ public class Main extends ApplicationAdapter {
 				imageData.setLoved(false);
 			}
 			addImageData(imageData);
+
 			ImageData.saveImagesData();
 
 		} catch (Exception e) {
@@ -689,7 +716,7 @@ public class Main extends ApplicationAdapter {
 
 	public static void setSize150Force(String imagePath, String imageName) {
 		setSize150(imagePath, imageName);
-
+		MixOfImage.manager.finishLoading();
 		setSize150AfterLoad(imagePath);
 	}
 
@@ -929,5 +956,27 @@ public class Main extends ApplicationAdapter {
 				}, null, null,
 				true, true, false, linkTable, true);
 
+	}
+
+	public static void date(String args[]) {
+		Date date = new Date();
+		Timestamp ts = new Timestamp(date.getTime());
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		System.out.println(formatter.format(ts));
+	}
+
+	public static void openInAMap(List<Float> coords) {
+		try {
+			Float zoom = (float) 13.75;
+			Desktop.getDesktop().browse(
+					new URI("https://www.google.com/maps/@" + coords.get(0) + "," + coords.get(1)
+							+ "," + zoom + "z?entry=ttu"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,13 +92,26 @@ public class ImageData {
         }
     }
 
-    public ImageData setCoords(List<Integer> coords) {
-        data.put("coords", coords);
+    public ImageData setCoords(List<Float> coords) {
+        List<Float> coordsBis = new ArrayList<Float>();
+        for (Float f : coords) {
+            if (f == 0.0) {
+                coordsBis.add(f);
+            }
+        }
+        if (coordsBis.isEmpty()) {
+            data.put("coords", coords);
+        } else {
+            data.put("coords", List.of());
+        }
         return this;
     }
 
-    public List<String> getCoords() {
-        return (List<String>) data.get("coords");
+    public List<Float> getCoords() {
+        if (((List<Float>) data.get("coords")) != null && ((List<Float>) data.get("coords")).isEmpty()) {
+            return null;
+        }
+        return (List<Float>) data.get("coords");
     }
 
     public ImageData setLoved(Boolean loved) {
@@ -160,11 +174,15 @@ public class ImageData {
             for (String imageInfo : imagesInfo) {
 
                 String[] category = imageInfo.split(";");
-                List<Integer> coords = List.of();
+                List<Float> coords = new ArrayList<Float>();
                 if (!category[4].equals("")) {
                     for (String co : category[4].split(",")) {
-                        coords.add(Integer.parseInt(co));
+                        coords.add(Float.parseFloat(co));
+
                     }
+                }
+                if (coords == null) {
+                    coords = List.of();
                 }
                 ImageData imageData = new ImageData()
                         .setName(category[0])
@@ -218,8 +236,9 @@ public class ImageData {
         if (data.get("coords") == null) {
             s += data.get("coords");
         } else {
-            List<Integer> coords = (List<Integer>) data.get("coords");
-            for (int coord : coords) {
+            List<Float> coords = (List<Float>) data.get("coords");
+            for (Float coord : coords) {
+                s += coord + ",";
             }
         }
         s += ";";
