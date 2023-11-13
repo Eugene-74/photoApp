@@ -308,9 +308,16 @@ public class Main extends ApplicationAdapter {
 			final Consumer<Object> onClicked, final Consumer<Object> onEnter, final Consumer<Object> onExit,
 			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize) {
 
-		MixOfImage mixOfImages = new MixOfImage(imageNames);
+		MixOfImage mixOfImages;
 		Integer width;
 		Integer height;
+		Integer rotation = 0;
+		String[] ListImageName = imageNames.get(0).split("/");
+		if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
+
+			rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+
+		}
 		if (setSize) {
 			if (isSquare) {
 				width = preferences.getInteger("size of " + prefSizeName, 100);
@@ -320,25 +327,38 @@ public class Main extends ApplicationAdapter {
 				width = preferences.getInteger("size of " + prefSizeName + " height");
 				height = preferences.getInteger("size of " + prefSizeName + " width");
 			}
+			mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName);
 			mixOfImages.setPosition(position.x, position.y + 1);
 
 		} else {
+			mixOfImages = new MixOfImage(imageNames, 0, 0, prefSizeName);
+
+			float widthBis = mixOfImages.getWidth();
+			float heightBis = mixOfImages.getHeight();
+
 			float w = Math
-					.abs(mixOfImages.getWidth() / preferences.getInteger("size of " + prefSizeName + " width"));
+					.abs(widthBis / preferences.getInteger("size of " + prefSizeName + " width"));
 			float h = Math
-					.abs(mixOfImages.getHeight() / preferences.getInteger("size of " + prefSizeName + " height"));
+					.abs(heightBis / preferences.getInteger("size of " + prefSizeName + " height"));
 			if (w < h) {
 
 				height = preferences.getInteger("size of " + prefSizeName + " height");
-				width = (int) (preferences.getInteger("size of " + prefSizeName + " height") / mixOfImages.getHeight()
-						* mixOfImages.getWidth());
+				width = (int) (preferences.getInteger("size of " + prefSizeName + " height")
+						/ heightBis
+						* widthBis);
+
 			} else {
-				height = (int) (preferences.getInteger("size of " + prefSizeName + " width") / mixOfImages.getWidth()
-						* mixOfImages.getHeight());
+
+				height = (int) (preferences.getInteger("size of " + prefSizeName + " width")
+						/ widthBis
+						* heightBis);
 				width = preferences.getInteger("size of " + prefSizeName + " width");
+
 			}
+			mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName);
 			mixOfImages.setPosition(0, 0);
 		}
+
 		mixOfImages.setSize(width, height);
 
 		mixOfImages.addListener(new ClickListener() {
@@ -430,13 +450,16 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
-		for (ImageData imageData : imagesData) {
+		if (imagesData != null) {
 
-			if ((imageData.getName())
-					.equals(currentImagePath)) {
-				return imageData;
+			for (ImageData imageData : imagesData) {
+
+				if ((imageData.getName())
+						.equals(currentImagePath)) {
+					return imageData;
+				}
+
 			}
-
 		}
 
 		return null;

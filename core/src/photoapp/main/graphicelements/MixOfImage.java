@@ -144,11 +144,11 @@ public class MixOfImage extends Group {
         }
     }
 
-    public MixOfImage(List<String> imageNames) {
+    public MixOfImage(List<String> imageNames, float width, float height, String prefSizeName) {
         // appliquer la rotation qui est dans les donnée de l'image !!!
         FileHandle handle = null;
         Texture texture;
-
+        Boolean rota = false;
         for (String imageName : imageNames) {
             Integer rotation = 0;
             imageName = imageName.replace("\\", "/");
@@ -174,6 +174,10 @@ public class MixOfImage extends Group {
                 image.setOrigin((image.getWidth() - 8) / 2, (image.getHeight() - 8) / 2);
                 // mettre - 8 en variable
 
+            } else if (rotation != 0) {
+                image.rotateBy(rotation);
+                image.setOrigin(width / 2, height / 2);
+                rota = true;
             }
 
             if (imageName.endsWith("outline.png") || imageName.endsWith("redOutline.png")) {
@@ -181,9 +185,22 @@ public class MixOfImage extends Group {
             } else {
                 image.setName("image");
             }
+
             if (imageNames.size() == 1) {
+
+                // if (rotation == 90 || rotation == 270) {
+                // // a changer la h des images rota doit etre <
+
+                // // longueur :
+                // setHeight(600);
+
+                // // hauteur :
+                // setWidth(Main.preferences.getInteger("size of " + prefSizeName + " height"));
+
+                // } else {
                 setWidth(image.getWidth());
                 setHeight(image.getHeight());
+                // }
 
             }
 
