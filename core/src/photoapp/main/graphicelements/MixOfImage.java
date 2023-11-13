@@ -145,25 +145,37 @@ public class MixOfImage extends Group {
     }
 
     public MixOfImage(List<String> imageNames) {
+        // appliquer la rotation qui est dans les donnée de l'image !!!
         FileHandle handle = null;
+        Texture texture;
+
         for (String imageName : imageNames) {
+            Integer rotation = 0;
             imageName = imageName.replace("\\", "/");
             String[] ListImageName = imageName.split("/");
-            if (imageName.split("/")[ListImageName.length - 2].equals("150")
-                    || imageName.split("/")[ListImageName.length - 2].equals("peoples")
-                    || imageName.split("/")[ListImageName.length - 2].equals("places")) {
+
+            if (imageName.split("/")[ListImageName.length - 2].equals("userImages")
+                    || imageName.split("/")[ListImageName.length - 2].equals("150")) {
 
                 handle = Gdx.files.absolute(imageName);
-                forceCreation(handle);
-            }
+                if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
+                        && !Gdx.files.internal(imageName).exists()) {
+                    imageName = "images/error.png";
+                }
 
-            if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
-                    && !Gdx.files.internal(imageName).exists()) {
-                imageName = "images/error.png";
-            }
-            Texture texture = isInImageData(imageName, false, "");
+                rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
 
+            }
+            texture = isInImageData(imageName, false, "");
             Image image = new Image(texture);
+
+            if (rotation != 0 && imageName.split("/")[ListImageName.length - 2].equals("150")) {
+                image.rotateBy(rotation);
+                image.setOrigin((image.getWidth() - 8) / 2, (image.getHeight() - 8) / 2);
+                // mettre - 8 en variable
+
+            }
+
             if (imageName.endsWith("outline.png") || imageName.endsWith("redOutline.png")) {
                 image.setName("outline");
             } else {
@@ -176,12 +188,12 @@ public class MixOfImage extends Group {
             }
 
             addActor(image);
+
         }
         if (handle != null) {
             setName(handle.name());
 
         } else {
-            // System.out.println(imageName);
             setName("noName");
 
         }
@@ -197,6 +209,7 @@ public class MixOfImage extends Group {
 
                 actor.setSize(Main.preferences.getInteger("size of main images button") - 8,
                         Main.preferences.getInteger("size of main images button") - 8);
+                // mettre - 8 en variable
 
                 actor.setPosition(8 / 2, 8 / 2);
             } else if (!actor.getName().endsWith("outline")
@@ -215,3 +228,4 @@ public class MixOfImage extends Group {
 
     }
 }
+// !!!!!!!!!!!!!!!!!!!!!! il manque une ligne a la fin des Mainsimages

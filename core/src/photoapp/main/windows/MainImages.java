@@ -150,15 +150,23 @@ public class MainImages {
     public static void createImagesButton(Integer firstI, Boolean isFirstLoading) {
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
-        firstI = firstI - firstI % column;
+        Integer row = Main.preferences.getInteger("size of main images height")
+                / Main.preferences.getInteger("size of main images button");
+
+        imageI = firstI - firstI % column;
+        if (Main.imagesData != null && firstI + column * row > Main.imagesData.size()) {
+            imageI = Main.imagesData.size() - Main.imagesData.size() % column - column * row;
+        }
+        if (Main.imagesData != null && Main.imagesData.size() < row * column) {
+            imageI = 0;
+        }
 
         if (Main.imagesData == null) {
             Main.infoTextSet("no image loaded, please add new images", true);
             Main.imagesData = new ArrayList<>();
         } else {
             Main.toReload = "mainImages";
-            Integer row = Main.preferences.getInteger("size of main images height")
-                    / Main.preferences.getInteger("size of main images button");
+
             Integer max;
             if (Main.imagesData.size() < column * row) {
                 max = Main.imagesData.size();
@@ -168,9 +176,9 @@ public class MainImages {
             Integer index = 1;
 
             for (int i = 0; i < max; i++) {
-                Integer imageInteger = firstI + i;
+                Integer imageInteger = imageI + i;
 
-                if (imageInteger < Main.imagesData.size()) {
+                if (imageInteger < Main.imagesData.size() && imageInteger >= 0) {
 
                     ImageData imageData = Main.imagesData.get(imageInteger);
                     String imageName = imageData.getName();
@@ -287,8 +295,7 @@ public class MainImages {
     public static void previousImages() {
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
-        Integer row = Main.preferences.getInteger("size of main images height")
-                / Main.preferences.getInteger("size of main images button");
+
         imageI -= column;
         if (imageI < 0) {
             imageI += column;
@@ -297,23 +304,6 @@ public class MainImages {
         imagesTable.clear();
         createImagesButton(imageI, true);
 
-        for (int i = 0; i < column; i++) {
-            int index = imageI - column * 3 + i;
-            if (index < Main.imagesData.size()
-                    && index >= 0) {
-
-                MixOfImage.startToLoadImage(
-                        ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(index).getName());
-            }
-        }
-
-        for (int i = 0; i < column; i++) {
-            int index = imageI + i + column * row + column * 2;
-            if (index < Main.imagesData.size()
-                    && index >= 0) {
-
-            }
-        }
         Main.checkToUnload(null);
 
     }
@@ -321,32 +311,15 @@ public class MainImages {
     public static void nextImages() {
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
-        Integer row = Main.preferences.getInteger("size of main images height")
-                / Main.preferences.getInteger("size of main images button");
+
         imageI += column;
-        if (imageI + column * (row - 1) >= Main.imagesData.size()) {
+        if (imageI >= Main.imagesData.size()) {
             imageI -= column;
             return;
         }
         imagesTable.clear();
         createImagesButton(imageI, true);
 
-        for (int i = 0; i < column; i++) {
-            int index = imageI + i + column * row + column * 2;
-            if (index < Main.imagesData.size()
-                    && index >= 0) {
-
-                MixOfImage.startToLoadImage(
-                        ImageData.IMAGE_PATH + "/150/" + Main.imagesData.get(index).getName());
-            }
-        }
-        for (int i = 0; i < column; i++) {
-            int index = imageI - column * 2 + i;
-            if (index < Main.imagesData.size()
-                    && index >= 0) {
-
-            }
-        }
         Main.checkToUnload(null);
 
     }

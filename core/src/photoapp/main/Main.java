@@ -185,8 +185,6 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		// System.out.println("render");
-
 		Integer progress = MixOfImage.willBeLoad.size();
 		MixOfImage.manager.update();
 
@@ -239,28 +237,29 @@ public class Main extends ApplicationAdapter {
 				}
 			}
 		}
-		// System.out.println("will be " + MixOfImage.willBeLoad);
-		List<String> toRemoveFromIsOnLoading = new ArrayList<String>();
-		Boolean loadToDo = false;
-		for (String imagePath : MixOfImage.isOnLoading) {
-			if (MixOfImage.manager.isLoaded(imagePath)) {
-				toRemoveFromIsOnLoading.add(imagePath);
+		if (TimeUtils.millis() - lastTime > 500) {
+			lastTime = TimeUtils.millis();
+			List<String> toRemoveFromIsOnLoading = new ArrayList<String>();
+			Boolean loadToDo = false;
+			for (String imagePath : MixOfImage.isOnLoading) {
+				if (MixOfImage.manager.isLoaded(imagePath)) {
+					toRemoveFromIsOnLoading.add(imagePath);
 
+				}
 			}
-		}
-		for (String imagePath : toRemoveFromIsOnLoading) {
 
-			MixOfImage.isOnLoading.remove(imagePath);
+			for (String imagePath : toRemoveFromIsOnLoading) {
 
-			MixOfImage.isLoaded.put(imagePath,
-					getImageDataIndex(imagePath.split("/")[imagePath.split("/").length - 1]));
-			loadToDo = true;
-		}
-		if (loadToDo) {
-			if (windowOpen.equals("MainImages")) {
-				MainImages.load();
-			} else if (windowOpen.equals("ImageEdition")) {
-				ImageEdition.load();
+				MixOfImage.isOnLoading.remove(imagePath);
+
+				MixOfImage.isLoaded.put(imagePath,
+						getImageDataIndex(imagePath.split("/")[imagePath.split("/").length - 1]));
+				loadToDo = true;
+			}
+			if (loadToDo) {
+				if (windowOpen.equals("ImageEdition")) {
+					ImageEdition.load();
+				}
 			}
 		}
 
@@ -310,38 +309,37 @@ public class Main extends ApplicationAdapter {
 			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize) {
 
 		MixOfImage mixOfImages = new MixOfImage(imageNames);
+		Integer width;
+		Integer height;
 		if (setSize) {
 			if (isSquare) {
-				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName, 100),
-						preferences.getInteger("size of " + prefSizeName, 100));
+				width = preferences.getInteger("size of " + prefSizeName, 100);
+				height = preferences.getInteger("size of " + prefSizeName, 100);
+
 			} else {
-				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName + " width"),
-						preferences.getInteger("size of " + prefSizeName + " height"));
+				width = preferences.getInteger("size of " + prefSizeName + " height");
+				height = preferences.getInteger("size of " + prefSizeName + " width");
 			}
 			mixOfImages.setPosition(position.x, position.y + 1);
-		} else {
 
+		} else {
 			float w = Math
 					.abs(mixOfImages.getWidth() / preferences.getInteger("size of " + prefSizeName + " width"));
 			float h = Math
 					.abs(mixOfImages.getHeight() / preferences.getInteger("size of " + prefSizeName + " height"));
-
 			if (w < h) {
 
-				mixOfImages.setSize(
-						preferences.getInteger("size of " + prefSizeName + " height") / mixOfImages.getHeight()
-								* mixOfImages.getWidth(),
-						preferences.getInteger("size of " + prefSizeName + " height"));
+				height = preferences.getInteger("size of " + prefSizeName + " height");
+				width = (int) (preferences.getInteger("size of " + prefSizeName + " height") / mixOfImages.getHeight()
+						* mixOfImages.getWidth());
 			} else {
-
-				mixOfImages.setSize(preferences.getInteger("size of " + prefSizeName + " width"),
-						preferences.getInteger("size of " + prefSizeName + " width")
-								/ mixOfImages.getWidth() * mixOfImages.getHeight());
+				height = (int) (preferences.getInteger("size of " + prefSizeName + " width") / mixOfImages.getWidth()
+						* mixOfImages.getHeight());
+				width = preferences.getInteger("size of " + prefSizeName + " width");
 			}
-
 			mixOfImages.setPosition(0, 0);
-
 		}
+		mixOfImages.setSize(width, height);
 
 		mixOfImages.addListener(new ClickListener() {
 
@@ -377,14 +375,11 @@ public class Main extends ApplicationAdapter {
 		if (inTable) {
 			for (Cell cell : placeImageTable.getCells()) {
 				String[] imageNameList = imageNames.get(0).split("/");
+				// System.out.println(
+				// imageNameList[imageNameList.length - 1] + "---------------" +
+				// cell.getActor().getName());
 				if (cell.getActor().getName().equals(imageNameList[imageNameList.length - 1])) {
-					// String path;
-					// if (preferences.getInteger("size of " + prefSizeName, 0) == 150) {
-					// path = "/150/";
 
-					// } else {
-					// path = "/";
-					// }
 					cell.setActor(mixOfImages);
 
 					return;
@@ -631,8 +626,15 @@ public class Main extends ApplicationAdapter {
 
 			Metadata metadata = ImageMetadataReader.readMetadata(file.read());
 			ImageData imageData = ImageData.getImageDataIfExist(imagePath);
-			List<Float> coords = new ArrayList<Float>();
+			String coords = "";
+			Integer rotation = 0;
+
 			for (Directory dir : metadata.getDirectories()) {
+				// System.out.println(dir.getTags());
+				// for (Tag tag : dir.getTags()) {
+				// System.out.println(tag);
+				// }
+
 				if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
 					for (Tag tag : dir.getTags()) {
 						if (tag.getTagName().equals("Date/Time Original")) {
@@ -640,47 +642,50 @@ public class Main extends ApplicationAdapter {
 						}
 					}
 				} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
-					Float lat = (float) 0;
-					Float lon = (float) 0;
-					Boolean minusLat = false;
-					Boolean minusLon = false;
+					String lat = "";
+					String lon = "";
+					String minusLat = "";
+					String minusLon = "";
 
 					for (Tag tag : dir.getTags()) {
 						if (tag.getTagName().equals("GPS Latitude")) {
-							String[] latitude = tag.getDescription().replace("°", "").replace("'", "").replace("\"", "")
-									.replace(",", ".")
-									.split(" ");
-							lat = Math.abs(Float.parseFloat(latitude[0])) + Math.abs(Float.parseFloat(latitude[1]) / 60)
-									+ Math.abs(Float.parseFloat(latitude[2]) / 3600);
+							lat = tag.getDescription();
 
 						} else if (tag.getTagName().equals("GPS Longitude")) {
-							String[] longitude = tag.getDescription().replace("°", "").replace("'", "")
-									.replace("\"", "").replace(",", ".").split(" ");
-							lon = Math.abs(Float.parseFloat(longitude[0]))
-									+ Math.abs(Float.parseFloat(longitude[1]) / 60)
-									+ Math.abs(Float.parseFloat(longitude[2]) / 3600);
+							lon = tag.getDescription();
 						} else if (tag.getTagName().equals("GPS Latitude Ref")) {
-							if (tag.getDescription().equals("S")) {
-								minusLat = true;
-							}
-						} else if (tag.getTagName().equals("GPS Longitude Ref")) {
-							if (tag.getDescription().equals("W")) {
-								minusLon = true;
 
+							minusLat = tag.getDescription();
+
+						} else if (tag.getTagName().equals("GPS Longitude Ref")) {
+							minusLon = tag.getDescription();
+
+						}
+					}
+					if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
+						coords = "";
+					} else {
+						coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
+					}
+				} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
+					for (Tag tag : dir.getTags()) {
+						if (tag.getTagName().equals("Orientation")) {
+							if (tag.getDescription().contains("180")) {
+								rotation = 180;
+							} else if (tag.getDescription().contains("90")) {
+								rotation = 90;
+							} else if (tag.getDescription().contains("270")) {
+								rotation = 270;
 							}
 						}
 					}
-					if (minusLat) {
-						lat = -lat;
-					}
-					if (minusLon) {
-						lon = -lon;
-					}
-					coords = List.of(lat, lon);
+
 				}
 			}
+			if (imageData.getRotation() == 0) {
+				imageData.setRotation(rotation);
+			}
 			if (imageData.getCoords() == null) {
-				System.out.println(coords);
 				imageData.setCoords(coords);
 			}
 			if (imageData.getName() == null) {
@@ -814,7 +819,6 @@ public class Main extends ApplicationAdapter {
 					&& !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
 					&& !lookingFor.split("/")[ListImageName.length - 2].equals("places")) {
 				unLoadAnImage(lookingFor);
-				// System.out.println(lookingFor);
 				toUnput.add(lookingFor);
 
 			}
@@ -962,15 +966,65 @@ public class Main extends ApplicationAdapter {
 		Date date = new Date();
 		Timestamp ts = new Timestamp(date.getTime());
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		System.out.println(formatter.format(ts));
 	}
 
-	public static void openInAMap(List<Float> coords) {
+	public static void openInAMap(String coord) {
 		try {
-			Float zoom = (float) 13.75;
+			Float zoom = (float) 15;
+			Boolean minusLat = false;
+			Boolean minusLon = false;
+
+			String[] coords = coord.split(":");
+
+			String[] latt = coords[0].split("_");
+			if (coords[0].charAt(0) == '-') {
+				minusLon = true;
+			}
+			String[] latitude = latt[0].replace("-", "").replace("°", "").replace("'", "")
+					.replace("\"", "").replace(",", ".").split(" ");
+			Float lat = Math.abs(Float.parseFloat(latitude[0])) + Math.abs(Float.parseFloat(latitude[1]) / 60)
+					+ Math.abs(Float.parseFloat(latitude[2]) / 3600);
+
+			if (coords[1].charAt(0) == '-') {
+				minusLon = true;
+			}
+			String[] lonn = coords[1].split("_");
+			String[] longitude = lonn[0].replace("-", "").replace("°", "").replace("'", "")
+					.replace("\"", "").replace(",", ".").split(" ");
+			Float lon = Math.abs(Float.parseFloat(longitude[0]))
+					+ Math.abs(Float.parseFloat(longitude[1]) / 60)
+					+ Math.abs(Float.parseFloat(longitude[2]) / 3600);
+
+			String lettre = "";
+			if (minusLat) {
+				lettre = "S";
+				lat = -lat;
+			} else {
+				lettre = "N";
+			}
+			String coo = latitude[0] + "%C2%B0" + latitude[1] + "'" + latitude[2] + "%22" + lettre;
+			if (minusLon) {
+				lettre = "W";
+				lon = -lon;
+			} else {
+				lettre = "E";
+			}
+			coo += longitude[0] + "%C2%B0" + longitude[1] + "'" + longitude[2] + "%22" + lettre;
+			// degree = (int) Math.floor(Math.abs(coords.get(1)));
+			// minute = (int) Math.floor((Math.abs(coords.get(1)) - degree) * 60);
+			// seconde = ((((Math.abs(coords.get(1)) - degree) * 60 - minute))) * 60;
+			// if (coords.get(1) < 0) {
+			// lettre = "W";
+			// } else {
+			// lettre = "E";
+			// }
+			// coord += "+" + degree + "%C2%B0" + minute + "'" + seconde + "%22" + lettre;
 			Desktop.getDesktop().browse(
-					new URI("https://www.google.com/maps/@" + coords.get(0) + "," + coords.get(1)
+					new URI("https://www.google.com/maps/place/" + coo + "/@" + lat + "," + lon
 							+ "," + zoom + "z?entry=ttu"));
+
+			// https://www.google.com/maps/place/49%C2%B038'47.5%22N+1%C2%B037'31.1%22W/@49.6465236,-1.6278672,17z/entry=ttu
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -978,5 +1032,6 @@ public class Main extends ApplicationAdapter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 }

@@ -66,7 +66,6 @@ public class Parameter {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    System.out.println("edit param");
                     if (Main.preferences.getBoolean("infoIsOn", true)) {
                         Main.preferences.putBoolean("infoIsOn", false);
                         reload();

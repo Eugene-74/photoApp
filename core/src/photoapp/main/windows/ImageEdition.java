@@ -184,13 +184,14 @@ public class ImageEdition {
 					addAPlace();
 				}, null, null,
 				true, true, false, table, true);
-		if (imageData.getCoords() != null) {
-
+		System.out.println("coords : " + imageData.getCoords());
+		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
+			table.row();
 			Main.placeImage(List.of("images/map.png", "images/outline.png"), "basic button",
 					new Vector2(0, 0),
 					Main.mainStage,
 					(o) -> {
-						List<Float> coords = imageData.getCoords();
+						String coords = imageData.getCoords();
 						Main.openInAMap(coords);
 					}, null, null,
 					true, true, false, table, true);
@@ -381,7 +382,6 @@ public class ImageEdition {
 						new Vector2(0, 0),
 						Main.mainStage,
 						(o) -> {
-							// System.out.println("click");
 							open(preview, true);
 
 							// ne s'ouvre pas toujours a cause de
@@ -392,7 +392,6 @@ public class ImageEdition {
 						(o) -> {
 							// les ouvre infiniment c'est pas ouf
 							// if (!preview.equals(lastPreview)) {
-							// System.out.println("enter !!!");
 
 							showBigPreview(preview);
 
@@ -545,8 +544,6 @@ public class ImageEdition {
 
 				open(imageData.getName(), true);
 
-				// MainImages.imageI = Main.imagesData.indexOf(imageData);
-
 				Integer i = -4;
 
 				if (Main.imagesData.indexOf(imageData) + i < 0) {
@@ -575,15 +572,12 @@ public class ImageEdition {
 				if (previous == null) {
 					open(
 							Main.imagesData.get(Main.imagesData.size() - 1).getName(), true);
-					// MainImages.imageI = Main.imagesData.indexOf(imageData);
-
 				} else {
 					open(previous.getName(), true);
 					Integer i = 4;
 					if (Main.imagesData.indexOf(previous) + 4 >= Main.imagesData.size()) {
 						i = i - Main.imagesData.size();
 					}
-					// MainImages.imageI = Main.imagesData.indexOf(imageData);
 
 				}
 

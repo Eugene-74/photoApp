@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,8 +31,24 @@ public class ImageData {
         data = new HashMap<>(6);
     }
 
+    public ImageData setRotation(Integer rota) {
+
+        data.put("rotation", rota);
+
+        return this;
+    }
+
+    public Integer getRotation() {
+        return Integer.parseInt(data.get("rotation").toString());
+    }
+
     public ImageData setName(String name) {
-        data.put("name", name);
+        if (name != "" && name != null) {
+            data.put("name", name);
+        } else {
+            data.put("name", " ");
+
+        }
         return this;
     }
 
@@ -42,7 +57,11 @@ public class ImageData {
     }
 
     public ImageData setDate(String date) {
-        data.put("date", date);
+        if (date != "" && date != null) {
+            data.put("date", date);
+        } else {
+            data.put("date", " ");
+        }
         return this;
     }
 
@@ -51,7 +70,11 @@ public class ImageData {
     }
 
     public ImageData setPlaces(List<String> places) {
-        data.put("places", places);
+        if (!places.isEmpty()) {
+            data.put("places", places);
+        } else {
+            data.put("places", List.of(""));
+        }
         return this;
     }
 
@@ -69,7 +92,11 @@ public class ImageData {
     }
 
     public ImageData setPeoples(List<String> peoples) {
-        data.put("peoples", peoples);
+        if (!peoples.isEmpty()) {
+            data.put("peoples", peoples);
+        } else {
+            data.put("peoples", List.of(""));
+        }
         return this;
 
     }
@@ -92,30 +119,26 @@ public class ImageData {
         }
     }
 
-    public ImageData setCoords(List<Float> coords) {
-        List<Float> coordsBis = new ArrayList<Float>();
-        for (Float f : coords) {
-            if (f == 0.0) {
-                coordsBis.add(f);
-            }
-        }
-        if (coordsBis.isEmpty()) {
+    public ImageData setCoords(String coords) {
+        if (coords != "" && coords != null) {
             data.put("coords", coords);
         } else {
-            data.put("coords", List.of());
+            data.put("coords", " ");
         }
         return this;
     }
 
-    public List<Float> getCoords() {
-        if (((List<Float>) data.get("coords")) != null && ((List<Float>) data.get("coords")).isEmpty()) {
-            return null;
-        }
-        return (List<Float>) data.get("coords");
+    public String getCoords() {
+
+        return (String) data.get("coords");
     }
 
     public ImageData setLoved(Boolean loved) {
-        data.put("loved", loved);
+        if (loved == true) {
+            data.put("loved", true);
+        } else {
+            data.put("loved", false);
+        }
         return this;
     }
 
@@ -137,6 +160,10 @@ public class ImageData {
             s += data.get("date");
         } else {
             s += "\nError when loading date X/";
+        }
+        if (data.get("rotation") != null) {
+            s += "\nrotation   : ";
+            s += data.get("rotation");
         }
         if (data.get("peoples") != null) {
             s += "\npeoples : ";
@@ -174,23 +201,15 @@ public class ImageData {
             for (String imageInfo : imagesInfo) {
 
                 String[] category = imageInfo.split(";");
-                List<Float> coords = new ArrayList<Float>();
-                if (!category[4].equals("")) {
-                    for (String co : category[4].split(",")) {
-                        coords.add(Float.parseFloat(co));
 
-                    }
-                }
-                if (coords == null) {
-                    coords = List.of();
-                }
                 ImageData imageData = new ImageData()
                         .setName(category[0])
                         .setDate(category[1])
-                        .setPeoples(List.of(category[2].split(",")))
-                        .setPlaces(List.of(category[3].split(",")))
-                        .setCoords(coords)
-                        .setLoved(Boolean.parseBoolean(category[5]));
+                        .setRotation(Integer.parseInt(category[2]))
+                        .setPeoples(List.of(category[3].split(",")))
+                        .setPlaces(List.of(category[4].split(",")))
+                        .setCoords(category[5])
+                        .setLoved(Boolean.parseBoolean(category[6]));
 
                 Main.addImageData(imageData);
 
@@ -217,6 +236,8 @@ public class ImageData {
         s += ";";
         s += data.get("date");
         s += ";";
+        s += data.get("rotation");
+        s += ";";
         if (data.get("peoples") == null) {
             s += data.get("peoples");
         } else {
@@ -233,14 +254,7 @@ public class ImageData {
             }
         }
         s += ";";
-        if (data.get("coords") == null) {
-            s += data.get("coords");
-        } else {
-            List<Float> coords = (List<Float>) data.get("coords");
-            for (Float coord : coords) {
-                s += coord + ",";
-            }
-        }
+        s += data.get("coords");
         s += ";";
         s += data.get("loved");
         s += ";\n";
