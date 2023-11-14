@@ -37,7 +37,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Null;
@@ -94,6 +96,7 @@ public class Main extends ApplicationAdapter {
 
 	public static Boolean brightMode = false;
 	public static Boolean darkMode = false;
+	static Skin skin;
 
 	public void iniPreferences() {
 		preferences.putInteger("image load at the same time", 20);
@@ -118,8 +121,8 @@ public class Main extends ApplicationAdapter {
 				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
 		preferences.putInteger("size of big preview height",
 				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
-		brightMode = preferences.getBoolean("option brightMode", false);
-		darkMode = preferences.getBoolean("option darkMode", false);
+		brightMode = preferences.getBoolean("option brightmode", false);
+		darkMode = preferences.getBoolean("option darkmode", false);
 
 	}
 
@@ -131,14 +134,17 @@ public class Main extends ApplicationAdapter {
 		MixOfImage.manager.load("images/loading button.png", Texture.class);
 		MixOfImage.manager.load("images/error.png", Texture.class);
 		MixOfImage.manager.finishLoading();
-
 		mainStage = new Stage(
 				new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 
 		Gdx.graphics.setSystemCursor(SystemCursor.Hand);
+
+		skin = new Skin(Gdx.files.internal("bitmapfont/textToolTip.json"));
+
 		createMultiplexer();
 
 		createInfoTable();
+
 		createCloseButton();
 		createLinkButton();
 
@@ -324,13 +330,7 @@ public class Main extends ApplicationAdapter {
 		MixOfImage mixOfImages;
 		Integer width;
 		Integer height;
-		Integer rotation = 0;
-		String[] ListImageName = imageNames.get(0).split("/");
-		if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
 
-			rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
-
-		}
 		if (setSize) {
 			if (isSquare) {
 				width = preferences.getInteger("size of " + prefSizeName, 100);
@@ -392,6 +392,7 @@ public class Main extends ApplicationAdapter {
 
 					onEnter.accept(null);
 				}
+
 			}
 
 			@Override
@@ -436,6 +437,7 @@ public class Main extends ApplicationAdapter {
 			}
 
 		}
+		mixOfImages.addListener(new TextTooltip("This is the tip ! Why it is not shown ?", skin));
 
 	}
 

@@ -86,7 +86,14 @@ public class FileChooser {
                 Main.mainStage,
                 (o) -> {
                     addAFile();
-                }, null, null,
+                }, (o) -> {
+                    System.out.println("enter");
+
+                    // Main.overlayTable.setPosition(, buttonTable.getY());
+
+                }, (o) -> {
+                    System.out.println("exit");
+                },
                 true, true, false, buttonTable, true);
 
         buttonTable.row();

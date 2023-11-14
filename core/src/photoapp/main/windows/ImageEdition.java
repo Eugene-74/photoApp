@@ -201,7 +201,7 @@ public class ImageEdition {
 		System.out.println("coords : " + imageData.getCoords());
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
 			table.row();
-			Main.placeImage(List.of("images/map.svg", "images/outline.png"), "basic button",
+			Main.placeImage(List.of("images/map.png", "images/outline.png"), "basic button",
 					new Vector2(0, 0),
 					Main.mainStage,
 					(o) -> {
