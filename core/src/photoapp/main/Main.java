@@ -67,7 +67,6 @@ public class Main extends ApplicationAdapter {
 	public static Table linkTable;
 	static Integer numberOfLoadedImages = 0;
 	public static Label labelInfoText;
-	public static Label labelOverlay;
 	public static List<ImageData> imagesData;
 	public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
 	public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
@@ -96,8 +95,6 @@ public class Main extends ApplicationAdapter {
 	public static Boolean brightMode = false;
 	public static Boolean darkMode = false;
 
-	public static Table overlayTable = new Table();
-
 	public void iniPreferences() {
 		preferences.putInteger("image load at the same time", 20);
 
@@ -121,8 +118,8 @@ public class Main extends ApplicationAdapter {
 				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
 		preferences.putInteger("size of big preview height",
 				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
-		brightMode = preferences.getBoolean("option brightmode", false);
-		darkMode = preferences.getBoolean("option darkmode", false);
+		brightMode = preferences.getBoolean("option brightMode", false);
+		darkMode = preferences.getBoolean("option darkMode", false);
 
 	}
 
@@ -142,8 +139,6 @@ public class Main extends ApplicationAdapter {
 		createMultiplexer();
 
 		createInfoTable();
-		createOverlay();
-
 		createCloseButton();
 		createLinkButton();
 
@@ -305,19 +300,6 @@ public class Main extends ApplicationAdapter {
 		mainStage.addActor(infoTable);
 	}
 
-	public void createOverlay() {
-		overlayTable = new Table();
-		overlayTable.setPosition(10, 10);
-
-		BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/dominican.fnt"));
-		label1Style.font = myFont;
-		label1Style.fontColor = Color.BLACK;
-		labelOverlay = new Label(" ", label1Style);
-		overlayTable.addActor(labelOverlay);
-
-		mainStage.addActor(overlayTable);
-	}
-
 	public void clear() {
 
 		mainStage.clear();
@@ -342,15 +324,13 @@ public class Main extends ApplicationAdapter {
 		MixOfImage mixOfImages;
 		Integer width;
 		Integer height;
-		// Integer rotation = 0;
-		// String[] ListImageName = imageNames.get(0).split("/");
-		// if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) !=
-		// null) {
+		Integer rotation = 0;
+		String[] ListImageName = imageNames.get(0).split("/");
+		if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
 
-		// rotation = Main.getCurrentImageData(ListImageName[ListImageName.length -
-		// 1]).getRotation();
+			rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
 
-		// }
+		}
 		if (setSize) {
 			if (isSquare) {
 				width = preferences.getInteger("size of " + prefSizeName, 100);

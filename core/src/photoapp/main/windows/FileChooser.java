@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import photoapp.main.Main;
@@ -18,8 +17,6 @@ public class FileChooser {
     public static Table fileTable;
     public static Table addFileTable;
     public static Table buttonTable;
-    static Label labelOverlay;
-    static Label.LabelStyle label1Style = new Label.LabelStyle();
 
     public static void create() {
 
@@ -89,16 +86,9 @@ public class FileChooser {
                 Main.mainStage,
                 (o) -> {
                     addAFile();
-                }, (o) -> {
-                    System.out.println("enter");
-
-                    Main.labelOverlay.setText("test");
-
-                }, (o) -> {
-                    System.out.println("exit");
-                    Main.labelOverlay.setText(" ");
-                },
+                }, null, null,
                 true, true, false, buttonTable, true);
+
         buttonTable.row();
 
         Main.placeImage(List.of("images/openParameter.png", "images/outline.png"), "basic button",
