@@ -78,6 +78,66 @@ public class Parameter {
                 }, null, null,
                 true, true, false, parameterTable, true);
 
+        List<String> darkmodeList = new ArrayList<String>();
+        darkmodeList.add("images/mode.png");
+        darkmodeList.add("images/outline.png");
+        if (Main.preferences.getBoolean("option darkmode", false)) {
+            darkmodeList.add("images/yes.png");
+        } else {
+            darkmodeList.add("images/no.png");
+
+        }
+
+        Main.placeImage(darkmodeList, "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    if (Main.preferences.getBoolean("option darkmode", true)) {
+                        Main.preferences.putBoolean("option darkmode", false);
+                        Main.darkMode = false;
+                        reload();
+                    } else {
+                        Main.preferences.putBoolean("option darkmode", true);
+                        Main.preferences.putBoolean("option brightmode", false);
+                        Main.darkMode = true;
+                        Main.brightMode = false;
+                        reload();
+
+                    }
+                    Main.preferences.flush();
+                }, null, null,
+                true, true, false, parameterTable, true);
+
+        List<String> brightmodeList = new ArrayList<String>();
+        brightmodeList.add("images/mode.png");
+        brightmodeList.add("images/outline.png");
+        if (Main.preferences.getBoolean("option brightmode", false)) {
+            brightmodeList.add("images/yes.png");
+        } else {
+            brightmodeList.add("images/no.png");
+
+        }
+
+        Main.placeImage(brightmodeList, "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    if (Main.preferences.getBoolean("option brightmode", true)) {
+                        Main.preferences.putBoolean("option brightmode", false);
+                        Main.brightMode = false;
+                        reload();
+                    } else {
+                        Main.preferences.putBoolean("option brightmode", true);
+                        Main.preferences.putBoolean("option darkmode", false);
+                        Main.brightMode = true;
+                        Main.darkMode = false;
+                        reload();
+
+                    }
+                    Main.preferences.flush();
+                }, null, null,
+                true, true, false, parameterTable, true);
+
     }
 
     public static void createMainTable() {

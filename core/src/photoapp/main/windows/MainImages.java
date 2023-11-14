@@ -155,7 +155,7 @@ public class MainImages {
 
         imageI = firstI - firstI % column;
         if (Main.imagesData != null && firstI + column * row > Main.imagesData.size()) {
-            imageI = Main.imagesData.size() - Main.imagesData.size() % column - column * row;
+            imageI = Main.imagesData.size() - Main.imagesData.size() % column - column * (row - 1);
         }
         if (Main.imagesData != null && Main.imagesData.size() < row * column) {
             imageI = 0;

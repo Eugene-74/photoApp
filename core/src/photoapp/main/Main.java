@@ -92,6 +92,9 @@ public class Main extends ApplicationAdapter {
 
 	public static ImageData lastImageData = null;
 
+	public static Boolean brightMode = false;
+	public static Boolean darkMode = false;
+
 	public void iniPreferences() {
 		preferences.putInteger("image load at the same time", 20);
 
@@ -115,6 +118,8 @@ public class Main extends ApplicationAdapter {
 				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
 		preferences.putInteger("size of big preview height",
 				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+		brightMode = preferences.getBoolean("option brightMode", false);
+		darkMode = preferences.getBoolean("option darkMode", false);
 
 	}
 
@@ -188,7 +193,15 @@ public class Main extends ApplicationAdapter {
 		Integer progress = MixOfImage.willBeLoad.size();
 		MixOfImage.manager.update();
 
-		ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
+		// ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
+		if (brightMode) {
+			ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
+		} else if (darkMode) {
+			ScreenUtils.clear(17 / 255f, 17 / 255f, 17 / 255f, 255 / 255f);
+		} else {
+			ScreenUtils.clear(255 / 255f, 255 / 255f, 255 / 255f, 255 / 255f);
+		}
+
 		if (!infoText.equals(" ")) {
 			labelInfoText.setText(infoText);
 		}
