@@ -149,22 +149,36 @@ public class ImageEdition {
 					nextImage(currentImagePath);
 				}, null, null, true, true, false, table, true);
 		table.row();
+		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					ImageData rotaImageData = Main.getCurrentImageData(theCurrentImagePath);
+					Integer rotation = rotaImageData.getRotation();
+					rotation -= 90;
+					if (rotation < 0) {
+						rotation += 360;
+					}
+					rotaImageData.setRotation(rotation);
+					ImageData.saveImagesData();
+					load();
+				}, null, null,
+				true, true, false, table, true);
 		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					for (ImageData anImageData : Main.imagesData) {
-						if ((anImageData.getName())
-								.equals(currentImagePath)) {
-							rotateAnImage(90, anImageData.getName());
-						}
+					ImageData rotaImageData = Main.getCurrentImageData(theCurrentImagePath);
+					Integer rotation = rotaImageData.getRotation();
+					rotation += 90;
+					if (rotation > 360) {
+						rotation -= 360;
 					}
+					rotaImageData.setRotation(rotation);
+					ImageData.saveImagesData();
+					load();
+
 				}, null, null,
-				true, true, false, table, true);
-		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				null, null, null,
 				true, true, false, table, true);
 		table.row();
 		CommonButton.createSaveButton(table);
