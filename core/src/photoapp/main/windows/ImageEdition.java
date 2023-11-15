@@ -716,9 +716,7 @@ public class ImageEdition {
 				if (res == JFileChooser.APPROVE_OPTION) {
 					if (chooser.getSelectedFile() != null) {
 						fileRessource = chooser.getSelectedFile();
-						if (fileRessource.toString().endsWith(".png") || fileRessource.toString().endsWith(".PNG")
-								|| fileRessource.toString().endsWith(".jpg")
-								|| fileRessource.toString().endsWith(".JPG")) {
+						if (Main.isAnImage(fileRessource.toString())) {
 							movePlace(fileRessource);
 							savePlaceToFile();
 							Main.reload(false);
@@ -751,9 +749,7 @@ public class ImageEdition {
 					if (chooser.getSelectedFile() != null) {
 
 						fileRessource = chooser.getSelectedFile();
-						if (fileRessource.toString().endsWith(".png") || fileRessource.toString().endsWith(".PNG")
-								|| fileRessource.toString().endsWith(".jpg")
-								|| fileRessource.toString().endsWith(".JPG")) {
+						if (Main.isAnImage(fileRessource.toString())) {
 							movePeople(fileRessource);
 							String name = fileRessource.getName().substring(0,
 									fileRessource.getName().lastIndexOf("."));

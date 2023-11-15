@@ -39,9 +39,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.JsonReader;
+import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
@@ -437,7 +438,9 @@ public class Main extends ApplicationAdapter {
 			}
 
 		}
-		mixOfImages.addListener(new TextTooltip("This is the tip ! Why it is not shown ?", skin));
+		// mixOfImages.addListener(new TextTooltip("This is the tip ! Why it is not
+		// shown ?", skin));
+		// !!!!!!!!!!!!! change what's inside
 
 	}
 
@@ -552,9 +555,7 @@ public class Main extends ApplicationAdapter {
 				if (res == JFileChooser.APPROVE_OPTION) {
 					if (chooser.getSelectedFile() != null) {
 						fileRessource = chooser.getSelectedFile();
-						if (fileRessource.toString().endsWith(".png") || fileRessource.toString().endsWith(".PNG")
-								|| fileRessource.toString().endsWith(".jpg")
-								|| fileRessource.toString().endsWith(".JPG")) {
+						if (isAnImage(fileRessource.toString())) {
 							openImageInAFile(fileRessource);
 						} else {
 							openImageOfAFile(fileRessource);
@@ -580,8 +581,6 @@ public class Main extends ApplicationAdapter {
 		FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName());
 		to.writeBytes(data, false);
 
-		openImageExif(dir.getName());
-
 		FileHandle fromJson = Gdx.files.absolute(dir.toString() + ".json");
 		if (fromJson.exists()) {
 			byte[] dataJson = fromJson.readBytes();
@@ -589,6 +588,7 @@ public class Main extends ApplicationAdapter {
 			FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName() + ".json");
 			toJson.writeBytes(dataJson, false);
 		}
+		openImageExif(dir.getName());
 
 		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName());
 
@@ -632,8 +632,7 @@ public class Main extends ApplicationAdapter {
 					infoText = "Loading the images : " + numberOfLoadedImages
 							+ " images load";
 
-					if (item.getName().endsWith(".png") || item.getName().endsWith(".PNG")
-							|| item.getName().endsWith(".jpg") || item.getName().endsWith(".JPG")) {
+					if (isAnImage(item.getName())) {
 
 						toLoad.add(dir + "/" + item.getName());
 						numberOfLoadedImages += 1;
@@ -652,97 +651,145 @@ public class Main extends ApplicationAdapter {
 
 	}
 
+	public static Boolean isAnImage(String imagePath) {
+		if (imagePath.endsWith(".HEIC") || imagePath.endsWith(".png") || imagePath.endsWith(".PNG")
+				|| imagePath.endsWith(".jpg") || imagePath.endsWith(".JPG") || imagePath.endsWith(".HEIF")
+				|| imagePath.endsWith(".HEVC")) {
+			return true;
+		}
+		return false;
+	}
+
 	public static void openImageExif(String imagePath) {
 		FileHandle file;
 		try {
 			file = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imagePath);
 			FileHandle fileJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imagePath + ".json");
-
-			if (fileJson.exists()) {
-				System.out.println("google image");
-			}
-
-			Metadata metadata = ImageMetadataReader.readMetadata(file.read());
 			ImageData imageData = ImageData.getImageDataIfExist(imagePath);
+
 			String coords = "";
 			Integer rotation = 0;
+			if (fileJson.exists()) {
+				// Json json = new Json();
+				// String text = json.toJson(fileJson, Object.class);
+				JsonValue root = new JsonReader().parse(fileJson);
 
-			for (Directory dir : metadata.getDirectories()) {
-				// System.out.println(dir.getTags());
-				// for (Tag tag : dir.getTags()) {
-				// System.out.println(tag);
-				// }
+				// String title = root.getString("title");
+				Boolean favorited = false;
+				if (root.has("favorited")) {
+					favorited = root.getBoolean("favorited");
+				}
 
-				if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
-					for (Tag tag : dir.getTags()) {
-						if (tag.getTagName().equals("Date/Time Original")) {
-							imageData.setDate(tag.getDescription());
-						}
-					}
-				} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
-					String lat = "";
-					String lon = "";
-					String minusLat = "";
-					String minusLon = "";
+				JsonValue photoTakenTime = root.get("photoTakenTime");
+				Long photoTakenTime_timestamp = photoTakenTime.getLong("timestamp");
+				// JsonValue creationTime = root.get("creationTime");
+				// Long creationTime_timestamp = creationTime.getLong("timestamp");
 
-					for (Tag tag : dir.getTags()) {
-						if (tag.getTagName().equals("GPS Latitude")) {
-							lat = tag.getDescription();
+				JsonValue geoData = root.get("geoData");
+				Float geoData_latitude = geoData.getFloat("latitude");
+				Float geoData_longitude = geoData.getFloat("longitude");
+				Float geoData_altitude = geoData.getFloat("altitude");
+				Float geoData_latitudeSpan = geoData.getFloat("latitudeSpan");
+				Float geoData_longitudeSpan = geoData.getFloat("longitudeSpan");
 
-						} else if (tag.getTagName().equals("GPS Longitude")) {
-							lon = tag.getDescription();
-						} else if (tag.getTagName().equals("GPS Latitude Ref")) {
+				JsonValue geoDataExif = root.get("geoDataExif");
+				Float geoDataExif_latitude = geoDataExif.getFloat("latitude");
+				Float geoDataExif_longitude = geoDataExif.getFloat("longitude");
+				Float geoDataExif_altitude = geoDataExif.getFloat("altitude");
+				Float geoDataExif_latitudeSpan = geoDataExif.getFloat("latitudeSpan");
+				Float geoDataExif_longitudeSpan = geoDataExif.getFloat("longitudeSpan");
 
-							minusLat = tag.getDescription();
+				if (favorited) {
+					imageData.setLoved(true);
+				}
+				if (photoTakenTime_timestamp != null) {
+					imageData.setDate(timestampToDate(photoTakenTime_timestamp));
+				}
 
-						} else if (tag.getTagName().equals("GPS Longitude Ref")) {
-							minusLon = tag.getDescription();
+			} else {
 
-						}
-					}
-					if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
-						coords = "";
-					} else {
-						coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
-					}
-				} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
-					for (Tag tag : dir.getTags()) {
-						if (tag.getTagName().equals("Orientation")) {
-							if (tag.getDescription().contains("180")) {
-								rotation = 180;
-							} else if (tag.getDescription().contains("90")) {
-								rotation = 90;
-							} else if (tag.getDescription().contains("270")) {
-								rotation = 270;
+				Metadata metadata = ImageMetadataReader.readMetadata(file.read());
+
+				for (Directory dir : metadata.getDirectories()) {
+
+					if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
+						for (Tag tag : dir.getTags()) {
+							if (tag.getTagName().equals("Date/Time Original")) {
+								imageData.setDate(tag.getDescription());
 							}
 						}
-					}
+					} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
+						String lat = "";
+						String lon = "";
+						String minusLat = "";
+						String minusLon = "";
 
+						for (Tag tag : dir.getTags()) {
+							if (tag.getTagName().equals("GPS Latitude")) {
+								lat = tag.getDescription();
+
+							} else if (tag.getTagName().equals("GPS Longitude")) {
+								lon = tag.getDescription();
+							} else if (tag.getTagName().equals("GPS Latitude Ref")) {
+
+								minusLat = tag.getDescription();
+
+							} else if (tag.getTagName().equals("GPS Longitude Ref")) {
+								minusLon = tag.getDescription();
+
+							}
+						}
+						if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
+							coords = "";
+						} else {
+							coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
+						}
+					} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
+						for (Tag tag : dir.getTags()) {
+							if (tag.getTagName().equals("Orientation")) {
+								if (tag.getDescription().contains("180")) {
+									rotation = 180;
+								} else if (tag.getDescription().contains("90")) {
+									rotation = 90;
+								} else if (tag.getDescription().contains("270")) {
+									rotation = 270;
+								}
+							}
+						}
+
+					}
 				}
 			}
 			if (imageData.getRotation() == 0) {
 				imageData.setRotation(rotation);
 			}
+
 			if (imageData.getCoords() == null) {
 				imageData.setCoords(coords);
 			}
+
 			if (imageData.getName() == null) {
 				imageData.setName(imagePath);
 			}
+
 			if (imageData.getPeoples() == null) {
 				imageData.setPeoples(List.of());
 			}
+
 			if (imageData.getPlaces() == null) {
 				imageData.setPlaces(List.of());
 			}
 			if (imageData.getLoved() == null || imageData.getLoved() == false) {
 				imageData.setLoved(false);
 			}
+
 			addImageData(imageData);
 
 			ImageData.saveImagesData();
 
-		} catch (Exception e) {
+		} catch (
+
+		Exception e) {
 			System.out.println("Error" + e);
 		} finally {
 		}
@@ -1000,10 +1047,12 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-	public static void date(String args[]) {
-		Date date = new Date();
-		Timestamp ts = new Timestamp(date.getTime());
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	public static String timestampToDate(Long timestamp) {
+		Timestamp time = new Timestamp(timestamp * 1000);
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss");
+		Date date = new Date(time.getTime());
+		return formatter.format(date);
+
 	}
 
 	public static void openInAMap(String coord) {

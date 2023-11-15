@@ -39,7 +39,12 @@ public class ImageData {
     }
 
     public Integer getRotation() {
-        return Integer.parseInt(data.get("rotation").toString());
+        if (data.get("rotation") != null) {
+            return Integer.parseInt(data.get("rotation").toString());
+
+        } else {
+            return 0;
+        }
     }
 
     public ImageData setName(String name) {

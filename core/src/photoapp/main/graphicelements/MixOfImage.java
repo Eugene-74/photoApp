@@ -31,19 +31,12 @@ public class MixOfImage extends Group {
 
     public static void startToLoadImage(String lookingFor) {
         FileHandle fileName = Gdx.files.absolute(lookingFor);
-        String[] ListImageName = lookingFor.split("/");
+        // String[] ListImageName = lookingFor.split("/");
 
         if (fileName.exists()) {
             willBeLoad.add(lookingFor);
             isLoading = true;
         } else {
-            Gdx.app.error(fileName.path(), "Do not exist");
-            if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
-                Gdx.app.error(fileName.path(), "Creating ...");
-
-                forceCreation(fileName);
-                return;
-            }
 
         }
 
@@ -54,18 +47,23 @@ public class MixOfImage extends Group {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                try {
 
-                if (Main.infoText == " " || Main.infoText == Main.preferences.getString("text.done")) {
-                    Main.infoTextSet("loading .", false);
+                    if (Main.infoText == " " || Main.infoText == Main.preferences.getString("text.done")) {
+                        Main.infoTextSet("loading .", false);
+                    }
+
+                    isLoading = true;
+                    manager.load(lookingFor, Texture.class);
+
+                    notToReLoadList.add(lookingFor);
+                } catch (Exception e) {
+                    System.err.println("image can't be load");
+                } finally {
                 }
-
-                isLoading = true;
-                manager.load(lookingFor, Texture.class);
-
-                notToReLoadList.add(lookingFor);
-
             }
         }).start();
+
     }
 
     public static void stopLoading() {
@@ -96,8 +94,8 @@ public class MixOfImage extends Group {
 
             }
             if (fileName.path().split("/")[ListImageName.length - 2].equals("peoples")
-                    && fileName.path().split("/")[ListImageName.length - 2].equals("places")
-                    && fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                    && fileName.path().split("/")[ListImageName.length - 2].equals("places")) {
+                // && fileName.path().split("/")[ListImageName.length - 2].equals("150")
                 loadImage(fileName.path());
             } else {
                 startToLoadImage(fileName.path());
@@ -115,7 +113,16 @@ public class MixOfImage extends Group {
                     }
                     return manager.get(fileName.path(), Texture.class);
                 } else {
-                    forceCreation(fileName);
+                    if (!type.equals("firstloading")) {
+                        Main.infoTextSet("need to load image due to an error of loading", true);
+
+                        Gdx.app.error(fileName.path(), "Do not exist");
+                        if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                            Gdx.app.error(fileName.path(), "Creating ...");
+
+                            forceCreation(fileName);
+                        }
+                    }
                     if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
                         toPlaceList.add(ListImageName[ListImageName.length - 1]);
                     }
@@ -146,9 +153,8 @@ public class MixOfImage extends Group {
 
     public MixOfImage(List<String> imageNames, float width, float height, String prefSizeName) {
         // appliquer la rotation qui est dans les donnée de l'image !!!
-        FileHandle handle = null;
+        FileHandle fileName = null;
         Texture texture;
-        Boolean rota = false;
         for (String imageName : imageNames) {
             Integer rotation = 0;
             imageName = imageName.replace("\\", "/");
@@ -157,9 +163,17 @@ public class MixOfImage extends Group {
             if (imageName.split("/")[ListImageName.length - 2].equals("userImages")
                     || imageName.split("/")[ListImageName.length - 2].equals("150")) {
 
-                handle = Gdx.files.absolute(imageName);
+                fileName = Gdx.files.absolute(imageName);
                 if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
                         && !Gdx.files.internal(imageName).exists()) {
+                    Main.infoTextSet("need to load image due to an error of loading", true);
+
+                    Gdx.app.error(fileName.path(), "Do not exist");
+                    if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                        Gdx.app.error(fileName.path(), "Creating ...");
+
+                        forceCreation(fileName);
+                    }
                     imageName = "images/error.png";
                 }
 
@@ -177,7 +191,6 @@ public class MixOfImage extends Group {
             } else if (rotation != 0) {
                 image.rotateBy(rotation);
                 image.setOrigin(width / 2, height / 2);
-                rota = true;
             }
 
             if (imageName.endsWith("outline.png") || imageName.endsWith("redOutline.png")) {
@@ -207,8 +220,8 @@ public class MixOfImage extends Group {
             addActor(image);
 
         }
-        if (handle != null) {
-            setName(handle.name());
+        if (fileName != null) {
+            setName(fileName.name());
 
         } else {
             setName("noName");
@@ -245,4 +258,3 @@ public class MixOfImage extends Group {
 
     }
 }
-// !!!!!!!!!!!!!!!!!!!!!! il manque une ligne a la fin des Mainsimages
