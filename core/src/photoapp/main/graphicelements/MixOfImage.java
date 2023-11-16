@@ -195,7 +195,12 @@ public class MixOfImage extends Group {
             if (rotation != 0 && ListImageName.length > 2
                     && imageName.split("/")[ListImageName.length - 2].equals("150")) {
                 image.rotateBy(rotation);
-                image.setOrigin((image.getWidth() - 8) / 2, (image.getHeight() - 8) / 2);
+                if (width == 150 && height == 150) {
+                    image.setOrigin((width - 8) / 2, (height - 8) / 2);
+                } else {
+                    image.setOrigin((width) / 2, (height) / 2);
+
+                }
                 // mettre - 8 en variable
 
             } else if (rotation != 0) {

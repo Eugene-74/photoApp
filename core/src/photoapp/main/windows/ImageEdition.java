@@ -21,6 +21,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
@@ -50,6 +51,10 @@ public class ImageEdition {
 	static Table dateTable;
 	static Label dateLabel;
 	static Label.LabelStyle datelabelStyle = new Label.LabelStyle();
+
+	static public Long lastImageChange = (long) 0;
+	static public Boolean imageWithGoodQuality = false;
+	// static public String imageQualityPath;
 
 	public static void create() {
 		Gdx.app.log(fileName, "create");
@@ -122,7 +127,7 @@ public class ImageEdition {
 			MainImages.mainTable.clear();
 		}
 		if (OpenMain) {
-			openMainImage(currentImagePath);
+			openMainImage(currentImagePath, false);
 
 		}
 
@@ -335,19 +340,32 @@ public class ImageEdition {
 
 		placeImageOfPeoples(theCurrentImagePath);
 		placeImageOfPlaces(theCurrentImagePath);
-		openMainImage(theCurrentImagePath);
+		openMainImage(theCurrentImagePath, false);
 
 	}
 
-	public static void openMainImage(String imageName) {
+	public static void openMainImage(String imageName, Boolean force) {
 		Main.mainStage.getActors().get(0);
-		Main.placeImage(List.of(ImageData.IMAGE_PATH + "/" + imageName), "main image", new Vector2(
-				0, 0),
-				Main.mainStage,
-				(o) -> {
-					clear();
-					BigPreview.open(imageName);
-				}, null, null, false, false, true, table, false);
+		String imagePath = ImageData.IMAGE_PATH + "/" + imageName;
+		if (!MixOfImage.manager.isLoaded(imagePath) && !force) {
+			imagePath = ImageData.IMAGE_PATH + "/150/" + imageName;
+
+			Main.placeImage(List.of(imagePath), "main image height", new Vector2(
+					0, 0),
+					Main.mainStage,
+					(o) -> {
+						clear();
+						BigPreview.open(imageName);
+					}, null, null, true, false, true, table, true);
+		} else {
+			Main.placeImage(List.of(imagePath), "main image", new Vector2(
+					0, 0),
+					Main.mainStage,
+					(o) -> {
+						clear();
+						BigPreview.open(imageName);
+					}, null, null, false, false, true, table, false);
+		}
 	}
 
 	public static void createMainImageTable() {
@@ -419,7 +437,7 @@ public class ImageEdition {
 				} else {
 					increment = 0;
 				}
-				if (i == 4 || i == -4) {
+				if (i >= 4 || i <= -4) {
 					if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/"
 							+ Main.imagesData.get(i + imageIndex + increment).getName())) {
 						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/150/" +
@@ -486,7 +504,7 @@ public class ImageEdition {
 	public static void showBigPreview(String preview) {
 		// theCurrentImagePath = preview;
 		// load();
-		openMainImage(preview);
+		openMainImage(preview, false);
 
 		reloadOnce = true;
 		Main.toReload = "imageEdition";
@@ -496,7 +514,7 @@ public class ImageEdition {
 	public static void closeBigPreview(String initialImage) {
 
 		// theCurrentImagePath = initialImage;
-		openMainImage(initialImage);
+		openMainImage(initialImage, false);
 		reloadOnce = true;
 		// openMainImage(initialImage);
 		Main.toReload = "imageEdition";
@@ -605,6 +623,9 @@ public class ImageEdition {
 	}
 
 	public static void nextImage(String currentImagePath) {
+		lastImageChange = TimeUtils.millis();
+		imageWithGoodQuality = false;
+
 		boolean next = false;
 		for (ImageData imageData : Main.imagesData) {
 			if ((imageData.getName())
@@ -633,6 +654,8 @@ public class ImageEdition {
 	}
 
 	public static void previousImage(String currentImagePath) {
+		lastImageChange = TimeUtils.millis();
+		imageWithGoodQuality = false;
 
 		ImageData previous = null;
 		for (ImageData imageData : Main.imagesData) {

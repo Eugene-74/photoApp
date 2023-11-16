@@ -212,8 +212,14 @@ public class Main extends ApplicationAdapter {
 	public void render() {
 		Integer progress = MixOfImage.willBeLoad.size();
 		MixOfImage.manager.update();
+		if (windowOpen.equals("ImageEdition")) {
+			if (TimeUtils.millis() - ImageEdition.lastImageChange > 500) {
+				if (!ImageEdition.imageWithGoodQuality) {
+					ImageEdition.openMainImage(ImageEdition.theCurrentImagePath, true);
+				}
+			}
+		}
 
-		// ScreenUtils.clear(151 / 255f, 0 / 255f, 151 / 255f, 255 / 255f);
 		if (brightMode) {
 			ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
 		} else if (darkMode) {
@@ -344,6 +350,7 @@ public class Main extends ApplicationAdapter {
 		MixOfImage mixOfImages;
 		Integer width;
 		Integer height;
+		// String[] ListImageName = imageNames.get(0).split("/");
 
 		if (setSize) {
 			if (isSquare) {
@@ -358,7 +365,10 @@ public class Main extends ApplicationAdapter {
 			mixOfImages.setPosition(position.x, position.y + 1);
 
 		} else {
+			// if( imageNames.get(0).split("/")[ListImageName.length - 2].equals("150")){
 			mixOfImages = new MixOfImage(imageNames, 0, 0, prefSizeName);
+
+			// }
 
 			float widthBis = mixOfImages.getWidth();
 			float heightBis = mixOfImages.getHeight();
