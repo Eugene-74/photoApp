@@ -71,6 +71,9 @@ public class ImageData {
     }
 
     public String getDate() {
+        if (data.get("date").equals(null)) {
+            return null;
+        }
         return (String) data.get("date");
     }
 

@@ -167,6 +167,19 @@ public class Main extends ApplicationAdapter {
 		BigPreview.create();
 
 		FileChooser.open();
+		// private VideoPlayer videoPlayer;
+		// VideoPlayer videoPlayer = VideoPlayerCreator.createVideoPlayer();
+		// videoPlayer.setOnCompletionListener(new VideoPlayer.CompletionListener() {
+		// @Override
+		// public void onCompletionListener(FileHandle file) {
+		// // Do something
+		// }
+		// });
+		// try {
+		// videoPlayer.play(Gdx.files.local("intro/yobowargames.webm"));
+		// } catch (FileNotFoundException e) {
+		// Gdx.app.error("gdx-video", "Oh no!");
+		// }
 	}
 
 	public static void createMultiplexer() {
@@ -827,10 +840,9 @@ public class Main extends ApplicationAdapter {
 	public static void setSize150(String imagePath, String imageName) {
 		FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + imageName);
 		if (!handlebis.exists()) {
-
+			// MixOfImage.LoadingList.add(imagePath);
 			MixOfImage.isInImageData(imagePath, false, "firstloading");
 		} else {
-
 			numberOfLoadedImages += 1;
 		}
 	}

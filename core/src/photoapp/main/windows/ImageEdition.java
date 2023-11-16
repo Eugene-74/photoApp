@@ -15,6 +15,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -46,6 +47,10 @@ public class ImageEdition {
 	public static Boolean doNotLoad = false;
 	public static Boolean reloadOnce = false;
 
+	static Table dateTable;
+	static Label dateLabel;
+	static Label.LabelStyle datelabelStyle = new Label.LabelStyle();
+
 	public static void create() {
 		Gdx.app.log(fileName, "create");
 
@@ -60,19 +65,55 @@ public class ImageEdition {
 		createTable();
 		createPlusTable();
 
+		createDateTable();
+
+	}
+
+	private static void createDateTable() {
+		dateTable = new Table();
+
+		BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/dominican.fnt"));
+		Float size = (float) 0.5;
+		myFont.getData().setScale(size);
+		datelabelStyle.font = myFont;
+		datelabelStyle.fontColor = Color.BLACK;
+		dateLabel = new Label(" ", datelabelStyle);
+		dateTable.setPosition(10, Gdx.graphics.getHeight() - 10 - dateLabel.getHeight());
+		dateTable.addActor(dateLabel);
+
+		Main.mainStage.addActor(dateTable);
 	}
 
 	public static void open(String currentImagePath, boolean OpenMain) {
 		Gdx.app.log(fileName, "open");
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 
-		Main.toReload = "imageEdition";
+		// Main.toReload = "imageEdition";
 		Main.windowOpen = "ImageEdition";
 
 		theCurrentImagePath = currentImagePath;
 		table.clear();
 		previewTable.clear();
 		plusTable.clear();
+		if (imageData.getDate() != null && !imageData.getDate().equals("null")) {
+			try {
+
+				String[] nomMois = { "January", "February", "March", "April", "May", "June", "July",
+						"August", "Septembre", "Octobrer", "Novembrer", "Decembrer" };
+				String date = "";
+				String[] dateSplit = imageData.getDate().split(" ");
+				String[] daySplit = dateSplit[0].split(":");
+				String[] hourSplit = dateSplit[1].split(":");
+				date += daySplit[2] + "  " + nomMois[Integer.parseInt(daySplit[1]) - 1] + "  " + daySplit[0];
+				date += "\n";
+				date += hourSplit[0] + "h " + hourSplit[1] + "min " + hourSplit[2] + "s ";
+
+				dateLabel.setText(date);
+			} catch (Exception e) {
+				System.err.println("bug when loading the image");
+			} finally {
+			}
+		}
 
 		if (MainImages.imagesTable != null) {
 			MainImages.imagesTable.clear();
@@ -269,6 +310,7 @@ public class ImageEdition {
 		previewTable.clear();
 		table.clear();
 		mainImageTable.clear();
+		dateTable.clear();
 
 	}
 

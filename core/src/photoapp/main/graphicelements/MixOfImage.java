@@ -77,61 +77,71 @@ public class MixOfImage extends Group {
     public static Texture isInImageData(String lookingFor, boolean wait, String type) {
         FileHandle fileName = Gdx.files.absolute(lookingFor);
         String[] ListImageName = lookingFor.split("/");
+
         if (manager.isLoaded(fileName.path())) {
 
             return manager.get(fileName.path(), Texture.class);
         } else {
+
             isLoading = true;
             String errorImagePath = "images/loading button.png";
             if (!manager.isLoaded(errorImagePath, Texture.class)) {
                 manager.load(errorImagePath, Texture.class);
                 manager.finishLoading();
             }
-            if (fileName.path().split("/")[ListImageName.length - 2].equals("images")) {
-                manager.load(fileName.path(), Texture.class);
-                manager.finishLoading();
-                return manager.get(fileName.path(), Texture.class);
+            if (type.equals("firstloading")) {
+                startToLoadImage(lookingFor);
+                firstLoading = true;
+                LoadingList.add(fileName.path());
 
-            }
-            if (fileName.path().split("/")[ListImageName.length - 2].equals("peoples")
-                    && fileName.path().split("/")[ListImageName.length - 2].equals("places")) {
-                // && fileName.path().split("/")[ListImageName.length - 2].equals("150")
-                loadImage(fileName.path());
+                return manager.get(errorImagePath, Texture.class);
             } else {
-                startToLoadImage(fileName.path());
-                fileName = Gdx.files
-                        .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
-                ListImageName = fileName.path().split("/");
-
-            }
-
-            if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
-                if (fileName.exists()) {
-                    if (!manager.isLoaded(fileName.path())) {
-                        manager.load(fileName.path(), Texture.class);
-                        manager.finishLoading();
-                    }
+                if (fileName.path().split("/")[ListImageName.length - 2].equals("images")) {
+                    manager.load(fileName.path(), Texture.class);
+                    manager.finishLoading();
                     return manager.get(fileName.path(), Texture.class);
+
+                }
+                if (fileName.path().split("/")[ListImageName.length - 2].equals("peoples")
+                        && fileName.path().split("/")[ListImageName.length - 2].equals("places")) {
+                    // && fileName.path().split("/")[ListImageName.length - 2].equals("150")
+                    loadImage(fileName.path());
                 } else {
-                    if (!type.equals("firstloading")) {
-                        Main.infoTextSet("need to load image due to an error of loading", true);
+                    startToLoadImage(fileName.path());
+                    fileName = Gdx.files
+                            .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
+                    ListImageName = fileName.path().split("/");
 
-                        Gdx.app.error(fileName.path(), "Do not exist");
-                        if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
-                            Gdx.app.error(fileName.path(), "Creating ...");
+                }
 
-                            forceCreation(fileName);
+                if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                    if (fileName.exists()) {
+                        if (!manager.isLoaded(fileName.path())) {
+                            manager.load(fileName.path(), Texture.class);
+                            manager.finishLoading();
+                        }
+                        return manager.get(fileName.path(), Texture.class);
+                    } else {
+                        if (!type.equals("firstloading")) {
+                            Main.infoTextSet("need to load image due to an error of loading", true);
+
+                            Gdx.app.error(fileName.path(), "Do not exist");
+                            if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
+                                Gdx.app.error(fileName.path(), "Creating ...");
+
+                                forceCreation(fileName);
+                            }
+                        }
+                        if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
+                            toPlaceList.add(ListImageName[ListImageName.length - 1]);
                         }
                     }
-                    if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
-                        toPlaceList.add(ListImageName[ListImageName.length - 1]);
-                    }
                 }
+                if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
+                    toPlaceList.add(ListImageName[ListImageName.length - 1]);
+                }
+                return manager.get(errorImagePath, Texture.class);
             }
-            if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
-                toPlaceList.add(ListImageName[ListImageName.length - 1]);
-            }
-            return manager.get(errorImagePath, Texture.class);
         }
 
     }
@@ -182,7 +192,8 @@ public class MixOfImage extends Group {
             texture = isInImageData(imageName, false, "");
             Image image = new Image(texture);
 
-            if (rotation != 0 && imageName.split("/")[ListImageName.length - 2].equals("150")) {
+            if (rotation != 0 && ListImageName.length > 2
+                    && imageName.split("/")[ListImageName.length - 2].equals("150")) {
                 image.rotateBy(rotation);
                 image.setOrigin((image.getWidth() - 8) / 2, (image.getHeight() - 8) / 2);
                 // mettre - 8 en variable
