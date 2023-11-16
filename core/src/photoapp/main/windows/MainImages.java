@@ -195,10 +195,12 @@ public class MainImages {
 
                         } else {
                             placeImageList.add("images/outline.png");
-
                         }
                         if (ImageEdition.toDelete.contains(imageData, false)) {
                             placeImageList.add("images/deleted preview.png");
+                        }
+                        if (imageData.getLoved()) {
+                            placeImageList.add("images/loved preview.png");
                         }
                         if (deleteModeIsOn) {
                             Main.placeImage(placeImageList,

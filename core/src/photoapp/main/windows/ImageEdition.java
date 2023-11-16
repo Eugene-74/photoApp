@@ -94,6 +94,20 @@ public class ImageEdition {
 		placePlusPlace();
 
 		table.row();
+		Main.placeImage(List.of("images/love.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					// ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
+					if (imageData.getLoved()) {
+						imageData.setLoved(false);
+					} else {
+						imageData.setLoved(true);
+					}
+					load();
+				}, null, null,
+				true, true, false, table, true);
+		table.row();
 		Main.placeImage(List.of("images/previous.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,

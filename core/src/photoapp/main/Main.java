@@ -685,6 +685,16 @@ public class Main extends ApplicationAdapter {
 				// JsonValue creationTime = root.get("creationTime");
 				// Long creationTime_timestamp = creationTime.getLong("timestamp");
 
+				JsonValue people = root.get("people");
+				ArrayList<String> peoplesNames = new ArrayList<String>();
+				if (people != null) {
+
+					people.forEach((child) -> {
+						// System.out.println(child.get("name").toString());
+						peoplesNames.add(child.getString("name"));
+					});
+				}
+
 				JsonValue geoData = root.get("geoData");
 				Float geoData_latitude = geoData.getFloat("latitude");
 				Float geoData_longitude = geoData.getFloat("longitude");
@@ -705,61 +715,65 @@ public class Main extends ApplicationAdapter {
 				if (photoTakenTime_timestamp != null) {
 					imageData.setDate(timestampToDate(photoTakenTime_timestamp));
 				}
+				if (!peoplesNames.isEmpty()) {
+					imageData.setPeoples(peoplesNames);
+				}
 
-			} else {
+			}
 
-				Metadata metadata = ImageMetadataReader.readMetadata(file.read());
+			Metadata metadata = ImageMetadataReader.readMetadata(file.read());
 
-				for (Directory dir : metadata.getDirectories()) {
+			for (Directory dir : metadata.getDirectories()) {
 
-					if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
-						for (Tag tag : dir.getTags()) {
-							if (tag.getTagName().equals("Date/Time Original")) {
-								imageData.setDate(tag.getDescription());
-							}
+				if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
+					for (Tag tag : dir.getTags()) {
+						if (tag.getTagName().equals("Date/Time Original")) {
+							imageData.setDate(tag.getDescription());
 						}
-					} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
-						String lat = "";
-						String lon = "";
-						String minusLat = "";
-						String minusLon = "";
-
-						for (Tag tag : dir.getTags()) {
-							if (tag.getTagName().equals("GPS Latitude")) {
-								lat = tag.getDescription();
-
-							} else if (tag.getTagName().equals("GPS Longitude")) {
-								lon = tag.getDescription();
-							} else if (tag.getTagName().equals("GPS Latitude Ref")) {
-
-								minusLat = tag.getDescription();
-
-							} else if (tag.getTagName().equals("GPS Longitude Ref")) {
-								minusLon = tag.getDescription();
-
-							}
-						}
-						if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
-							coords = "";
-						} else {
-							coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
-						}
-					} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
-						for (Tag tag : dir.getTags()) {
-							if (tag.getTagName().equals("Orientation")) {
-								if (tag.getDescription().contains("180")) {
-									rotation = 180;
-								} else if (tag.getDescription().contains("90")) {
-									rotation = 90;
-								} else if (tag.getDescription().contains("270")) {
-									rotation = 270;
-								}
-							}
-						}
-
 					}
+				} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
+					String lat = "";
+					String lon = "";
+					String minusLat = "";
+					String minusLon = "";
+
+					for (Tag tag : dir.getTags()) {
+						if (tag.getTagName().equals("GPS Latitude")) {
+							lat = tag.getDescription();
+
+						} else if (tag.getTagName().equals("GPS Longitude")) {
+							lon = tag.getDescription();
+						} else if (tag.getTagName().equals("GPS Latitude Ref")) {
+
+							minusLat = tag.getDescription();
+
+						} else if (tag.getTagName().equals("GPS Longitude Ref")) {
+							minusLon = tag.getDescription();
+
+						}
+					}
+					if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
+						coords = "";
+					} else {
+						coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
+					}
+				} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
+					for (Tag tag : dir.getTags()) {
+						if (tag.getTagName().equals("Orientation")) {
+							// System.out.println(tag.getDescription());
+							if (tag.getDescription().contains("180")) {
+								rotation = 180;
+							} else if (tag.getDescription().contains("270")) {
+								rotation = 90;
+							} else if (tag.getDescription().contains("90")) {
+								rotation = 270;
+							}
+						}
+					}
+
 				}
 			}
+
 			if (imageData.getRotation() == 0) {
 				imageData.setRotation(rotation);
 			}

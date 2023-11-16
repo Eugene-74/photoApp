@@ -152,7 +152,6 @@ public class MixOfImage extends Group {
     }
 
     public MixOfImage(List<String> imageNames, float width, float height, String prefSizeName) {
-        // appliquer la rotation qui est dans les donnée de l'image !!!
         FileHandle fileName = null;
         Texture texture;
         for (String imageName : imageNames) {
