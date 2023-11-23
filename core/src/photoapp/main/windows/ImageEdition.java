@@ -140,7 +140,16 @@ public class ImageEdition {
 		placePlusPlace();
 
 		table.row();
-		Main.placeImage(List.of("images/love.png", "images/outline.png"), "basic button",
+		ArrayList<String> loveList = new ArrayList<String>();
+		loveList.add("images/love.png");
+		loveList.add("images/outline.png");
+
+		if (imageData.getLoved()) {
+			loveList.add("images/yes.png");
+		} else {
+			loveList.add("images/no.png");
+		}
+		Main.placeImage(loveList, "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -152,7 +161,7 @@ public class ImageEdition {
 					}
 					load();
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "love");
 		table.row();
 		Main.placeImage(List.of("images/previous.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
@@ -160,7 +169,7 @@ public class ImageEdition {
 				(o) -> {
 					previousImage(currentImagePath);
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "previous image");
 
 		List<String> deletImages = new ArrayList<>();
 		deletImages.add("images/delete.png");
@@ -200,14 +209,14 @@ public class ImageEdition {
 						Gdx.app.error(fileName, "error null");
 					}
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "delete the image");
 
 		Main.placeImage(List.of("images/next.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
 					nextImage(currentImagePath);
-				}, null, null, true, true, false, table, true);
+				}, null, null, true, true, false, table, true, "next image");
 		table.row();
 		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
@@ -223,7 +232,7 @@ public class ImageEdition {
 					ImageData.saveImagesData();
 					load();
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "rotate to the right");
 		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
@@ -239,7 +248,7 @@ public class ImageEdition {
 					load();
 
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "rotate to the left");
 		table.row();
 		CommonButton.createSaveButton(table);
 
@@ -250,14 +259,14 @@ public class ImageEdition {
 					addAPeople();
 
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "add people");
 		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
 					addAPlace();
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "add place");
 		System.out.println("coords : " + imageData.getCoords());
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
 			table.row();
@@ -268,7 +277,7 @@ public class ImageEdition {
 						String coords = imageData.getCoords();
 						Main.openInAMap(coords);
 					}, null, null,
-					true, true, false, table, true);
+					true, true, false, table, true, "open the map");
 		}
 
 		table.row();
@@ -284,7 +293,7 @@ public class ImageEdition {
 
 					MainImages.open();
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "back");
 
 	}
 
@@ -356,7 +365,7 @@ public class ImageEdition {
 					(o) -> {
 						clear();
 						BigPreview.open(imageName);
-					}, null, null, true, false, true, table, true);
+					}, null, null, true, false, true, table, true, "");
 		} else {
 			Main.placeImage(List.of(imagePath), "main image", new Vector2(
 					0, 0),
@@ -364,7 +373,7 @@ public class ImageEdition {
 					(o) -> {
 						clear();
 						BigPreview.open(imageName);
-					}, null, null, false, false, true, table, false);
+					}, null, null, false, false, true, table, false, "");
 		}
 	}
 
@@ -488,7 +497,7 @@ public class ImageEdition {
 						}, (o) -> {
 							closeBigPreview(currentImagePath);
 						},
-						false, true, false, previewTable, true);
+						false, true, false, previewTable, true, "");
 
 				index += 1;
 				if (index >= max) {
@@ -559,7 +568,7 @@ public class ImageEdition {
 							addPeople(people, currentImagePath, true);
 
 						}, null, null,
-						true, true, false, table, true);
+						true, true, false, table, true, people);
 
 				index += 1;
 				if (index >= max) {
@@ -610,7 +619,7 @@ public class ImageEdition {
 						(o) -> {
 							addPlace(place, currentImagePath, true);
 						}, null, null,
-						true, true, false, table, true);
+						true, true, false, table, true, "place");
 
 				index += 1;
 				if (index >= max) {
@@ -872,7 +881,7 @@ public class ImageEdition {
 				(o) -> {
 					openPlusPeople();
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "see more people");
 	}
 
 	public static void placePlusPlace() {
@@ -883,7 +892,7 @@ public class ImageEdition {
 					openPlusPlace();
 
 				}, null, null,
-				true, true, false, table, true);
+				true, true, false, table, true, "see more place");
 	}
 
 	public static void savePeopleToFile() {
@@ -967,7 +976,7 @@ public class ImageEdition {
 							addPeople(people, theCurrentImagePath, false);
 							addAllPeopleToPlusTable();
 						}, null, null,
-						true, true, false, plusTable, true);
+						true, true, false, plusTable, true, "");
 
 				index += 1;
 				if (index >= max) {
@@ -984,7 +993,7 @@ public class ImageEdition {
 				(o) -> {
 					Main.reload(false);
 				}, null, null,
-				true, true, false, plusTable, true);
+				true, true, false, plusTable, true, "");
 
 	}
 
@@ -1032,7 +1041,7 @@ public class ImageEdition {
 							addAllPlaceToPlusTable();
 
 						}, null, null,
-						true, true, false, plusTable, true);
+						true, true, false, plusTable, true, "");
 
 				index += 1;
 				if (index >= max) {
@@ -1050,7 +1059,7 @@ public class ImageEdition {
 					plusTable.clear();
 					Main.reload(false);
 				}, null, null,
-				true, true, false, plusTable, true);
+				true, true, false, plusTable, true, "");
 
 	}
 }

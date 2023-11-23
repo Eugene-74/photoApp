@@ -34,7 +34,7 @@ public class BigPreview {
                 (o) -> {
                     clear();
                     ImageEdition.open(imageName, true);
-                }, null, null, false, true, false, BigPreviewTable, false);
+                }, null, null, false, true, false, BigPreviewTable, false, "");
 
     }
 

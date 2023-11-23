@@ -18,7 +18,8 @@ public class MainImages {
     public static Table imagesTable;
     public static Integer imageI = 0;
     public static Integer nextToNotLoad = 0;
-    public static Boolean deleteModeIsOn = false;
+    public static Boolean selectModeIsOn = false;
+    public static ArrayList<ImageData> selectedList = new ArrayList<ImageData>();
 
     public static void create() {
         createMainTable();
@@ -67,7 +68,7 @@ public class MainImages {
     }
 
     public static void createButton() {
-        if (!deleteModeIsOn) {
+        if (!selectModeIsOn) {
             CommonButton.createAddImagesButton(mainTable);
         }
         CommonButton.createRefreshButton(mainTable);
@@ -78,26 +79,48 @@ public class MainImages {
                 Main.mainStage,
                 (o) -> {
                     nextImages();
-                }, null, null, true, true, false, mainTable, true);
+                }, null, null, true, true, false, mainTable, true, "next images");
         Main.placeImage(List.of("images/previous up.png", "images/outline.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
                     previousImages();
                 }, null, null,
-                true, true, false, mainTable, true);
+                true, true, false, mainTable, true, "previous images");
         mainTable.row();
-        if (deleteModeIsOn) {
+        if (selectModeIsOn) {
 
+            Main.placeImage(List.of("images/delete.png", "images/outline.png"), "basic button",
+                    new Vector2(0, 0),
+                    Main.mainStage,
+                    (o) -> {
+                        deleteImagesOfList(selectedList);
+                        selectModeIsOn = false;
+                        reload();
+
+                    }, null, null,
+                    true, true, false, mainTable, true, "delete the selected images");
+            Main.placeImage(List.of("images/love.png", "images/outline.png"), "basic button",
+                    new Vector2(0, 0),
+                    Main.mainStage,
+                    (o) -> {
+                        loveImagesOfList(selectedList);
+                        selectModeIsOn = false;
+                        reload();
+
+                    }, null, null,
+                    true, true, false, mainTable, true, "love the selected images");
+            mainTable.row();
             Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
                     new Vector2(0, 0),
                     Main.mainStage,
                     (o) -> {
-                        deleteModeIsOn = false;
+                        selectModeIsOn = false;
                         reload();
 
                     }, null, null,
-                    true, true, false, mainTable, true);
+                    true, true, false, mainTable, true, "back");
+
         } else {
             Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
                     new Vector2(0, 0),
@@ -108,30 +131,63 @@ public class MainImages {
                         FileChooser.open();
 
                     }, null, null,
-                    true, true, false, mainTable, true);
+                    true, true, false, mainTable, true, "back");
+
+            Main.placeImage(List.of("images/selected.png", "images/outline.png"), "basic button",
+                    new Vector2(0, 0),
+                    Main.mainStage,
+                    (o) -> {
+                        if (selectModeIsOn) {
+                            selectModeIsOn = false;
+                        } else {
+                            selectModeIsOn = true;
+                        }
+                        reload();
+
+                    }, null, null,
+                    true, true, false, mainTable, true, "select images");
         }
-        mainTable.row();
-        Main.placeImage(List.of("images/delete.png", "images/outline.png"), "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    if (deleteModeIsOn) {
-                        ImageEdition.save();
-                        deleteModeIsOn = false;
-                        reload();
-                    } else {
-                        deleteModeIsOn = true;
-                        reload();
+
+    }
+
+    public static void loveImagesOfList(ArrayList<ImageData> list) {
+        ArrayList<ImageData> toRemove = new ArrayList<ImageData>();
+        for (ImageData imageData : list) {
+            if (imageData.getLoved()) {
+                imageData.setLoved(false);
+            } else {
+                imageData.setLoved(true);
+            }
+            toRemove.add(imageData);
+        }
+        for (ImageData imageData : toRemove) {
+            list.remove(imageData);
+        }
+        reload();
+    }
+
+    public static void deleteImagesOfList(ArrayList<ImageData> list) {
+        ArrayList<ImageData> toRemove = new ArrayList<ImageData>();
+        for (ImageData imageData : list) {
+            if (ImageEdition.toDelete.contains(imageData, true)) {
+                for (ImageData delet : ImageEdition.toDelete) {
+                    Integer index = 0;
+                    if (delet.equals(imageData)) {
+
+                        ImageEdition.toDelete.removeIndex(index);
 
                     }
-
-                }, null, null,
-                true, true, false, mainTable, true);
-
-        if (deleteModeIsOn) {
-            CommonButton.createSaveButton(mainTable);
+                    index += 1;
+                }
+            } else {
+                ImageEdition.toDelete.add(imageData);
+            }
+            toRemove.add(imageData);
         }
-
+        for (ImageData imageData : toRemove) {
+            list.remove(imageData);
+        }
+        reload();
     }
 
     private static void createImagesTable() {
@@ -190,19 +246,22 @@ public class MainImages {
 
                         List<String> placeImageList = new ArrayList<String>();
                         placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
-                        if (deleteModeIsOn) {
+                        if (selectModeIsOn) {
                             placeImageList.add("images/redOutline.png");
 
                         } else {
                             placeImageList.add("images/outline.png");
                         }
-                        if (ImageEdition.toDelete.contains(imageData, false)) {
-                            placeImageList.add("images/deleted preview.png");
+                        if (selectedList.contains(imageData) && selectModeIsOn) {
+                            placeImageList.add("images/selected.png");
                         }
                         if (imageData.getLoved()) {
                             placeImageList.add("images/loved preview.png");
                         }
-                        if (deleteModeIsOn) {
+                        if (ImageEdition.toDelete.contains(imageData, true)) {
+                            placeImageList.add("images/deleted preview.png");
+                        }
+                        if (selectModeIsOn) {
                             Main.placeImage(placeImageList,
                                     "main images button",
                                     new Vector2(0, 0),
@@ -210,51 +269,31 @@ public class MainImages {
 
                                     (o) -> {
 
-                                        if (deleteModeIsOn) {
+                                        if (selectModeIsOn) {
 
-                                            Integer indexBis = 0;
-                                            if (!ImageEdition.toDelete.isEmpty()) {
-                                                for (ImageData delet : ImageEdition.toDelete) {
-                                                    if (delet.equals(imageData)) {
-
-                                                        ImageEdition.toDelete.removeIndex(indexBis);
-                                                        reload();
-                                                        Main.lastImageData = imageData;
-
-                                                        return;
-
-                                                    }
-                                                    indexBis += 1;
-                                                }
+                                            if (selectedList.contains(imageData)) {
+                                                selectedList.remove(imageData);
+                                            } else {
+                                                selectedList.add(imageData);
                                             }
-                                            ImageEdition.toDelete.add(imageData);
                                             reload();
-                                            Main.lastImageData = imageData;
+
                                         }
+
                                     }, (o) -> {
                                         if (imageData != Main.lastImageData) {
 
                                             Main.lastImageData = imageData;
-                                            if (deleteModeIsOn && Main.isOnClick) {
-                                                Integer indexBis = 0;
-                                                if (!ImageEdition.toDelete.isEmpty()) {
-                                                    for (ImageData delet : ImageEdition.toDelete) {
-                                                        if (delet.equals(imageData)) {
-
-                                                            ImageEdition.toDelete.removeIndex(indexBis);
-                                                            reload();
-
-                                                            return;
-
-                                                        }
-                                                        indexBis += 1;
-                                                    }
+                                            if (selectModeIsOn && Main.isOnClick) {
+                                                if (selectedList.contains(imageData)) {
+                                                    selectedList.remove(imageData);
+                                                } else {
+                                                    selectedList.add(imageData);
                                                 }
-                                                ImageEdition.toDelete.add(imageData);
                                                 reload();
                                             }
                                         }
-                                    }, null, true, true, false, imagesTable, true);
+                                    }, null, true, true, false, imagesTable, true, "");
                         } else {
 
                             Main.placeImage(placeImageList,
@@ -265,7 +304,7 @@ public class MainImages {
                                         clearMainImages();
                                         Main.unLoadAll();
                                         ImageEdition.open(imageName, true);
-                                    }, null, null, true, true, false, imagesTable, true);
+                                    }, null, null, true, true, false, imagesTable, true, "");
                         }
                         if (index >= column) {
                             imagesTable.row();

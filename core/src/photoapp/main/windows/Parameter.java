@@ -48,7 +48,7 @@ public class Parameter {
                     FileChooser.open();
 
                 }, null, null,
-                true, true, false, mainTableParameter, true);
+                true, true, false, mainTableParameter, true, "back");
     }
 
     public static void placeParameterButton() {
@@ -76,7 +76,7 @@ public class Parameter {
                     }
                     Main.preferences.flush();
                 }, null, null,
-                true, true, false, parameterTable, true);
+                true, true, false, parameterTable, true, "info");
 
         List<String> darkmodeList = new ArrayList<String>();
         darkmodeList.add("images/mode.png");
@@ -106,7 +106,7 @@ public class Parameter {
                     }
                     Main.preferences.flush();
                 }, null, null,
-                true, true, false, parameterTable, true);
+                true, true, false, parameterTable, true, "dark mode");
 
         List<String> brightmodeList = new ArrayList<String>();
         brightmodeList.add("images/mode.png");
@@ -136,7 +136,7 @@ public class Parameter {
                     }
                     Main.preferences.flush();
                 }, null, null,
-                true, true, false, parameterTable, true);
+                true, true, false, parameterTable, true, "bright mode");
 
     }
 

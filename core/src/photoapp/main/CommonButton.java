@@ -16,7 +16,7 @@ public class CommonButton {
                     Main.openFile();
                     Main.reload(false);
                 }, null, null,
-                true, true, false, table, true);
+                true, true, false, table, true, "add images");
     }
 
     public static void createRefreshButton(Table table) {
@@ -27,7 +27,7 @@ public class CommonButton {
 
                     Main.reload(false);
                 }, null, null,
-                true, true, false, table, true);
+                true, true, false, table, true, "refresh");
     }
 
     public static void createSaveButton(Table table) {
@@ -37,6 +37,6 @@ public class CommonButton {
                 (o) -> {
                     ImageEdition.save();
                 }, null, null,
-                true, true, false, table, true);
+                true, true, false, table, true, "save");
     }
 }

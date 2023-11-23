@@ -39,6 +39,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
@@ -345,7 +346,8 @@ public class Main extends ApplicationAdapter {
 	public static void placeImage(List<String> imageNames, String prefSizeName,
 			Vector2 position, Stage mainStage,
 			final Consumer<Object> onClicked, final Consumer<Object> onEnter, final Consumer<Object> onExit,
-			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize) {
+			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize,
+			String tip) {
 
 		MixOfImage mixOfImages;
 		Integer width;
@@ -461,9 +463,9 @@ public class Main extends ApplicationAdapter {
 			}
 
 		}
-		// mixOfImages.addListener(new TextTooltip("This is the tip ! Why it is not
-		// shown ?", skin));
-		// !!!!!!!!!!!!! change what's inside
+		if (!tip.equals("")) {
+			mixOfImages.addListener(new TextTooltip(tip, skin));
+		}
 
 	}
 
@@ -487,7 +489,7 @@ public class Main extends ApplicationAdapter {
 					System.out.println("closing");
 					dispose();
 					System.exit(0);
-				}, null, null, true, false, false, ImageEdition.table, true);
+				}, null, null, true, false, false, ImageEdition.table, true, "close");
 	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
@@ -527,7 +529,7 @@ public class Main extends ApplicationAdapter {
 		if (windowOpen.equals("ImageEdition")) {
 			ImageEdition.reload(returnToZero);
 		}
-		if (windowOpen.equals("Main Images")) {
+		if (windowOpen.equals("MainImages")) {
 			MainImages.reload();
 		}
 	}
@@ -1079,7 +1081,7 @@ public class Main extends ApplicationAdapter {
 					Gdx.net.openURI("https://discord.gg/Q2HhZucmxU");
 
 				}, null, null,
-				true, true, false, linkTable, true);
+				true, true, false, linkTable, true, "open the discord");
 
 	}
 

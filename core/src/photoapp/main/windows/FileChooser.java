@@ -94,7 +94,7 @@ public class FileChooser {
                 }, (o) -> {
                     System.out.println("exit");
                 },
-                true, true, false, buttonTable, true);
+                true, true, false, buttonTable, true, "add a file");
 
         buttonTable.row();
 
@@ -105,7 +105,7 @@ public class FileChooser {
                     Parameter.open();
                     clear();
                 }, null, null,
-                true, true, false, buttonTable, true);
+                true, true, false, buttonTable, true, "open the parameter");
     }
 
     public static void addAFile() {
@@ -136,7 +136,7 @@ public class FileChooser {
                 (o) -> {
                     openFile("");
                 }, null, null,
-                true, true, false, fileTable, true);
+                true, true, false, fileTable, true, "allFile");
 
         for (File name : handle.listFiles()) {
             if (name.isDirectory()) {
@@ -171,7 +171,7 @@ public class FileChooser {
                         (o) -> {
                             openFile(name);
                         }, null, null,
-                        true, true, false, fileTable, true);
+                        true, true, false, fileTable, true, name);
 
                 index += 1;
                 if (index >= maxByLine) {

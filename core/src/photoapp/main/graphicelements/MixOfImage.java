@@ -184,9 +184,13 @@ public class MixOfImage extends Group {
                         forceCreation(fileName);
                     }
                     imageName = "images/error.png";
-                }
+                    ListImageName = imageName.split("/");
+                    rotation = 0;
 
-                rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+                } else {
+                    rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+
+                }
 
             }
             texture = isInImageData(imageName, false, "");
