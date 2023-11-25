@@ -170,7 +170,9 @@ public class MixOfImage extends Group {
             String[] ListImageName = imageName.split("/");
 
             if (imageName.split("/")[ListImageName.length - 2].equals("userImages")
-                    || imageName.split("/")[ListImageName.length - 2].equals("150")) {
+                    || imageName.split("/")[ListImageName.length - 2].equals("150")
+                    || imageName.split("/")[ListImageName.length - 2].equals("peoples")
+                    || imageName.split("/")[ListImageName.length - 2].equals("places")) {
 
                 fileName = Gdx.files.absolute(imageName);
                 if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
@@ -188,8 +190,11 @@ public class MixOfImage extends Group {
                     rotation = 0;
 
                 } else {
-                    rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+                    if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
 
+                        rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+
+                    }
                 }
 
             }

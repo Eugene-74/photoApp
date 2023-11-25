@@ -216,7 +216,13 @@ public class Main extends ApplicationAdapter {
 		if (windowOpen.equals("ImageEdition")) {
 			if (TimeUtils.millis() - ImageEdition.lastImageChange > 500) {
 				if (!ImageEdition.imageWithGoodQuality) {
-					ImageEdition.openMainImage(ImageEdition.theCurrentImagePath, true);
+					if (!ImageEdition.imageOpen.equals("")) {
+
+						ImageEdition.openMainImage(ImageEdition.imageOpen, true);
+					} else {
+						ImageEdition.openMainImage(ImageEdition.theCurrentImagePath, true);
+
+					}
 				}
 			}
 		}
@@ -438,6 +444,7 @@ public class Main extends ApplicationAdapter {
 				// System.out.println(
 				// imageNameList[imageNameList.length - 1] + "---------------" +
 				// cell.getActor().getName());
+
 				if (cell.getActor().getName().equals(imageNameList[imageNameList.length - 1])) {
 
 					cell.setActor(mixOfImages);
@@ -938,7 +945,7 @@ public class Main extends ApplicationAdapter {
 		for (String lookingFor : MixOfImage.manager.getAssetNames()) {
 			String[] ListImageName = lookingFor.split("/");
 
-			if (!lookingFor.split("/")[ListImageName.length - 2].equals("images")
+			if (ListImageName.length > 2 && !lookingFor.split("/")[ListImageName.length - 2].equals("images")
 					&& !lookingFor.split("/")[ListImageName.length - 2].equals("peoples")
 					&& !lookingFor.split("/")[ListImageName.length - 2].equals("places")) {
 				unLoadAnImage(lookingFor);

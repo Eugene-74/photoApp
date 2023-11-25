@@ -228,7 +228,7 @@ public class ImageData {
     }
 
     public static void saveImagesData() {
-
+        sortImageData(Main.imagesData);
         String s = "";
         for (ImageData imageData : Main.imagesData) {
             s += imageData.toFileLine();
@@ -236,6 +236,61 @@ public class ImageData {
         FileHandle handle = Gdx.files.absolute(SAVE_PATH);
         InputStream text = new ByteArrayInputStream(s.getBytes());
         handle.write(text, false);
+    }
+
+    public static void sortImageData(List<ImageData> imagesData) {
+        imagesData.sort((ImageData imageData1, ImageData imageData2) -> {
+
+            if (imageData2.getDate() != null && !imageData2.getDate().equals("null")) {
+                try {
+                    String date1;
+                    String date2;
+                    if (imageData1.getDate() == null && imageData1.getDate().equals("null")) {
+                        date1 = "0";
+                    } else {
+
+                        date1 = "";
+                        String[] dateSplit1 = imageData1.getDate().split(" ");
+                        String[] daySplit1 = dateSplit1[0].split(":");
+                        String[] hourSplit1 = dateSplit1[1].split(":");
+                        date1 += daySplit1[0] + "" + daySplit1[1]
+                                + "" + daySplit1[2];
+                        date1 += hourSplit1[0] + "" + hourSplit1[1]
+                                + "" + hourSplit1[2];
+                    }
+                    if (imageData2.getDate() == null && imageData2.getDate().equals("null")) {
+                        date2 = "0";
+                    } else {
+                        date2 = "";
+                        String[] dateSplit2 = imageData2.getDate().split(" ");
+                        String[] daySplit2 = dateSplit2[0].split(":");
+                        String[] hourSplit2 = dateSplit2[1].split(":");
+                        date2 += daySplit2[0] + "" + daySplit2[1]
+                                + "" + daySplit2[2];
+                        date2 += hourSplit2[0] + "" + hourSplit2[1]
+                                + "" + hourSplit2[2];
+                    }
+                    System.out.println("date 2 : " + date1 + " date 1 : " + date2);
+                    // !!!!!!!!!!!!ici
+                    // System.out.println(Math.abs((Long.parseLong(date1) -
+                    // Long.parseLong(date2))));
+                    // return (int) Math.abs((Long.parseLong(date1) - Long.parseLong(date2)));
+                    // return compare(Integer.parseInt(date1), Integer.parseInt(date2));
+                    if (Long.parseLong(date1) > Long.parseLong(date2)) {
+                        System.out.println(1);
+                        return -1;
+                    } else {
+                        System.out.println(-1);
+                        return 1;
+                    }
+                } catch (Exception e) {
+                    System.err.println("bug when loading date : " + e);
+                } finally {
+                }
+            }
+            return 0;
+        });
+
     }
 
     public String toFileLine() {

@@ -45,6 +45,7 @@ public class ImageEdition {
 	public static String theCurrentImagePath;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	static String lastPreview = "";
+	public static String imageOpen = "";
 	public static Boolean doNotLoad = false;
 	public static Boolean reloadOnce = false;
 
@@ -97,6 +98,7 @@ public class ImageEdition {
 		Main.windowOpen = "ImageEdition";
 
 		theCurrentImagePath = currentImagePath;
+		imageWithGoodQuality = false;
 		table.clear();
 		previewTable.clear();
 		plusTable.clear();
@@ -135,9 +137,12 @@ public class ImageEdition {
 
 		placeImageOfPeoples(currentImagePath);
 		placePlusPeople();
+		placeAddPeople();
+
 		table.row();
 		placeImageOfPlaces(currentImagePath);
 		placePlusPlace();
+		placeAddPlace();
 
 		table.row();
 		ArrayList<String> loveList = new ArrayList<String>();
@@ -252,21 +257,6 @@ public class ImageEdition {
 		table.row();
 		CommonButton.createSaveButton(table);
 
-		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					addAPeople();
-
-				}, null, null,
-				true, true, false, table, true, "add people");
-		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					addAPlace();
-				}, null, null,
-				true, true, false, table, true, "add place");
 		System.out.println("coords : " + imageData.getCoords());
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
 			table.row();
@@ -374,7 +364,31 @@ public class ImageEdition {
 						clear();
 						BigPreview.open(imageName);
 					}, null, null, false, false, true, table, false, "");
+			imageWithGoodQuality = true;
+
 		}
+	}
+
+	public static void placeAddPeople() {
+		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					addAPeople();
+
+				}, null, null,
+				true, true, false, table, true, "add people");
+	}
+
+	public static void placeAddPlace() {
+
+		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					addAPlace();
+				}, null, null,
+				true, true, false, table, true, "add place");
 	}
 
 	public static void createMainImageTable() {
@@ -511,6 +525,9 @@ public class ImageEdition {
 	}
 
 	public static void showBigPreview(String preview) {
+		imageWithGoodQuality = false;
+		imageOpen = preview;
+		// theCurrentImagePath = preview;
 		// theCurrentImagePath = preview;
 		// load();
 		openMainImage(preview, false);
@@ -521,8 +538,10 @@ public class ImageEdition {
 	}
 
 	public static void closeBigPreview(String initialImage) {
-
 		// theCurrentImagePath = initialImage;
+		// theCurrentImagePath = initialImage;
+		imageOpen = "";
+
 		openMainImage(initialImage, false);
 		reloadOnce = true;
 		// openMainImage(initialImage);
@@ -532,13 +551,14 @@ public class ImageEdition {
 
 	public static void placeImageOfPeoples(String currentImagePath) {
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
-		Integer max = 3;
+		Integer max = 4;
 		Integer index = 0;
 		List<String> peopleNames = new ArrayList<String>();
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
 		for (FileHandle f : handle.list()) {
+
 			peopleNames.add(f.nameWithoutExtension());
 		}
 
@@ -551,7 +571,7 @@ public class ImageEdition {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				peopleList.add(ImageData.IMAGE_PATH + "/peoples/" + people + ".jpg");
+				peopleList.add(ImageData.IMAGE_PATH + "/150/" + people + ".jpg");
 				peopleList.add("images/people outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
@@ -601,7 +621,7 @@ public class ImageEdition {
 			handle.mkdirs();
 		}
 		for (String place : placeNames) {
-			if (i < maxPlace) {
+			if (i < maxPlace - 1) {
 				i += 1;
 				List<String> placeList = new ArrayList<>();
 				placeList.add(ImageData.IMAGE_PATH + "/places/" + place + ".jpg");
@@ -844,7 +864,7 @@ public class ImageEdition {
 							Main.peopleData.put(name, 0);
 							savePeopleToFile();
 
-							Main.reload(false);
+							// Main.reload(false);
 						}
 
 					}
@@ -864,6 +884,7 @@ public class ImageEdition {
 		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + dir.getName());
 
 		to.writeBytes(data, false);
+		Main.setSize150(dir.toString(), dir.getName());
 	}
 
 	public static void movePlace(File dir) {
