@@ -106,6 +106,21 @@ public class FileChooser {
                     clear();
                 }, null, null,
                 true, true, false, buttonTable, true, "open the parameter");
+
+        buttonTable.row();
+
+        addExport();
+    }
+
+    public static void addExport() {
+        Main.placeImage(List.of("images/export.png", "images/outline.png"), "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    Main.infoTextSet("export start", true);
+                    Main.exportImages();
+                }, null, null,
+                true, true, false, buttonTable, true, "export a file");
     }
 
     public static void addAFile() {

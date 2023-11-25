@@ -1166,4 +1166,44 @@ public class Main extends ApplicationAdapter {
 		}
 
 	}
+
+	public static void exportImages() {
+
+		thread = new Thread() {
+			@Override
+			public void run() {
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				JFrame f = new JFrame();
+				f.setVisible(true);
+				f.toFront();
+				f.setVisible(false);
+				int res = chooser.showSaveDialog(f);
+				f.dispose();
+				File fileRessource = null;
+				if (res == JFileChooser.APPROVE_OPTION) {
+					if (chooser.getSelectedFile() != null) {
+						fileRessource = chooser.getSelectedFile();
+						for (ImageData imageData : imagesData) {
+							String imageName = imageData.getName();
+
+							FileHandle from = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageName);
+							byte[] data = from.readBytes();
+
+							FileHandle to = Gdx.files.absolute(fileRessource + "/" + imageName);
+							to.writeBytes(data, false);
+
+						}
+						Main.infoTextSet("export done", true);
+
+					}
+					f.dispose();
+
+				}
+			}
+
+		};
+		thread.start();
+
+	}
 }
