@@ -340,10 +340,9 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void dispose() {
-		if (windowOpen.equals("ImageEdition")) {
-			ImageEdition.save();
-
-		}
+		// if (windowOpen.equals("ImageEdition")||) {
+		ImageEdition.save();
+		// }
 		System.out.println("------------------ saved ---------------- ");
 		mainStage.dispose();
 
@@ -740,6 +739,15 @@ public class Main extends ApplicationAdapter {
 				Float geoDataExif_altitude = geoDataExif.getFloat("altitude");
 				Float geoDataExif_latitudeSpan = geoDataExif.getFloat("latitudeSpan");
 				Float geoDataExif_longitudeSpan = geoDataExif.getFloat("longitudeSpan");
+
+				// System.out.println(processCoordinates(listCoord));
+				if (geoData_latitude != 0.0 && geoData_longitude != 0.0) {
+					float[] listCoord = { geoData_latitude, geoData_longitude };
+					coords = processCoordinates(listCoord);
+				} else if (geoDataExif_latitude != 0.0 && geoDataExif_longitude != 0.0) {
+					float[] listCoord = { geoDataExif_latitude, geoDataExif_longitude };
+					coords = processCoordinates(listCoord);
+				}
 
 				if (favorited) {
 					imageData.setLoved(true);
@@ -1205,5 +1213,55 @@ public class Main extends ApplicationAdapter {
 		};
 		thread.start();
 
+	}
+
+	private static String processCoordinates(float[] coordinates) {
+		String[] ORIENTATIONS = "N/S/E/W".split("/");
+		String converted0 = decimalToDMS(coordinates[1]);
+		final String dmsLat = coordinates[0] > 0 ? ORIENTATIONS[0] : ORIENTATIONS[1];
+		converted0 = converted0.concat("_").concat(dmsLat);
+
+		String converted1 = decimalToDMS(coordinates[0]);
+		final String dmsLng = coordinates[1] > 0 ? ORIENTATIONS[2] : ORIENTATIONS[3];
+		converted1 = converted1.concat("_").concat(dmsLng);
+
+		return converted0.concat(":").concat(converted1);
+	}
+
+	/**
+	 * Given a decimal longitudinal coordinate such as <i>-79.982195</i> it will
+	 * be necessary to know whether it is a latitudinal or longitudinal
+	 * coordinate in order to fully convert it.
+	 * 
+	 * @param coord
+	 *              coordinate in decimal format
+	 * @return coordinate in D°M′S″ format
+	 * @see <a href='https://goo.gl/pWVp60'>Geographic coordinate conversion
+	 *      (wikipedia)</a>
+	 */
+	private static String decimalToDMS(float coord) {
+
+		float mod = coord % 1;
+		int intPart = (int) coord;
+
+		String degrees = String.valueOf(intPart);
+
+		coord = mod * 60;
+		mod = coord % 1;
+		intPart = (int) coord;
+		if (intPart < 0)
+			intPart *= -1;
+
+		String minutes = String.valueOf(intPart);
+
+		coord = mod * 60;
+		intPart = (int) coord;
+		if (intPart < 0)
+			intPart *= -1;
+
+		String seconds = String.valueOf(intPart);
+		String output = Math.abs(Integer.parseInt(degrees)) + "° " + minutes + "' " + seconds + "\" ";
+
+		return output;
 	}
 }

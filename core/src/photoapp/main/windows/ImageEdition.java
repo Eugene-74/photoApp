@@ -714,8 +714,12 @@ public class ImageEdition {
 
 	public static void addPeople(String peopleToAdd, String currentImagePath, boolean isReloadImageEdition) {
 
+		Main.peopleData.put(peopleToAdd, Main.peopleData.get(peopleToAdd) + 1);
+		System.out.println(peopleToAdd);
+		System.out.println(Main.peopleData.get(peopleToAdd));
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 		List<String> peoples = imageData.getPeoples();
+
 		peoples = Main.addToList(peoples, peopleToAdd);
 
 		imageData.setPeoples(peoples);
@@ -728,6 +732,8 @@ public class ImageEdition {
 	}
 
 	public static void addPlace(String placeToAdd, String currentImagePath, boolean isReloadImageEdition) {
+		Main.placeData.put(placeToAdd, Main.placeData.get(placeToAdd) + 1);
+
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 		List<String> places = imageData.getPlaces();
 		places = Main.addToList(places, placeToAdd);
@@ -780,6 +786,8 @@ public class ImageEdition {
 		MainImages.imageI = 0;
 		ImageData.saveImagesData();
 		deleteImageTodelete();
+		savePeopleDataToFile();
+		savePlaceDataToFile();
 
 	}
 
@@ -826,7 +834,7 @@ public class ImageEdition {
 						fileRessource = chooser.getSelectedFile();
 						if (Main.isAnImage(fileRessource.toString())) {
 							movePlace(fileRessource);
-							savePlaceToFile();
+							savePlaceDataToFile();
 							Main.reload(false);
 
 						}
@@ -862,8 +870,8 @@ public class ImageEdition {
 							String name = fileRessource.getName().substring(0,
 									fileRessource.getName().lastIndexOf("."));
 							Main.peopleData.put(name, 0);
-							savePeopleToFile();
 
+							ImageEdition.savePeopleDataToFile();
 							// Main.reload(false);
 						}
 
@@ -916,8 +924,11 @@ public class ImageEdition {
 				true, true, false, table, true, "see more place");
 	}
 
-	public static void savePeopleToFile() {
+	public static void savePeopleDataToFile() {
 
+		// !!!!!!!!!!!! should be sort
+		// same for place
+		Main.peopleData.orderedKeys().sort();
 		String s = "";
 		for (String people : Main.peopleData.keys()) {
 			s += people + ":" + Main.peopleData.get(people) + "\n";
@@ -927,7 +938,7 @@ public class ImageEdition {
 		handle.write(text, false);
 	}
 
-	public static void savePlaceToFile() {
+	public static void savePlaceDataToFile() {
 
 		String s = "";
 		for (String place : Main.placeData.keys()) {

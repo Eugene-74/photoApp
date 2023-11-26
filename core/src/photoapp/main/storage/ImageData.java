@@ -270,17 +270,17 @@ public class ImageData {
                         date2 += hourSplit2[0] + "" + hourSplit2[1]
                                 + "" + hourSplit2[2];
                     }
-                    System.out.println("date 2 : " + date1 + " date 1 : " + date2);
+                    // System.out.println("date 2 : " + date1 + " date 1 : " + date2);
                     // !!!!!!!!!!!!ici
                     // System.out.println(Math.abs((Long.parseLong(date1) -
                     // Long.parseLong(date2))));
                     // return (int) Math.abs((Long.parseLong(date1) - Long.parseLong(date2)));
                     // return compare(Integer.parseInt(date1), Integer.parseInt(date2));
                     if (Long.parseLong(date1) > Long.parseLong(date2)) {
-                        System.out.println(1);
+                        // System.out.println(1);
                         return -1;
                     } else {
-                        System.out.println(-1);
+                        // System.out.println(-1);
                         return 1;
                     }
                 } catch (Exception e) {
