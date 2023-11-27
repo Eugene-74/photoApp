@@ -17,9 +17,18 @@ public class MainImages {
     public static Table mainTable;
     public static Table imagesTable;
     public static Integer imageI = 0;
+    public static Integer lastImageI = 0;
+
     public static Integer nextToNotLoad = 0;
     public static Boolean selectModeIsOn = false;
     public static ArrayList<ImageData> selectedList = new ArrayList<ImageData>();
+
+    // public static ArrayList<String> imagesWithPoorQuality = new
+    // ArrayList<String>();
+    // public static ArrayList<String> imagesWithGoodQuality = new
+    // ArrayList<String>();
+    public static Boolean imageWithGoodQuality = false;
+    static public Long lastImageChange = (long) 0;
 
     public static void create() {
         createMainTable();
@@ -52,7 +61,7 @@ public class MainImages {
 
     }
 
-    public static void clearMainImages() {
+    public static void clear() {
         Gdx.app.log(fileName, "clear");
 
         MixOfImage.stopLoading();
@@ -111,27 +120,10 @@ public class MainImages {
                     }, null, null,
                     true, true, false, mainTable, true, "love the selected images");
             mainTable.row();
-            Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-                    new Vector2(0, 0),
-                    Main.mainStage,
-                    (o) -> {
-                        selectModeIsOn = false;
-                        reload();
-
-                    }, null, null,
-                    true, true, false, mainTable, true, "back");
+            CommonButton.createBack(mainTable);
 
         } else {
-            Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-                    new Vector2(0, 0),
-                    Main.mainStage,
-                    (o) -> {
-                        Main.toReload = "File Chooser";
-                        clearMainImages();
-                        FileChooser.open();
-
-                    }, null, null,
-                    true, true, false, mainTable, true, "back");
+            CommonButton.createBack(mainTable);
 
             Main.placeImage(List.of("images/selected.png", "images/outline.png"), "basic button",
                     new Vector2(0, 0),
@@ -204,6 +196,9 @@ public class MainImages {
     }
 
     public static void createImagesButton(Integer firstI, Boolean isFirstLoading) {
+        if (imageWithGoodQuality) {
+            System.out.println("good quality");
+        }
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
         Integer row = Main.preferences.getInteger("size of main images height")
@@ -221,7 +216,6 @@ public class MainImages {
             Main.infoTextSet("no image loaded, please add new images", true);
             Main.imagesData = new ArrayList<>();
         } else {
-            Main.toReload = "mainImages";
 
             Integer max;
             if (Main.imagesData.size() < column * row) {
@@ -245,66 +239,84 @@ public class MainImages {
                         MixOfImage.toPlaceList.remove(imageData.getName());
 
                         List<String> placeImageList = new ArrayList<String>();
-                        placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
-                        if (selectModeIsOn) {
-                            placeImageList.add("images/redOutline.png");
+                        if (imageWithGoodQuality) {
+                            System.out.println("good quality");
 
-                        } else {
-                            placeImageList.add("images/outline.png");
-                        }
-                        if (selectedList.contains(imageData) && selectModeIsOn) {
-                            placeImageList.add("images/selected.png");
-                        }
-                        if (imageData.getLoved()) {
-                            placeImageList.add("images/loved preview.png");
-                        }
-                        if (ImageEdition.toDelete.contains(imageData, true)) {
-                            placeImageList.add("images/deleted preview.png");
-                        }
-                        if (selectModeIsOn) {
-                            Main.placeImage(placeImageList,
-                                    "main images button",
-                                    new Vector2(0, 0),
-                                    Main.mainStage,
+                            placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
+                            if (selectModeIsOn) {
+                                placeImageList.add("images/redOutline.png");
 
-                                    (o) -> {
+                            } else {
+                                placeImageList.add("images/outline.png");
+                            }
+                            if (selectedList.contains(imageData) && selectModeIsOn) {
+                                placeImageList.add("images/selected.png");
+                            }
+                            if (imageData.getLoved()) {
+                                placeImageList.add("images/loved preview.png");
+                            }
+                            if (ImageEdition.toDelete.contains(imageData, true)) {
+                                placeImageList.add("images/deleted preview.png");
+                            }
+                            if (selectModeIsOn) {
+                                Main.placeImage(placeImageList,
+                                        "main images button",
+                                        new Vector2(0, 0),
+                                        Main.mainStage,
 
-                                        if (selectModeIsOn) {
+                                        (o) -> {
 
-                                            if (selectedList.contains(imageData)) {
-                                                selectedList.remove(imageData);
-                                            } else {
-                                                selectedList.add(imageData);
-                                            }
-                                            reload();
+                                            if (selectModeIsOn) {
 
-                                        }
-
-                                    }, (o) -> {
-                                        if (imageData != Main.lastImageData) {
-
-                                            Main.lastImageData = imageData;
-                                            if (selectModeIsOn && Main.isOnClick) {
                                                 if (selectedList.contains(imageData)) {
                                                     selectedList.remove(imageData);
                                                 } else {
                                                     selectedList.add(imageData);
                                                 }
                                                 reload();
+
                                             }
-                                        }
-                                    }, null, true, true, false, imagesTable, true, "");
+
+                                        }, (o) -> {
+                                            if (imageData != Main.lastImageData) {
+
+                                                Main.lastImageData = imageData;
+                                                if (selectModeIsOn && Main.isOnClick) {
+                                                    if (selectedList.contains(imageData)) {
+                                                        selectedList.remove(imageData);
+                                                    } else {
+                                                        selectedList.add(imageData);
+                                                    }
+                                                    reload();
+                                                }
+                                            }
+                                        }, null, true, true, false, imagesTable, true, "");
+                            } else {
+
+                                Main.placeImage(placeImageList,
+                                        "main images button",
+                                        new Vector2(0, 0),
+                                        Main.mainStage,
+                                        (o) -> {
+                                            clear();
+                                            Main.unLoadAll();
+                                            ImageEdition.open(imageName, true);
+                                        }, null, null, true, true, false, imagesTable, true, "");
+                            }
                         } else {
+                            if (MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/" + imageName)) {
+                                placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
+                            } else {
+                                placeImageList.add("images/loading button.png");
+                            }
+
+                            placeImageList.add("images/outline.png");
 
                             Main.placeImage(placeImageList,
                                     "main images button",
                                     new Vector2(0, 0),
                                     Main.mainStage,
-                                    (o) -> {
-                                        clearMainImages();
-                                        Main.unLoadAll();
-                                        ImageEdition.open(imageName, true);
-                                    }, null, null, true, true, false, imagesTable, true, "");
+                                    null, null, null, true, true, false, imagesTable, true, "");
                         }
                         if (index >= column) {
                             imagesTable.row();
@@ -334,6 +346,8 @@ public class MainImages {
     }
 
     public static void previousImages() {
+        imageWithGoodQuality = false;
+
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
 
@@ -350,6 +364,7 @@ public class MainImages {
     }
 
     public static void nextImages() {
+        imageWithGoodQuality = false;
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
 

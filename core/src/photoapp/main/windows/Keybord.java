@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 
+import photoapp.main.CommonFunction;
 import photoapp.main.Main;
 
 public class Keybord implements InputProcessor {
@@ -17,7 +18,8 @@ public class Keybord implements InputProcessor {
         } else if ((keycode == Keys.RIGHT || keycode == Keys.DOWN
                 || keycode == Keys.S)) {
             next();
-
+        } else if (keycode == Keys.ESCAPE) {
+            CommonFunction.back();
         }
 
         return false;
@@ -100,4 +102,5 @@ public class Keybord implements InputProcessor {
         }
 
     }
+
 }

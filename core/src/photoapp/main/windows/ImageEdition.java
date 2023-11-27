@@ -57,6 +57,8 @@ public class ImageEdition {
 	static public Boolean imageWithGoodQuality = false;
 	// static public String imageQualityPath;
 
+	static public Boolean plusTableOpen = false;
+
 	public static void create() {
 		Gdx.app.log(fileName, "create");
 
@@ -94,7 +96,6 @@ public class ImageEdition {
 		Gdx.app.log(fileName, "open");
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 
-		// Main.toReload = "imageEdition";
 		Main.windowOpen = "ImageEdition";
 
 		theCurrentImagePath = currentImagePath;
@@ -255,9 +256,7 @@ public class ImageEdition {
 				}, null, null,
 				true, true, false, table, true, "rotate to the left");
 		table.row();
-		CommonButton.createSaveButton(table);
 
-		System.out.println("coords : " + imageData.getCoords());
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
 			table.row();
 			Main.placeImage(List.of("images/map.png", "images/outline.png"), "basic button",
@@ -269,21 +268,14 @@ public class ImageEdition {
 					}, null, null,
 					true, true, false, table, true, "open the map");
 		}
-
 		table.row();
+
 		CommonButton.createAddImagesButton(table);
+		table.row();
 
+		CommonButton.createSaveButton(table);
 		CommonButton.createRefreshButton(table);
-
-		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					clear();
-
-					MainImages.open();
-				}, null, null,
-				true, true, false, table, true, "back");
+		CommonButton.createBack(table);
 
 	}
 
@@ -292,8 +284,6 @@ public class ImageEdition {
 
 		plusTable.clear();
 		Main.windowOpen = "ImageEdition";
-		Main.toReload = "imageEdition";
-
 		ImageData.openDataOfImages();
 
 		if (returnToZero) {
@@ -332,7 +322,6 @@ public class ImageEdition {
 
 		}
 
-		Main.toReload = "imageEdition";
 		Main.windowOpen = "ImageEdition";
 
 		placePreviewImage(theCurrentImagePath);
@@ -527,25 +516,17 @@ public class ImageEdition {
 	public static void showBigPreview(String preview) {
 		imageWithGoodQuality = false;
 		imageOpen = preview;
-		// theCurrentImagePath = preview;
-		// theCurrentImagePath = preview;
-		// load();
 		openMainImage(preview, false);
 
 		reloadOnce = true;
-		Main.toReload = "imageEdition";
 
 	}
 
 	public static void closeBigPreview(String initialImage) {
-		// theCurrentImagePath = initialImage;
-		// theCurrentImagePath = initialImage;
 		imageOpen = "";
 
 		openMainImage(initialImage, false);
 		reloadOnce = true;
-		// openMainImage(initialImage);
-		Main.toReload = "imageEdition";
 
 	}
 
@@ -970,6 +951,7 @@ public class ImageEdition {
 	}
 
 	public static void addAllPeopleToPlusTable() {
+		plusTableOpen = true;
 		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
@@ -1019,17 +1001,12 @@ public class ImageEdition {
 			}
 		}
 		plusTable.row();
-		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					Main.reload(false);
-				}, null, null,
-				true, true, false, plusTable, true, "");
+		CommonButton.createBack(plusTable);
 
 	}
 
 	public static void addAllPlaceToPlusTable() {
+		plusTableOpen = true;
 		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
@@ -1084,14 +1061,8 @@ public class ImageEdition {
 			}
 		}
 		plusTable.row();
-		Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-				new Vector2(0, 0),
-				Main.mainStage,
-				(o) -> {
-					plusTable.clear();
-					Main.reload(false);
-				}, null, null,
-				true, true, false, plusTable, true, "");
+
+		CommonButton.createBack(plusTable);
 
 	}
 }

@@ -32,126 +32,186 @@ public class ImageData {
     }
 
     public ImageData setRotation(Integer rota) {
+        if (data != null) {
 
-        data.put("rotation", rota);
-
+            data.put("rotation", rota);
+        }
         return this;
     }
 
     public Integer getRotation() {
-        if (data.get("rotation") != null) {
-            return Integer.parseInt(data.get("rotation").toString());
+        if (data != null) {
 
-        } else {
-            return 0;
+            if (data.get("rotation") != null) {
+                return Integer.parseInt(data.get("rotation").toString());
+
+            }
         }
+        return 0;
+
     }
 
     public ImageData setName(String name) {
-        if (name != "" && name != null) {
-            data.put("name", name);
-        } else {
-            data.put("name", " ");
+        if (data != null) {
 
+            if (name != "" && name != null) {
+                data.put("name", name);
+            } else {
+                data.put("name", "error in the name");
+
+            }
         }
         return this;
     }
 
     public String getName() {
-        return (String) data.get("name");
+        if (data != null) {
+            if (data.get("name") != null) {
+                return (String) data.get("name");
+            }
+        }
+        return "";
     }
 
     public ImageData setDate(String date) {
-        if (date != "" && date != null) {
-            data.put("date", date);
-        } else {
-            data.put("date", " ");
+        if (data != null) {
+
+            if (date != "" && date != null) {
+                data.put("date", date);
+            } else {
+                data.put("date", " ");
+                // date of now !!!!!!!!
+            }
         }
         return this;
     }
 
     public String getDate() {
-        if (data.get("date").equals(null)) {
-            return null;
+        if (data != null) {
+            if (data.get("date") != null) {
+                return (String) data.get("date");
+            }
         }
-        return (String) data.get("date");
+        return null;
+
     }
 
     public ImageData setPlaces(List<String> places) {
-        if (!places.isEmpty()) {
-            data.put("places", places);
-        } else {
-            data.put("places", List.of(""));
+        if (data != null) {
+
+            if (!places.isEmpty()) {
+                data.put("places", places);
+            } else {
+                data.put("places", "");
+            }
         }
         return this;
     }
 
     public List<String> getPlaces() {
-        return (List<String>) data.get("places");
+        if (data != null) {
+
+            if (data.get("places") != null && !data.get("places").equals("")) {
+                return (List<String>) data.get("places");
+            }
+        }
+        return null;
+
     }
 
     public Boolean isInPlaces(String placeLookingFor) {
-        for (String place : (List<String>) data.get("places")) {
-            if (place.equals(placeLookingFor)) {
-                return true;
+        if (data != null) {
+
+            if (data != null) {
+                if (data.get("places") != null) {
+                    for (String place : (List<String>) data.get("places")) {
+                        if (place.equals(placeLookingFor)) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         return false;
+
     }
 
     public ImageData setPeoples(List<String> peoples) {
-        if (!peoples.isEmpty()) {
-            data.put("peoples", peoples);
-        } else {
-            data.put("peoples", List.of(""));
+        if (data != null) {
+
+            if (!peoples.isEmpty()) {
+                data.put("peoples", peoples);
+            } else {
+                data.put("peoples", "");
+            }
         }
         return this;
 
     }
 
     public List<String> getPeoples() {
-        return (List<String>) data.get("peoples");
+        if (data != null) {
+
+            if (data.get("peoples") != null && !data.get("peoples").equals("")) {
+                return (List<String>) data.get("peoples");
+            }
+        }
+
+        return null;
+
     }
 
     public Boolean isInPeoples(String peopleLookingFor) {
         if (data != null) {
-            for (String people : (List<String>) data.get("peoples")) {
-                if (people.equals(peopleLookingFor)) {
-                    return true;
+            if (data.get("peoples") != null) {
+                for (String people : (List<String>) data.get("peoples")) {
+                    if (people.equals(peopleLookingFor)) {
+                        return true;
+                    }
                 }
             }
-            return false;
 
-        } else {
-            return null;
         }
+        return false;
     }
 
     public ImageData setCoords(String coords) {
-        if (coords != "" && coords != null) {
-            data.put("coords", coords);
-        } else {
-            data.put("coords", " ");
+        if (data != null) {
+
+            if (coords != "" && coords != null) {
+                data.put("coords", coords);
+            } else {
+                data.put("coords", "");
+            }
         }
         return this;
     }
 
     public String getCoords() {
-
-        return (String) data.get("coords");
+        if (data != null) {
+            return (String) data.get("coords");
+        }
+        return "";
     }
 
     public ImageData setLoved(Boolean loved) {
-        if (loved == true) {
-            data.put("loved", true);
-        } else {
-            data.put("loved", false);
+        if (data != null) {
+
+            if (loved == true) {
+                data.put("loved", true);
+            } else {
+                data.put("loved", false);
+            }
         }
         return this;
     }
 
     public Boolean getLoved() {
-        return (Boolean) data.get("loved");
+        if (data != null) {
+
+            return (Boolean) data.get("loved");
+        }
+        return false;
     }
 
     @Override
@@ -239,13 +299,14 @@ public class ImageData {
     }
 
     public static void sortImageData(List<ImageData> imagesData) {
-        imagesData.sort((ImageData imageData1, ImageData imageData2) -> {
+        if (Main.imagesData != null && !Main.imagesData.isEmpty()) {
 
-            if (imageData2.getDate() != null && !imageData2.getDate().equals("null")) {
+            imagesData.sort((ImageData imageData1, ImageData imageData2) -> {
+
                 try {
                     String date1;
                     String date2;
-                    if (imageData1.getDate() == null && imageData1.getDate().equals("null")) {
+                    if (imageData1.getDate() == null) {
                         date1 = "0";
                     } else {
 
@@ -258,7 +319,7 @@ public class ImageData {
                         date1 += hourSplit1[0] + "" + hourSplit1[1]
                                 + "" + hourSplit1[2];
                     }
-                    if (imageData2.getDate() == null && imageData2.getDate().equals("null")) {
+                    if (imageData2.getDate() == null) {
                         date2 = "0";
                     } else {
                         date2 = "";
@@ -270,12 +331,7 @@ public class ImageData {
                         date2 += hourSplit2[0] + "" + hourSplit2[1]
                                 + "" + hourSplit2[2];
                     }
-                    // System.out.println("date 2 : " + date1 + " date 1 : " + date2);
-                    // !!!!!!!!!!!!ici
-                    // System.out.println(Math.abs((Long.parseLong(date1) -
-                    // Long.parseLong(date2))));
-                    // return (int) Math.abs((Long.parseLong(date1) - Long.parseLong(date2)));
-                    // return compare(Integer.parseInt(date1), Integer.parseInt(date2));
+
                     if (Long.parseLong(date1) > Long.parseLong(date2)) {
                         // System.out.println(1);
                         return -1;
@@ -287,10 +343,9 @@ public class ImageData {
                     System.err.println("bug when loading date : " + e);
                 } finally {
                 }
-            }
-            return 0;
-        });
-
+                return 0;
+            });
+        }
     }
 
     public String toFileLine() {

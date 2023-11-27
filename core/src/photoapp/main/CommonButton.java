@@ -39,4 +39,14 @@ public class CommonButton {
                 }, null, null,
                 true, true, false, table, true, "save");
     }
+
+    public static void createBack(Table table) {
+        Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    CommonFunction.back();
+                }, null, null,
+                true, true, false, table, true, "back");
+    }
 }

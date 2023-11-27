@@ -72,12 +72,12 @@ public class Main extends ApplicationAdapter {
 	static Integer numberOfLoadedImages = 0;
 	public static Label labelInfoText;
 	public static List<ImageData> imagesData;
+
 	public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
 	public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
 
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
-	public static String toReload = "";
 	public static String windowOpen = "Main";
 	Integer newProgress;
 	public static ArrayList<String> toLoad = new ArrayList<String>();
@@ -91,7 +91,6 @@ public class Main extends ApplicationAdapter {
 	static Long lastTimeImageEdition = (long) 0;
 	static InputMultiplexer multiplexer = new InputMultiplexer();
 
-	static float lastX = 0;
 	public static Boolean isOnClick = false;
 
 	public static ImageData lastImageData = null;
@@ -168,19 +167,7 @@ public class Main extends ApplicationAdapter {
 		BigPreview.create();
 
 		FileChooser.open();
-		// private VideoPlayer videoPlayer;
-		// VideoPlayer videoPlayer = VideoPlayerCreator.createVideoPlayer();
-		// videoPlayer.setOnCompletionListener(new VideoPlayer.CompletionListener() {
-		// @Override
-		// public void onCompletionListener(FileHandle file) {
-		// // Do something
-		// }
-		// });
-		// try {
-		// videoPlayer.play(Gdx.files.local("intro/yobowargames.webm"));
-		// } catch (FileNotFoundException e) {
-		// Gdx.app.error("gdx-video", "Oh no!");
-		// }
+
 	}
 
 	public static void createMultiplexer() {
@@ -214,7 +201,7 @@ public class Main extends ApplicationAdapter {
 		Integer progress = MixOfImage.willBeLoad.size();
 		MixOfImage.manager.update();
 		if (windowOpen.equals("ImageEdition")) {
-			if (TimeUtils.millis() - ImageEdition.lastImageChange > 500) {
+			if (TimeUtils.millis() - ImageEdition.lastImageChange > 200) {
 				if (!ImageEdition.imageWithGoodQuality) {
 					if (!ImageEdition.imageOpen.equals("")) {
 
@@ -223,7 +210,29 @@ public class Main extends ApplicationAdapter {
 						ImageEdition.openMainImage(ImageEdition.theCurrentImagePath, true);
 
 					}
+					ImageEdition.imageWithGoodQuality = true;
+					ImageEdition.lastImageChange = TimeUtils.millis();
+					// faire pour image edation !!!!!
+					MainImages.lastImageI = MainImages.imageI;
+
 				}
+			}
+		} else if (windowOpen.equals("MainImages")) {
+			if (TimeUtils.millis() - MainImages.lastImageChange > 500) {
+				// System.out.println("should referesh" + MainImages.imageWithGoodQuality);
+				if (!MainImages.imageWithGoodQuality) {
+					if (MainImages.lastImageI == MainImages.imageI) {
+						MainImages.imageWithGoodQuality = true;
+						MainImages.reload();
+
+					} else {
+						MainImages.lastImageI = MainImages.imageI;
+					}
+					// MainImages.createImagesButton(MainImages.imageI, true);
+					MainImages.lastImageChange = TimeUtils.millis();
+				}
+				// Change to reload only if imageI is the same !
+
 			}
 		}
 
@@ -762,55 +771,57 @@ public class Main extends ApplicationAdapter {
 			}
 
 			Metadata metadata = ImageMetadataReader.readMetadata(file.read());
+			if (metadata != null) {
 
-			for (Directory dir : metadata.getDirectories()) {
+				for (Directory dir : metadata.getDirectories()) {
 
-				if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
-					for (Tag tag : dir.getTags()) {
-						if (tag.getTagName().equals("Date/Time Original")) {
-							imageData.setDate(tag.getDescription());
-						}
-					}
-				} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
-					String lat = "";
-					String lon = "";
-					String minusLat = "";
-					String minusLon = "";
-
-					for (Tag tag : dir.getTags()) {
-						if (tag.getTagName().equals("GPS Latitude")) {
-							lat = tag.getDescription();
-
-						} else if (tag.getTagName().equals("GPS Longitude")) {
-							lon = tag.getDescription();
-						} else if (tag.getTagName().equals("GPS Latitude Ref")) {
-
-							minusLat = tag.getDescription();
-
-						} else if (tag.getTagName().equals("GPS Longitude Ref")) {
-							minusLon = tag.getDescription();
-
-						}
-					}
-					if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
-						coords = "";
-					} else {
-						coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
-					}
-				} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
-					for (Tag tag : dir.getTags()) {
-						if (tag.getTagName().equals("Orientation")) {
-							// System.out.println(tag.getDescription());
-							if (tag.getDescription().contains("180")) {
-								rotation = 180;
-							} else if (tag.getDescription().contains("270")) {
-								rotation = 90;
-							} else if (tag.getDescription().contains("90")) {
-								rotation = 270;
+					if (dir != null && dir.getName() != null && dir.getName().equals("Exif SubIFD")) {
+						for (Tag tag : dir.getTags()) {
+							if (tag.getTagName().equals("Date/Time Original")) {
+								imageData.setDate(tag.getDescription());
 							}
 						}
-					}
+					} else if (dir != null && dir.getName() != null && dir.getName().equals("GPS")) {
+						String lat = "";
+						String lon = "";
+						String minusLat = "";
+						String minusLon = "";
 
+						for (Tag tag : dir.getTags()) {
+							if (tag.getTagName().equals("GPS Latitude")) {
+								lat = tag.getDescription();
+
+							} else if (tag.getTagName().equals("GPS Longitude")) {
+								lon = tag.getDescription();
+							} else if (tag.getTagName().equals("GPS Latitude Ref")) {
+
+								minusLat = tag.getDescription();
+
+							} else if (tag.getTagName().equals("GPS Longitude Ref")) {
+								minusLon = tag.getDescription();
+
+							}
+						}
+						if (lat == "" && lon == "" && minusLat == "" && minusLon == "") {
+							coords = "";
+						} else {
+							coords = lat + "_" + minusLat + ":" + lon + "_" + minusLon;
+						}
+					} else if (dir != null && dir.getName() != null && dir.getName().equals("Exif IFD0")) {
+						for (Tag tag : dir.getTags()) {
+							if (tag.getTagName().equals("Orientation")) {
+								// System.out.println(tag.getDescription());
+								if (tag.getDescription().contains("180")) {
+									rotation = 180;
+								} else if (tag.getDescription().contains("270")) {
+									rotation = 90;
+								} else if (tag.getDescription().contains("90")) {
+									rotation = 270;
+								}
+							}
+						}
+
+					}
 				}
 			}
 
@@ -818,20 +829,12 @@ public class Main extends ApplicationAdapter {
 				imageData.setRotation(rotation);
 			}
 
-			if (imageData.getCoords() == null) {
+			if (imageData.getCoords() == "") {
 				imageData.setCoords(coords);
 			}
 
-			if (imageData.getName() == null) {
+			if (imageData.getName() == "") {
 				imageData.setName(imagePath);
-			}
-
-			if (imageData.getPeoples() == null) {
-				imageData.setPeoples(List.of());
-			}
-
-			if (imageData.getPlaces() == null) {
-				imageData.setPlaces(List.of());
 			}
 			if (imageData.getLoved() == null || imageData.getLoved() == false) {
 				imageData.setLoved(false);
@@ -844,7 +847,7 @@ public class Main extends ApplicationAdapter {
 		} catch (
 
 		Exception e) {
-			System.out.println("Error" + e);
+			System.out.println("openImageExif" + " -Error " + e);
 		} finally {
 		}
 	}

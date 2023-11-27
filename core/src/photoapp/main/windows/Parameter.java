@@ -7,6 +7,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import photoapp.main.CommonButton;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 
@@ -20,6 +21,7 @@ public class Parameter {
     }
 
     public static void open() {
+        Main.windowOpen = "Parameter";
         placeParameterButton();
         placeMainParameterButton();
     }
@@ -39,16 +41,7 @@ public class Parameter {
     }
 
     public static void placeMainParameterButton() {
-        Main.placeImage(List.of("images/back.png", "images/outline.png"), "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    Main.toReload = "File Chooser";
-                    clear();
-                    FileChooser.open();
-
-                }, null, null,
-                true, true, false, mainTableParameter, true, "back");
+        CommonButton.createBack(mainTableParameter);
     }
 
     public static void placeParameterButton() {
