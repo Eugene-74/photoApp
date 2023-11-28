@@ -89,12 +89,17 @@ public class MixOfImage extends Group {
                 manager.load(errorImagePath, Texture.class);
                 manager.finishLoading();
             }
-            if (type.equals("firstloading")) {
+            if (type.equals("force")) {
+                manager.load(lookingFor, Texture.class);
+                manager.finishLoading();
+
+                return manager.get(lookingFor, Texture.class);
+            } else if (type.equals("firstloading")) {
                 startToLoadImage(lookingFor);
                 firstLoading = true;
                 LoadingList.add(fileName.path());
 
-                return manager.get(errorImagePath, Texture.class);
+                return manager.get(lookingFor, Texture.class);
             } else {
                 if (fileName.path().split("/")[ListImageName.length - 2].equals("images")) {
                     manager.load(fileName.path(), Texture.class);
@@ -129,8 +134,13 @@ public class MixOfImage extends Group {
                             if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
                                 Gdx.app.error(fileName.path(), "Creating ...");
 
-                                forceCreation(fileName);
+                                Main.setSize150Force(Main.nameWithoutToNameWithout150(fileName.path()),
+                                        fileName.path().split("/")[ListImageName.length - 1]);
+                                // forceCreation(fileName);
+                                return manager.get(fileName.path(), Texture.class);
+
                             }
+
                         }
                         if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
                             toPlaceList.add(ListImageName[ListImageName.length - 1]);
@@ -146,20 +156,22 @@ public class MixOfImage extends Group {
 
     }
 
-    public static void forceCreation(FileHandle fileName) {
-        String[] ListImageName = fileName.path().split("/");
-        if (!fileName.exists()) {
-            Main.infoTextSet("need to load image due to an error of loading", true);
-            String nameWithout150 = "";
-            for (int i = 0; i < ListImageName.length - 2; i++) {
-                nameWithout150 += ListImageName[i] + "/";
-            }
-            nameWithout150 += ListImageName[ListImageName.length - 1];
+    // public static void forceCreation(FileHandle fileName) {
+    // System.out.println("force creation");
+    // String[] ListImageName = fileName.path().split("/");
+    // if (!fileName.exists()) {
+    // Main.infoTextSet("need to load image due to an error of loading", true);
+    // String nameWithout150 = "";
+    // for (int i = 0; i < ListImageName.length - 2; i++) {
+    // nameWithout150 += ListImageName[i] + "/";
+    // }
+    // nameWithout150 += ListImageName[ListImageName.length - 1];
 
-            Main.setSize150Force(nameWithout150, ListImageName[ListImageName.length - 1]);
+    // Main.setSize150Force(nameWithout150, ListImageName[ListImageName.length -
+    // 1]);
 
-        }
-    }
+    // }
+    // }
 
     public MixOfImage(List<String> imageNames, float width, float height, String prefSizeName) {
         FileHandle fileName = null;
@@ -182,8 +194,9 @@ public class MixOfImage extends Group {
                     Gdx.app.error(fileName.path(), "Do not exist");
                     if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
                         Gdx.app.error(fileName.path(), "Creating ...");
-
-                        forceCreation(fileName);
+                        Main.setSize150Force(Main.nameWithoutToNameWithout150(fileName.path()),
+                                fileName.path().split("/")[ListImageName.length - 1]);
+                        // forceCreation(fileName);
                     }
                     imageName = "images/error.png";
                     ListImageName = imageName.split("/");

@@ -288,7 +288,8 @@ public class ImageData {
     }
 
     public static void saveImagesData() {
-        sortImageData(Main.imagesData);
+        // not working for now !!!!
+        // sortImageData(Main.imagesData);
         String s = "";
         for (ImageData imageData : Main.imagesData) {
             s += imageData.toFileLine();

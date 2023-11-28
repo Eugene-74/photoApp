@@ -197,7 +197,6 @@ public class MainImages {
 
     public static void createImagesButton(Integer firstI, Boolean isFirstLoading) {
         if (imageWithGoodQuality) {
-            System.out.println("good quality");
         }
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
@@ -240,7 +239,6 @@ public class MainImages {
 
                         List<String> placeImageList = new ArrayList<String>();
                         if (imageWithGoodQuality) {
-                            System.out.println("good quality");
 
                             placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
                             if (selectModeIsOn) {
@@ -310,7 +308,21 @@ public class MainImages {
                                 placeImageList.add("images/loading button.png");
                             }
 
-                            placeImageList.add("images/outline.png");
+                            if (selectModeIsOn) {
+                                placeImageList.add("images/redOutline.png");
+
+                            } else {
+                                placeImageList.add("images/outline.png");
+                            }
+                            if (selectedList.contains(imageData) && selectModeIsOn) {
+                                placeImageList.add("images/selected.png");
+                            }
+                            if (imageData.getLoved()) {
+                                placeImageList.add("images/loved preview.png");
+                            }
+                            if (ImageEdition.toDelete.contains(imageData, true)) {
+                                placeImageList.add("images/deleted preview.png");
+                            }
 
                             Main.placeImage(placeImageList,
                                     "main images button",

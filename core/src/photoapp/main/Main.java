@@ -203,22 +203,33 @@ public class Main extends ApplicationAdapter {
 		if (windowOpen.equals("ImageEdition")) {
 			if (TimeUtils.millis() - ImageEdition.lastImageChange > 200) {
 				if (!ImageEdition.imageWithGoodQuality) {
-					if (!ImageEdition.imageOpen.equals("")) {
 
-						ImageEdition.openMainImage(ImageEdition.imageOpen, true);
+					if (!ImageEdition.imageOpen.equals("")) {
+						if (ImageEdition.lastImage.equals(ImageEdition.imageOpen)) {
+							ImageEdition.openMainImage(ImageEdition.imageOpen, true);
+							ImageEdition.imageWithGoodQuality = true;
+
+						} else {
+							ImageEdition.lastImage = ImageEdition.imageOpen;
+						}
 					} else {
-						ImageEdition.openMainImage(ImageEdition.theCurrentImagePath, true);
+						System.out.println(ImageEdition.lastImage);
+						if (ImageEdition.lastImage.equals(ImageEdition.theCurrentImagePath)) {
+							ImageEdition.openMainImage(ImageEdition.theCurrentImagePath, true);
+							ImageEdition.imageWithGoodQuality = true;
+
+						} else {
+							ImageEdition.lastImage = ImageEdition.theCurrentImagePath;
+						}
 
 					}
-					ImageEdition.imageWithGoodQuality = true;
+
 					ImageEdition.lastImageChange = TimeUtils.millis();
-					// faire pour image edation !!!!!
-					MainImages.lastImageI = MainImages.imageI;
 
 				}
 			}
 		} else if (windowOpen.equals("MainImages")) {
-			if (TimeUtils.millis() - MainImages.lastImageChange > 500) {
+			if (TimeUtils.millis() - MainImages.lastImageChange > 200) {
 				// System.out.println("should referesh" + MainImages.imageWithGoodQuality);
 				if (!MainImages.imageWithGoodQuality) {
 					if (MainImages.lastImageI == MainImages.imageI) {
@@ -630,7 +641,7 @@ public class Main extends ApplicationAdapter {
 		}
 		openImageExif(dir.getName());
 
-		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName());
+		setSize150(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), false);
 
 	}
 
@@ -655,7 +666,7 @@ public class Main extends ApplicationAdapter {
 			}
 
 			openImageExif(name);
-			setSize150(ImageData.IMAGE_PATH + "/" + name, name);
+			setSize150(ImageData.IMAGE_PATH + "/" + name, name, false);
 			index += 1;
 		}
 		toLoad = new ArrayList<String>();
@@ -862,16 +873,23 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void setSize150Force(String imagePath, String imageName) {
-		setSize150(imagePath, imageName);
-		MixOfImage.manager.finishLoading();
+		System.out.println("force : " + imagePath);
+		setSize150(imagePath, imageName, true);
+		// MixOfImage.manager.finishLoading();
 		setSize150AfterLoad(imagePath);
 	}
 
-	public static void setSize150(String imagePath, String imageName) {
+	public static void setSize150(String imagePath, String imageName, Boolean force) {
 		FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + imageName);
 		if (!handlebis.exists()) {
-			// MixOfImage.LoadingList.add(imagePath);
-			MixOfImage.isInImageData(imagePath, false, "firstloading");
+			// System.out.println("not exist");
+			if (force) {
+				MixOfImage.isInImageData(imagePath, false, "force");
+
+			} else {
+				MixOfImage.isInImageData(imagePath, false, "firstloading");
+			}
+
 		} else {
 			numberOfLoadedImages += 1;
 		}
@@ -879,6 +897,7 @@ public class Main extends ApplicationAdapter {
 
 	public static Boolean setSize150AfterLoad(String imagePath) {
 		if (MixOfImage.manager.isLoaded(imagePath, Texture.class)) {
+			// System.out.println("is loaded");
 
 			String[] nameList = imagePath.split("/");
 			String imageName = nameList[nameList.length - 1];
@@ -1266,5 +1285,15 @@ public class Main extends ApplicationAdapter {
 		String output = Math.abs(Integer.parseInt(degrees)) + "° " + minutes + "' " + seconds + "\" ";
 
 		return output;
+	}
+
+	public static String nameWithoutToNameWithout150(String name) {
+		String nameWithout150 = "";
+		String[] ListImageName = name.split("/");
+		for (int i = 0; i < ListImageName.length - 2; i++) {
+			nameWithout150 += ListImageName[i] + "/";
+		}
+		nameWithout150 += ListImageName[ListImageName.length - 1];
+		return nameWithout150;
 	}
 }

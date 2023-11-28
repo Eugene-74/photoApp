@@ -58,6 +58,7 @@ public class ImageEdition {
 	// static public String imageQualityPath;
 
 	static public Boolean plusTableOpen = false;
+	static public String lastImage = "";
 
 	public static void create() {
 		Gdx.app.log(fileName, "create");
@@ -873,7 +874,7 @@ public class ImageEdition {
 		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + dir.getName());
 
 		to.writeBytes(data, false);
-		Main.setSize150(dir.toString(), dir.getName());
+		Main.setSize150(dir.toString(), dir.getName(),false);
 	}
 
 	public static void movePlace(File dir) {
