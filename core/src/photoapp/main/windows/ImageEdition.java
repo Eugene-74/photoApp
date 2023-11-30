@@ -697,8 +697,6 @@ public class ImageEdition {
 	public static void addPeople(String peopleToAdd, String currentImagePath, boolean isReloadImageEdition) {
 
 		Main.peopleData.put(peopleToAdd, Main.peopleData.get(peopleToAdd) + 1);
-		System.out.println(peopleToAdd);
-		System.out.println(Main.peopleData.get(peopleToAdd));
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 		List<String> peoples = imageData.getPeoples();
 
@@ -725,18 +723,6 @@ public class ImageEdition {
 			theCurrentImagePath = currentImagePath;
 
 		}
-	}
-
-	public static void rotateAnImage(Integer degree, String imagePath) {
-		Texture texture = MixOfImage.isInImageData(ImageData.IMAGE_PATH + "/" + imagePath, true, "");
-
-		Pixmap pixmap = Main.textureToPixmap(texture);
-		pixmap = rotatePixmap(pixmap, degree);
-		FileHandle fh = new FileHandle(ImageData.IMAGE_PATH + "/" + imagePath);
-
-		PixmapIO.writePNG(fh, pixmap);
-		pixmap.dispose();
-		ImageEdition.reload(false);
 	}
 
 	public static Pixmap rotatePixmap(Pixmap src, float angle) {
@@ -874,7 +860,7 @@ public class ImageEdition {
 		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + dir.getName());
 
 		to.writeBytes(data, false);
-		Main.setSize150(dir.toString(), dir.getName(),false);
+		LoadImage.setSize(dir.toString(), dir.getName(), 150, false);
 	}
 
 	public static void movePlace(File dir) {
@@ -1065,5 +1051,34 @@ public class ImageEdition {
 
 		CommonButton.createBack(plusTable);
 
+	}
+
+	public static void render() {
+		if (TimeUtils.millis() - lastImageChange > 100) {
+			if (!imageWithGoodQuality) {
+
+				if (!imageOpen.equals("")) {
+					if (lastImage.equals(imageOpen)) {
+						openMainImage(imageOpen, true);
+						imageWithGoodQuality = true;
+
+					} else {
+						lastImage = imageOpen;
+					}
+				} else {
+					if (lastImage.equals(theCurrentImagePath)) {
+						openMainImage(theCurrentImagePath, true);
+						imageWithGoodQuality = true;
+
+					} else {
+						lastImage = theCurrentImagePath;
+					}
+
+				}
+
+				lastImageChange = TimeUtils.millis();
+
+			}
+		}
 	}
 }

@@ -11,8 +11,10 @@ import java.util.stream.Collectors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.Main;
+import photoapp.main.windows.LoadImage;
 
 public class ImageData {
     public final static String SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/save.csv";
@@ -76,12 +78,11 @@ public class ImageData {
     public ImageData setDate(String date) {
         if (data != null) {
 
-            if (date != "" && date != null) {
+            if (date != "" && date != null && !date.equals("null")) {
                 data.put("date", date);
-            } else {
-                data.put("date", " ");
-                // date of now !!!!!!!!
             }
+            // TODAY return Main.timestampToDate(TimeUtils.millis() / 1000);
+
         }
         return this;
     }
@@ -98,11 +99,13 @@ public class ImageData {
 
     public ImageData setPlaces(List<String> places) {
         if (data != null) {
+            if (places != null) {
 
-            if (!places.isEmpty()) {
-                data.put("places", places);
-            } else {
-                data.put("places", "");
+                if (!places.isEmpty()) {
+                    data.put("places", places);
+                } else {
+                    data.put("places", "");
+                }
             }
         }
         return this;
@@ -138,11 +141,13 @@ public class ImageData {
 
     public ImageData setPeoples(List<String> peoples) {
         if (data != null) {
+            if (peoples != null) {
 
-            if (!peoples.isEmpty()) {
-                data.put("peoples", peoples);
-            } else {
-                data.put("peoples", "");
+                if (!peoples.isEmpty()) {
+                    data.put("peoples", peoples);
+                } else {
+                    data.put("peoples", "");
+                }
             }
         }
         return this;
@@ -269,17 +274,33 @@ public class ImageData {
             for (String imageInfo : imagesInfo) {
 
                 String[] category = imageInfo.split(";");
+                Integer i = 0;
+                for (String cat : category) {
+                    if (cat.equals("null")) {
+                        category[i] = null;
+                    }
+                    i += 1;
+                }
+                List<String> people = null;
+                List<String> place = null;
+
+                if (category[3] != null) {
+                    people = List.of(category[3].split(","));
+                }
+                if (category[4] != null) {
+                    place = List.of(category[4].split(","));
+                }
 
                 ImageData imageData = new ImageData()
                         .setName(category[0])
                         .setDate(category[1])
                         .setRotation(Integer.parseInt(category[2]))
-                        .setPeoples(List.of(category[3].split(",")))
-                        .setPlaces(List.of(category[4].split(",")))
+                        .setPeoples(people)
+                        .setPlaces(place)
                         .setCoords(category[5])
                         .setLoved(Boolean.parseBoolean(category[6]));
 
-                Main.addImageData(imageData);
+                LoadImage.addImageData(imageData);
 
             }
 
@@ -288,8 +309,6 @@ public class ImageData {
     }
 
     public static void saveImagesData() {
-        // not working for now !!!!
-        // sortImageData(Main.imagesData);
         String s = "";
         for (ImageData imageData : Main.imagesData) {
             s += imageData.toFileLine();
@@ -334,13 +353,13 @@ public class ImageData {
                     }
 
                     if (Long.parseLong(date1) > Long.parseLong(date2)) {
-                        // System.out.println(1);
                         return -1;
                     } else {
-                        // System.out.println(-1);
+
                         return 1;
                     }
                 } catch (Exception e) {
+
                     System.err.println("bug when loading date : " + e);
                 } finally {
                 }

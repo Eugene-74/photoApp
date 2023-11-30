@@ -6,6 +6,7 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
@@ -196,8 +197,8 @@ public class MainImages {
     }
 
     public static void createImagesButton(Integer firstI, Boolean isFirstLoading) {
-        if (imageWithGoodQuality) {
-        }
+        // if (imageWithGoodQuality) {
+        // }
         Integer column = Main.preferences.getInteger("size of main images width")
                 / Main.preferences.getInteger("size of main images button");
         Integer row = Main.preferences.getInteger("size of main images height")
@@ -304,8 +305,9 @@ public class MainImages {
                         } else {
                             if (MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/" + imageName)) {
                                 placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
+
                             } else {
-                                placeImageList.add("images/loading button.png");
+                                placeImageList.add(ImageData.IMAGE_PATH + "/10/" + imageName);
                             }
 
                             if (selectModeIsOn) {
@@ -390,5 +392,21 @@ public class MainImages {
 
         Main.checkToUnload(null);
 
+    }
+
+    public static void render() {
+        if (TimeUtils.millis() - lastImageChange > 100) {
+            if (!imageWithGoodQuality) {
+                if (lastImageI == imageI) {
+                    imageWithGoodQuality = true;
+                    reload();
+
+                } else {
+                    lastImageI = imageI;
+                }
+                lastImageChange = TimeUtils.millis();
+            }
+
+        }
     }
 }

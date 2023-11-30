@@ -87,12 +87,10 @@ public class FileChooser {
                 (o) -> {
                     addAFile();
                 }, (o) -> {
-                    System.out.println("enter");
 
                     // Main.overlayTable.setPosition(, buttonTable.getY());
 
                 }, (o) -> {
-                    System.out.println("exit");
                 },
                 true, true, false, buttonTable, true, "add a file");
 
@@ -118,7 +116,7 @@ public class FileChooser {
                 Main.mainStage,
                 (o) -> {
                     Main.infoTextSet("export start", true);
-                    Main.exportImages();
+                    LoadImage.exportImages();
                 }, null, null,
                 true, true, false, buttonTable, true, "export a file");
     }
@@ -197,5 +195,8 @@ public class FileChooser {
             }
         }
 
+    }
+
+    public static void render() {
     }
 }

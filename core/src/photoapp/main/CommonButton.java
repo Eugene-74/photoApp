@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import photoapp.main.windows.ImageEdition;
+import photoapp.main.windows.LoadImage;
 
 public class CommonButton {
     public static void createAddImagesButton(Table table) {
@@ -13,8 +14,9 @@ public class CommonButton {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    Main.openFile();
-                    Main.reload(false);
+                    Main.clear();
+                    LoadImage.open();
+                    // Main.reload(false);
                 }, null, null,
                 true, true, false, table, true, "add images");
     }
