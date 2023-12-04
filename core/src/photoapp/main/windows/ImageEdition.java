@@ -366,7 +366,7 @@ public class ImageEdition {
 	}
 
 	public static void placeAddPeople() {
-		Main.placeImage(List.of("images/add people.png", "images/outline.png"), "basic button",
+		Main.placeImage(List.of("images/add people.png", "images/people outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -378,7 +378,7 @@ public class ImageEdition {
 
 	public static void placeAddPlace() {
 
-		Main.placeImage(List.of("images/add place.png", "images/outline.png"), "basic button",
+		Main.placeImage(List.of("images/add place.png", "images/place outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
