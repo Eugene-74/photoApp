@@ -88,7 +88,6 @@ public class ImageEdition {
 		datelabelStyle.fontColor = Color.BLACK;
 		dateLabel = new Label(" ", datelabelStyle);
 		dateTable.setPosition(10, Gdx.graphics.getHeight() - 10 - dateLabel.getHeight());
-		dateTable.addActor(dateLabel);
 
 		Main.mainStage.addActor(dateTable);
 	}
@@ -99,12 +98,15 @@ public class ImageEdition {
 
 		Main.windowOpen = "ImageEdition";
 
+		dateTable.addActor(dateLabel);
+
 		theCurrentImagePath = currentImagePath;
 		imageWithGoodQuality = false;
 		table.clear();
 		previewTable.clear();
 		plusTable.clear();
-		if (imageData.getDate() != null && !imageData.getDate().equals("null")) {
+		// && !imageData.getDate().equals("null")
+		if (imageData.getDate() != null) {
 			try {
 
 				String[] nomMois = { "January", "February", "March", "April", "May", "June", "July",
@@ -117,11 +119,15 @@ public class ImageEdition {
 				date += "\n";
 				date += hourSplit[0] + "h " + hourSplit[1] + "min " + hourSplit[2] + "s ";
 
+				// dateTable.addActor(dateLabel);
 				dateLabel.setText(date);
+				// System.out.println("date : " + date);
 			} catch (Exception e) {
 				System.err.println("bug when loading the image");
 			} finally {
 			}
+		} else {
+			dateLabel.setText("no date");
 		}
 
 		if (MainImages.imagesTable != null) {

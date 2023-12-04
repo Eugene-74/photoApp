@@ -74,8 +74,8 @@ public class LoadImage {
                 Main.infoText = "exporting data of image : " + numberOfImagesExif + "/" + numberOfImagesToLoad
                         + "(if you import a lot of image it will lag, but just wait)";
             }
-            ImageData.saveImagesData();
             ImageData.sortImageData(Main.imagesData);
+            ImageData.saveImagesData();
 
         } else if (numberOfImagesExif != 0 && numberOfImagesExif > 0) {
             if (numberOfImagesExif.equals(numberOfImagesToLoad)) {
@@ -222,8 +222,11 @@ public class LoadImage {
                     }
                     f.dispose();
                 } else {
+                    f.dispose();
                     clear();
-                    MainImages.open();
+                    Main.windowOpen = "";
+                    // MainImages.open();
+                    return;
                 }
             }
         };

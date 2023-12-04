@@ -79,6 +79,7 @@ public class ImageData {
         if (data != null) {
 
             if (date != "" && date != null && !date.equals("null")) {
+
                 data.put("date", date);
             }
             // TODAY return Main.timestampToDate(TimeUtils.millis() / 1000);
@@ -89,6 +90,7 @@ public class ImageData {
 
     public String getDate() {
         if (data != null) {
+            // System.out.println("date bis" + data.get("date"));
             if (data.get("date") != null) {
                 return (String) data.get("date");
             }
@@ -324,40 +326,79 @@ public class ImageData {
             imagesData.sort((ImageData imageData1, ImageData imageData2) -> {
 
                 try {
-                    String date1;
-                    String date2;
+
+                    // if (imageData1.getDate() != null && imageData2.getDate() != null) {
+                    String[] daySplit1;
+                    String[] hourSplit1;
+                    String[] daySplit2;
+                    String[] hourSplit2;
+
                     if (imageData1.getDate() == null) {
-                        date1 = "0";
+                        daySplit1 = new String[] { "0", "0", "0" };
+                        hourSplit1 = new String[] { "0", "0", "0" };
                     } else {
-
-                        date1 = "";
                         String[] dateSplit1 = imageData1.getDate().split(" ");
-                        String[] daySplit1 = dateSplit1[0].split(":");
-                        String[] hourSplit1 = dateSplit1[1].split(":");
-                        date1 += daySplit1[0] + "" + daySplit1[1]
-                                + "" + daySplit1[2];
-                        date1 += hourSplit1[0] + "" + hourSplit1[1]
-                                + "" + hourSplit1[2];
+                        daySplit1 = dateSplit1[0].split(":");
+                        hourSplit1 = dateSplit1[1].split(":");
                     }
+
                     if (imageData2.getDate() == null) {
-                        date2 = "0";
+                        daySplit2 = new String[] { "0", "0", "0" };
+                        hourSplit2 = new String[] { "0", "0", "0" };
                     } else {
-                        date2 = "";
                         String[] dateSplit2 = imageData2.getDate().split(" ");
-                        String[] daySplit2 = dateSplit2[0].split(":");
-                        String[] hourSplit2 = dateSplit2[1].split(":");
-                        date2 += daySplit2[0] + "" + daySplit2[1]
-                                + "" + daySplit2[2];
-                        date2 += hourSplit2[0] + "" + hourSplit2[1]
-                                + "" + hourSplit2[2];
+                        daySplit2 = dateSplit2[0].split(":");
+                        hourSplit2 = dateSplit2[1].split(":");
                     }
 
-                    if (Long.parseLong(date1) > Long.parseLong(date2)) {
-                        return -1;
-                    } else {
-
+                    if (compare(Integer.parseInt(daySplit1[0]), Integer.parseInt(daySplit2[0])) == null) {
+                        if (compare(Integer.parseInt(daySplit1[1]), Integer.parseInt(daySplit2[1])) == null) {
+                            if (compare(Integer.parseInt(daySplit1[2]), Integer.parseInt(daySplit2[2])) == null) {
+                                if (compare(Integer.parseInt(hourSplit2[0]),
+                                        Integer.parseInt(hourSplit2[0])) == null) {
+                                    if (compare(Integer.parseInt(hourSplit2[1]),
+                                            Integer.parseInt(hourSplit2[1])) == null) {
+                                        if (compare(Integer.parseInt(hourSplit2[2]),
+                                                Integer.parseInt(hourSplit2[2])) == null) {
+                                            return 0;
+                                        } else if (compare(Integer.parseInt(hourSplit1[2]),
+                                                Integer.parseInt(hourSplit2[2]))) {
+                                            return 1;
+                                        } else if (compare(Integer.parseInt(hourSplit2[2]),
+                                                Integer.parseInt(hourSplit1[2]))) {
+                                            return -1;
+                                        }
+                                    } else if (compare(Integer.parseInt(hourSplit1[1]),
+                                            Integer.parseInt(hourSplit2[1]))) {
+                                        return 1;
+                                    } else if (compare(Integer.parseInt(hourSplit2[1]),
+                                            Integer.parseInt(hourSplit1[1]))) {
+                                        return -1;
+                                    }
+                                } else if (compare(Integer.parseInt(hourSplit1[0]),
+                                        Integer.parseInt(hourSplit2[0]))) {
+                                    return 1;
+                                } else if (compare(Integer.parseInt(hourSplit2[0]),
+                                        Integer.parseInt(hourSplit1[0]))) {
+                                    return -1;
+                                }
+                            } else if (compare(Integer.parseInt(daySplit1[2]), Integer.parseInt(daySplit2[2]))) {
+                                return 1;
+                            } else if (compare(Integer.parseInt(daySplit2[2]), Integer.parseInt(daySplit1[2]))) {
+                                return -1;
+                            }
+                        } else if (compare(Integer.parseInt(daySplit1[1]), Integer.parseInt(daySplit2[1]))) {
+                            return 1;
+                        } else if (compare(Integer.parseInt(daySplit2[1]), Integer.parseInt(daySplit1[1]))) {
+                            return -1;
+                        }
+                    } else if (compare(Integer.parseInt(daySplit1[0]), Integer.parseInt(daySplit2[0]))) {
                         return 1;
+                    } else if (compare(Integer.parseInt(daySplit2[0]), Integer.parseInt(daySplit1[0]))) {
+                        return -1;
                     }
+                    return 0;
+
                 } catch (Exception e) {
 
                     System.err.println("bug when loading date : " + e);
@@ -365,7 +406,18 @@ public class ImageData {
                 }
                 return 0;
             });
+
         }
+
+    }
+
+    public static Boolean compare(Integer nbr1, Integer nbr2) {
+        if (nbr1 > nbr2) {
+            return false;
+        } else if (nbr1 < nbr2) {
+            return true;
+        }
+        return null;
     }
 
     public String toFileLine() {

@@ -157,7 +157,8 @@ public class FileChooser {
                 if (!name.getName().equals("150")
                         && !name.getName().equals("bin")
                         && !name.getName().equals("peoples")
-                        && !name.getName().equals("places")) {
+                        && !name.getName().equals("places")
+                        && !name.getName().equals("10")) {
 
                     names.add(name.toString());
                 }

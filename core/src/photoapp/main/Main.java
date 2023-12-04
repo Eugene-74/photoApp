@@ -196,6 +196,9 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+		if (windowOpen.equals("")) {
+			FileChooser.open();
+		}
 		MixOfImage.manager.update();
 		if (windowOpen.equals("ImageEdition")) {
 			ImageEdition.render();
@@ -292,7 +295,6 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void clear() {
-		// mainStage.clear();
 		if (windowOpen.equals("ImageEdition")) {
 			ImageEdition.clear();
 		} else if (windowOpen.equals("MainImages")) {
@@ -531,9 +533,10 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static Boolean isAnImage(String imagePath) {
-		if (imagePath.endsWith(".HEIC") || imagePath.endsWith(".png") || imagePath.endsWith(".PNG")
+		if (imagePath.endsWith(".png") || imagePath.endsWith(".PNG")
 				|| imagePath.endsWith(".jpg") || imagePath.endsWith(".JPG") || imagePath.endsWith(".HEIF")
 				|| imagePath.endsWith(".HEVC")) {
+			// imagePath.endsWith(".HEIC") ||
 			return true;
 		}
 		return false;
