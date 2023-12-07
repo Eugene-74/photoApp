@@ -564,9 +564,8 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
-		for (String people : Main.peopleData.keySet()) {
-
-			peopleNames.add(people);
+		for (Entry<String, Integer> entry : Main.entriesSortedByValues(Main.peopleData, true)) {
+			peopleNames.add(entry.getKey());
 		}
 
 		if (!handle.exists()) {
@@ -614,8 +613,9 @@ public class ImageEdition {
 		List<String> placeNames = new ArrayList<String>();
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
-		for (String place : Main.placeData.keySet()) {
-			placeNames.add(place);
+
+		for (Entry<String, Integer> entry : Main.entriesSortedByValues(Main.placeData, true)) {
+			placeNames.add(entry.getKey());
 		}
 
 		if (!handle.exists()) {
@@ -949,18 +949,11 @@ public class ImageEdition {
 	}
 
 	public static void savePeopleDataToFile() {
-
-		// !!!!!!!!!!!! should be sort
-		// same for place
-		// Main.peopleData.orderedKeys().sort();
 		String s = "";
 		for (Map.Entry<String, Integer> entry : Main.entriesSortedByValues(Main.peopleData, true)) {
-			// System.out.println(entry.getValue());
 			s += entry.getKey() + ":" + entry.getValue() + "\n";
 		}
-		// for (String people : Main.peopleData) {
-		// s += people + ":" + Main.peopleData.get(people) + "\n";
-		// }
+
 		FileHandle handle = Gdx.files.absolute(ImageData.PEOPLE_SAVE_PATH);
 		InputStream text = new ByteArrayInputStream(s.getBytes());
 		handle.write(text, false);
@@ -1009,8 +1002,8 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
-		for (String people : Main.peopleData.keySet()) {
-			peopleNames.add(people);
+		for (Entry<String, Integer> entry : Main.entriesSortedByValues(Main.peopleData, true)) {
+			peopleNames.add(entry.getKey());
 		}
 
 		if (!handle.exists()) {
@@ -1064,8 +1057,8 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
 
-		for (String place : Main.placeData.keySet()) {
-			placeNames.add(place);
+		for (Entry<String, Integer> entry : Main.entriesSortedByValues(Main.placeData, true)) {
+			placeNames.add(entry.getKey());
 		}
 
 		if (!handle.exists()) {

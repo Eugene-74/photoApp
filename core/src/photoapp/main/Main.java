@@ -728,7 +728,7 @@ public class Main extends ApplicationAdapter {
 			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
-
+				System.out.println(inf[0]);
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
