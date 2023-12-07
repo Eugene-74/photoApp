@@ -3,6 +3,7 @@ package photoapp.main.windows;
 import java.io.File;
 import java.lang.Thread.State;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -69,7 +70,8 @@ public class LoadImage {
                 String[] nameList = imagePath.split("/");
                 String imageName = nameList[nameList.length - 1];
 
-                openImageExif(imageName);
+                // System.out.println(nameList[nameList.length - 2]);
+                openImageExif(imageName, nameList[nameList.length - 2]);
                 numberOfImagesExif += 1;
                 Main.infoText = "exporting data of image : " + numberOfImagesExif + "/" + numberOfImagesToLoad
                         + "(if you import a lot of image it will lag, but just wait)";
@@ -286,7 +288,8 @@ public class LoadImage {
             FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName() + ".json");
             toJson.writeBytes(dataJson, false);
         }
-        openImageExif(dir.getName());
+        System.out.println("set " + dir.getParentFile().toString());
+        openImageExif(dir.getName(), dir.getParentFile().toString());
 
         setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 150, false);
         setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 10, false);
@@ -360,12 +363,12 @@ public class LoadImage {
         setSizeAfterLoad(imagePath, size);
     }
 
-    public static void openImageExif(String imagePath) {
+    public static void openImageExif(String imageName, String directory) {
         FileHandle file;
         try {
-            file = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imagePath);
-            FileHandle fileJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imagePath + ".json");
-            ImageData imageData = ImageData.getImageDataIfExist(imagePath);
+            file = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageName);
+            FileHandle fileJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageName + ".json");
+            ImageData imageData = ImageData.getImageDataIfExist(imageName);
 
             String coords = "";
             Integer rotation = 0;
@@ -486,18 +489,33 @@ public class LoadImage {
             }
 
             if (imageData.getName() == "") {
-                imageData.setName(imagePath);
+                imageData.setName(imageName);
             }
             if (imageData.getLoved() == null || imageData.getLoved() == false) {
                 imageData.setLoved(false);
             }
+            if (imageData.getFiles() != null) {
+                List<String> newList = new ArrayList<String>();
 
+                for (String inList : imageData.getFiles()) {
+                    newList.add(inList);
+                }
+                if (!newList.contains(directory)) {
+                    newList.add(directory);
+                }
+                imageData.setFiles(newList);
+            } else {
+                imageData.setFiles(List.of(directory));
+            }
+            if (!Main.fileData.containsKey(directory)) {
+                Main.fileData.put(directory, 0);
+            }
             addImageData(imageData);
 
         } catch (
 
         Exception e) {
-            System.out.println("openImageExif" + " -Error " + e);
+            Gdx.app.error("openImageExif", " -Error " + e);
         } finally {
         }
     }
@@ -527,35 +545,6 @@ public class LoadImage {
             numberOfLoadedImages += 1;
         }
     }
-
-    // public static void loadImagesForTheFirstTime() {
-    // Integer index = 0;
-    // for (String imagePath : toLoad) {
-    // String[] nameList = imagePath.split("/");
-    // String name = nameList[nameList.length - 1];
-
-    // FileHandle from = Gdx.files.absolute(imagePath);
-    // byte[] data = from.readBytes();
-
-    // FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name);
-    // to.writeBytes(data, false);
-
-    // FileHandle fromJson = Gdx.files.absolute(imagePath + ".json");
-    // if (fromJson.exists()) {
-    // byte[] dataJson = fromJson.readBytes();
-
-    // FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + name +
-    // ".json");
-    // toJson.writeBytes(dataJson, false);
-    // }
-
-    // openImageExif(name);
-    // setSize(ImageData.IMAGE_PATH + "/" + name, name, false);
-    // index += 1;
-    // }
-    // toLoad = new ArrayList<String>();
-
-    // }
 
     private static String processCoordinates(float[] coordinates) {
         String[] ORIENTATIONS = "N/S/E/W".split("/");

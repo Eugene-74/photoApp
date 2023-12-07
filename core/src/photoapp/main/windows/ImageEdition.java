@@ -20,6 +20,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
@@ -61,6 +62,7 @@ public class ImageEdition {
 
 	static public Boolean plusTableOpen = false;
 	static public String lastImage = "";
+	static Integer indexLoaded = 0;
 
 	public static void create() {
 		Gdx.app.log(fileName, "create");
@@ -69,6 +71,8 @@ public class ImageEdition {
 		Main.preferences.putInteger("size of main image height", 800);
 		Main.preferences.putInteger("size of preview image width", 150);
 		Main.preferences.putInteger("size of preview image height", 150);
+		Main.preferences.putInteger("image loaded when waiting in ImageEdition", 10);
+
 		Main.preferences.flush();
 
 		createMainImageTable();
@@ -143,7 +147,7 @@ public class ImageEdition {
 		}
 
 		placePreviewImage(currentImagePath);
-
+		// TODO rotation of the images fo place and people
 		placeImageOfPeoples(currentImagePath);
 		placePlusPeople();
 		placeAddPeople();
@@ -303,7 +307,7 @@ public class ImageEdition {
 
 		plusTable.clear();
 		Main.windowOpen = "ImageEdition";
-		ImageData.openDataOfImages();
+		// ImageData.openDataOfImages();
 
 		if (returnToZero) {
 			open(Main.imagesData.get(0).getName(), true);
@@ -661,6 +665,7 @@ public class ImageEdition {
 	public static void nextImage(String currentImagePath) {
 		lastImageChange = TimeUtils.millis();
 		imageWithGoodQuality = false;
+		indexLoaded = 0;
 
 		boolean next = false;
 		for (ImageData imageData : Main.imagesData) {
@@ -692,6 +697,7 @@ public class ImageEdition {
 	public static void previousImage(String currentImagePath) {
 		lastImageChange = TimeUtils.millis();
 		imageWithGoodQuality = false;
+		indexLoaded = 0;
 
 		ImageData previous = null;
 		for (ImageData imageData : Main.imagesData) {
@@ -783,6 +789,7 @@ public class ImageEdition {
 		deleteImageTodelete();
 		savePeopleDataToFile();
 		savePlaceDataToFile();
+		saveFileDataToFile();
 
 	}
 
@@ -963,10 +970,20 @@ public class ImageEdition {
 
 		String s = "";
 		for (Map.Entry<String, Integer> entry : Main.entriesSortedByValues(Main.placeData, true)) {
-			// System.out.println(entry.getValue());
 			s += entry.getKey() + ":" + entry.getValue() + "\n";
 		}
 		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_SAVE_PATH);
+		InputStream text = new ByteArrayInputStream(s.getBytes());
+		handle.write(text, false);
+	}
+
+	public static void saveFileDataToFile() {
+
+		String s = "";
+		for (Map.Entry<String, Integer> entry : Main.entriesSortedByValues(Main.fileData, true)) {
+			s += entry.getKey() + ":" + entry.getValue() + "\n";
+		}
+		FileHandle handle = Gdx.files.absolute(ImageData.FILE_SAVE_PATH);
 		InputStream text = new ByteArrayInputStream(s.getBytes());
 		handle.write(text, false);
 	}
@@ -1108,7 +1125,7 @@ public class ImageEdition {
 	}
 
 	public static void render() {
-		if (TimeUtils.millis() - lastImageChange > 100) {
+		if (TimeUtils.millis() - lastImageChange > 200) {
 			if (!imageWithGoodQuality) {
 
 				if (!imageOpen.equals("")) {
@@ -1133,6 +1150,37 @@ public class ImageEdition {
 				lastImageChange = TimeUtils.millis();
 
 			}
+			if (indexLoaded < Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5)) {
+				indexLoaded += 1;
+				Integer index = Main.getImageDataIndex(theCurrentImagePath);
+				Integer index1 = index + indexLoaded;
+				Integer index2 = index - indexLoaded;
+				if (index1 >= Main.imagesData.size()) {
+					index1 = Main.imagesData.size() - index1;
+				} else if (index1 < 0) {
+					index1 = Main.imagesData.size() + index1;
+				}
+				if (index2 >= Main.imagesData.size()) {
+					index2 = Main.imagesData.size() - index2;
+				} else if (index2 < 0) {
+					index2 = Main.imagesData.size() + index2;
+				}
+				if (index1 > 0 && index1 < Main.imagesData.size() && index2 > 0 && index2 < Main.imagesData.size()) {
+
+					if (!MixOfImage.manager
+							.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName())) {
+						// System.out.println(Main.imagesData.get(index1).getName());
+						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName());
+					}
+					if (!MixOfImage.manager
+							.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index2).getName())) {
+						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index2).getName());
+					}
+					lastImageChange = TimeUtils.millis();
+
+				}
+			}
 		}
+
 	}
 }

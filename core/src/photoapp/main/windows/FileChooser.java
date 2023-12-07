@@ -3,6 +3,7 @@ package photoapp.main.windows;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
@@ -73,10 +74,10 @@ public class FileChooser {
     }
 
     public static void openFile(String name) {
-        if (name.equals("")) {
-            MainImages.open();
-            clear();
-        }
+        Main.imagesData = new ArrayList<ImageData>();
+        ImageData.openDataOfImages(name);
+        MainImages.open();
+        clear();
     }
 
     public static void placeButton() {
@@ -133,67 +134,70 @@ public class FileChooser {
     }
 
     public static void placeFileChooserButton() {
+        try {
 
-        placeButton();
+            placeButton();
 
-        Integer maxByLine = 3;
-        Integer index = 0;
-        List<String> names = new ArrayList<String>();
+            Integer maxByLine = 3;
+            Integer index = 0;
+            List<String> names = new ArrayList<String>();
 
-        File handle = new File(ImageData.IMAGE_PATH);
+            Main.placeImage(List.of("images/allFile.png", "images/outline.png"),
+                    "basic button",
+                    new Vector2(0, 0),
+                    Main.mainStage,
+                    (o) -> {
+                        openFile(null);
+                    }, null, null,
+                    true, true, false, fileTable, true, "allFile");
 
-        Main.placeImage(List.of("images/allFile.png", "images/outline.png"),
-                "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    openFile("");
-                }, null, null,
-                true, true, false, fileTable, true, "allFile");
+            File handle = new File(ImageData.IMAGE_PATH);
 
-        for (File name : handle.listFiles()) {
-            if (name.isDirectory()) {
+            if (!handle.exists())
 
-                if (!name.getName().equals("150")
-                        && !name.getName().equals("bin")
-                        && !name.getName().equals("peoples")
-                        && !name.getName().equals("places")
-                        && !name.getName().equals("10")) {
+            {
+                handle.mkdirs();
+            }
+            Integer totalMax = 5;
+            Integer i = 0;
+            for (Entry<String, Integer> entry : Main.entriesSortedByValues(Main.fileData, true)) {
+                names.add(entry.getKey());
+            }
 
-                    names.add(name.toString());
+            for (String name : names) {
+                if (i < totalMax) {
+                    i += 1;
+                    List<String> placeList = new ArrayList<>();
+                    placeList.add("images/file.png");
+                    placeList.add("images/outline.png");
+
+                    Main.placeImage(placeList,
+                            "basic button",
+                            new Vector2(0, 0),
+                            Main.mainStage,
+                            (o) -> {
+                                openFile(name);
+                                if (Main.placeData.get(name) != null) {
+                                    Main.fileData.put(name, Main.placeData.get(name) + 1);
+                                } else {
+                                    Main.fileData.put(name, 0);
+                                }
+                            }, null, null,
+                            true, true, false, fileTable, true, name);
+
+                    index += 1;
+                    if (index >= maxByLine) {
+                        fileTable.row();
+                        index = 0;
+
+                    }
                 }
             }
-        }
+        } catch (
 
-        if (!handle.exists()) {
-            handle.mkdirs();
-        }
-        Integer totalMax = 5;
-        Integer i = 0;
-
-        for (String name : names) {
-            if (i < totalMax) {
-                i += 1;
-                List<String> placeList = new ArrayList<>();
-                placeList.add("images/file.png");
-                placeList.add("images/outline.png");
-
-                Main.placeImage(placeList,
-                        "basic button",
-                        new Vector2(0, 0),
-                        Main.mainStage,
-                        (o) -> {
-                            openFile(name);
-                        }, null, null,
-                        true, true, false, fileTable, true, name);
-
-                index += 1;
-                if (index >= maxByLine) {
-                    fileTable.row();
-                    index = 0;
-
-                }
-            }
+        Exception e) {
+            Gdx.app.error("placeFileChooserButton", " -Error " + e);
+        } finally {
         }
 
     }

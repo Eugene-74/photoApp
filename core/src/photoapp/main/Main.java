@@ -89,6 +89,7 @@ public class Main extends ApplicationAdapter {
 
 	public static SortedMap<String, Integer> peopleData = new TreeMap<>();
 	public static SortedMap<String, Integer> placeData = new TreeMap<>();
+	public static SortedMap<String, Integer> fileData = new TreeMap<>();
 
 	public static Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
@@ -190,9 +191,10 @@ public class Main extends ApplicationAdapter {
 		createCloseButton();
 		createLinkButton();
 
-		ImageData.openDataOfImages();
+		// ImageData.openDataOfImages();
 		openPlaceData();
 		openPeopleData();
+		openFileData();
 
 		System.out.println("starting");
 
@@ -661,10 +663,12 @@ public class Main extends ApplicationAdapter {
 						/ Main.preferences.getInteger("size of main images button");
 				Integer row = Main.preferences.getInteger("size of main images height")
 						/ Main.preferences.getInteger("size of main images button");
-				range = row * column;
-				addRange = row * column / 2;
+				range = row * column
+						+ Main.preferences.getInteger("image loaded when waiting in MainImages", column * row) * 2;
+				addRange = column * row / 2;
+
 			} else if (Main.windowOpen.equals("ImageEdition")) {
-				range = 7;
+				range = 7 + Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5);
 			}
 
 			ArrayList<String> toUnput = new ArrayList<String>();
@@ -728,7 +732,6 @@ public class Main extends ApplicationAdapter {
 			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
-				System.out.println(inf[0]);
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
@@ -751,6 +754,27 @@ public class Main extends ApplicationAdapter {
 				String[] inf = imageInfo.split(":");
 
 				placeData.put(inf[0], Integer.parseInt(inf[1]));
+			}
+		}
+	}
+
+	public static void openFileData() {
+		FileHandle handle = Gdx.files.absolute(ImageData.FILE_SAVE_PATH);
+
+		if (!handle.exists()) {
+			return;
+		} else {
+			InputStream infos = handle.read();
+			String infosString = new BufferedReader(new InputStreamReader(infos))
+					.lines().collect(Collectors.joining("\n"));
+			if (infosString.equals("") || infosString.equals("\n")) {
+				return;
+			}
+			String[] imagesInfo = infosString.split("\n");
+			for (String imageInfo : imagesInfo) {
+				String[] inf = imageInfo.split(":");
+
+				fileData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
 	}
