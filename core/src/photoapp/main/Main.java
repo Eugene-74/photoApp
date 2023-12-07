@@ -12,8 +12,14 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -31,6 +37,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -39,8 +47,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -49,6 +59,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
@@ -58,6 +69,7 @@ import com.drew.metadata.Tag;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.windows.BigPreview;
+import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.Keybord;
@@ -70,14 +82,15 @@ public class Main extends ApplicationAdapter {
 	public static Preferences preferences;
 	public static Table infoTable;
 	public static Table linkTable;
+
 	static Integer numberOfLoadedImages = 0;
 	public static Label labelInfoText;
 	public static List<ImageData> imagesData;
 
-	public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
-	public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
+	public static SortedMap<String, Integer> peopleData = new TreeMap<>();
+	public static SortedMap<String, Integer> placeData = new TreeMap<>();
 
-	Label.LabelStyle label1Style = new Label.LabelStyle();
+	public static Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
 	public static String windowOpen = "Main";
 	Integer newProgress;
@@ -98,6 +111,8 @@ public class Main extends ApplicationAdapter {
 	public static Boolean brightMode = false;
 	public static Boolean darkMode = false;
 	static Skin skin;
+	public static Skin skinTextField;
+	public static boolean openWindow;
 
 	public void iniPreferences() {
 		preferences.putInteger("image load at the same time", 50);
@@ -123,7 +138,23 @@ public class Main extends ApplicationAdapter {
 		preferences.putInteger("size of big preview height",
 				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
 		brightMode = preferences.getBoolean("option brightmode", false);
-		darkMode = preferences.getBoolean("option darkmode", false);
+		// darkMode = preferences.getBoolean("option darkmode", false);
+
+		preferences.putInteger("darkmode r", 17);
+		preferences.putInteger("darkmode g", 17);
+		preferences.putInteger("darkmode b", 17);
+
+		preferences.putInteger("brightmode r", 35);
+		preferences.putInteger("brightmode g", 180);
+		preferences.putInteger("brightmode b", 255);
+
+		preferences.putInteger("enter darkmode r", 30);
+		preferences.putInteger("enter darkmode g", 30);
+		preferences.putInteger("enter darkmode b", 30);
+
+		preferences.putInteger("enter brightmode r", 45);
+		preferences.putInteger("enter brightmode g", 190);
+		preferences.putInteger("enter brightmode b", 255);
 
 	}
 
@@ -142,7 +173,16 @@ public class Main extends ApplicationAdapter {
 		Gdx.graphics.setSystemCursor(SystemCursor.Hand);
 
 		skin = new Skin(Gdx.files.internal("bitmapfont/textToolTip.json"));
-
+		if (brightMode) {
+			System.out.println("open bright mode skin");
+			// TextureAtlas atlas = new
+			// TextureAtlas(Gdx.files.internal("bitmapfont/textFieldBrightmode.atlas"));
+			skinTextField = new Skin(Gdx.files.internal("bitmapfont/textFieldBrightmode.json"));
+			// skinTextField.load(Gdx.files.internal("bitmapfont/textFieldBrightmode.json"));
+			// skinTextField.addRegions(atlas);
+		} else {
+			skinTextField = new Skin(Gdx.files.internal("bitmapfont/textFieldDarkmode.json"));
+		}
 		createMultiplexer();
 
 		createInfoTable();
@@ -166,6 +206,7 @@ public class Main extends ApplicationAdapter {
 		ImageEdition.create();
 		Parameter.create();
 		BigPreview.create();
+		EnterValue.create();
 
 		FileChooser.open();
 
@@ -196,30 +237,56 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		if (windowOpen.equals("")) {
-			FileChooser.open();
-		}
+		// if (windowOpen.equals("")) {
+		// FileChooser.open();
+		// }
 		MixOfImage.manager.update();
-		if (windowOpen.equals("ImageEdition")) {
-			ImageEdition.render();
-		} else if (windowOpen.equals("MainImages")) {
-			MainImages.render();
-		} else if (windowOpen.equals("LoadImage")) {
-			LoadImage.render();
-		} else if (windowOpen.equals("FileChooser")) {
-			FileChooser.render();
+		if (openWindow) {
+			openWindow = false;
+			if (windowOpen.equals("ImageEdition")) {
+				ImageEdition.create();
+				ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+			} else if (windowOpen.equals("MainImages")) {
+				MainImages.open();
+			} else if (windowOpen.equals("LoadImage")) {
+				LoadImage.open();
+			} else if (windowOpen.equals("FileChooser")) {
+				FileChooser.open();
+			} else if (windowOpen.equals("")) {
+				FileChooser.open();
+			}
+		} else {
+
+			if (windowOpen.equals("ImageEdition")) {
+				ImageEdition.render();
+			} else if (windowOpen.equals("MainImages")) {
+				MainImages.render();
+			} else if (windowOpen.equals("LoadImage")) {
+				LoadImage.render();
+			} else if (windowOpen.equals("FileChooser")) {
+				FileChooser.render();
+			} else if (windowOpen.equals("")) {
+				FileChooser.open();
+			}
 		}
 
 		if (brightMode) {
-			ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
-		} else if (darkMode) {
-			ScreenUtils.clear(17 / 255f, 17 / 255f, 17 / 255f, 255 / 255f);
+			// ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
+
+			ScreenUtils.clear(Main.preferences.getInteger("brightmode r", 0) / 255f,
+					Main.preferences.getInteger("brightmode g", 0) / 255f,
+					Main.preferences.getInteger("brightmode b", 0) / 255f, 255 / 255f);
 		} else {
-			ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
+			// ScreenUtils.clear(17 / 255f, 17 / 255f, 17 / 255f, 255 / 255f);
+			ScreenUtils.clear(Main.preferences.getInteger("darkmode r", 0) / 255f,
+					Main.preferences.getInteger("darkmode g", 0) / 255f,
+					Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
 
 		}
 
-		if (!infoText.equals(" ")) {
+		if (!infoText.equals(" "))
+
+		{
 			labelInfoText.setText(infoText);
 		}
 		mainStage.act();
@@ -504,7 +571,9 @@ public class Main extends ApplicationAdapter {
 
 	public static List<String> addToList(List<String> firstList, String toAdd) {
 		List<String> newList = new ArrayList<String>();
-
+		if (firstList == null) {
+			firstList = new ArrayList<String>();
+		}
 		for (String inList : firstList) {
 			newList.add(inList);
 
@@ -796,5 +865,35 @@ public class Main extends ApplicationAdapter {
 		}
 		nameWithout150 += ListImageName[ListImageName.length - 1];
 		return nameWithout150;
+	}
+
+	// public static void sortList(OrderedMap<String, Integer> map) {
+	// OrderedMap<String, Integer> result = new OrderedMap<String, Integer>();
+	// for (Entry<String, Integer> entrie : map.val) {
+	// result.put(entrie.key, entrie.value);
+	// }
+
+	// }
+	public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map,
+			Boolean reverse) {
+
+		SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(
+				new Comparator<Map.Entry<K, V>>() {
+					@Override
+					public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
+						int res;
+						if (reverse) {
+
+							res = -e1.getValue().compareTo(e2.getValue());
+						} else {
+							res = e1.getValue().compareTo(e2.getValue());
+
+						}
+						return res != 0 ? res : 1;
+					}
+				});
+
+		sortedEntries.addAll(map.entrySet());
+		return sortedEntries;
 	}
 }

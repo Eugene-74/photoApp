@@ -512,7 +512,9 @@ public class LoadImage {
     }
 
     public static void setSize(String imagePath, String imageName, Integer size, Boolean force) {
+        // String[] ImageSplit = imagePath.split("/");
         FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size + "/" + imageName);
+
         if (!handlebis.exists()) {
             if (force) {
                 MixOfImage.isInImageData(imagePath, false, "force");

@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -121,7 +123,6 @@ public class ImageEdition {
 
 				// dateTable.addActor(dateLabel);
 				dateLabel.setText(date);
-				// System.out.println("date : " + date);
 			} catch (Exception e) {
 				System.err.println("bug when loading the image");
 			} finally {
@@ -172,7 +173,7 @@ public class ImageEdition {
 					} else {
 						imageData.setLoved(true);
 					}
-					load();
+					reload(false);
 				}, null, null,
 				true, true, false, table, true, "love");
 		table.row();
@@ -284,6 +285,17 @@ public class ImageEdition {
 		CommonButton.createRefreshButton(table);
 		CommonButton.createBack(table);
 
+		// table.row();
+		// Main.placeImage(List.of("images/map.png", "images/outline.png"), "basic
+		// button",
+		// new Vector2(0, 0),
+		// Main.mainStage,
+		// (t) -> {
+
+		// }, "test of name : ");
+		// }, null, null,
+		// true, true, false, table, true, "open the map");
+
 	}
 
 	public static void reload(boolean returnToZero) {
@@ -296,11 +308,8 @@ public class ImageEdition {
 		if (returnToZero) {
 			open(Main.imagesData.get(0).getName(), true);
 		} else {
-
 			open(theCurrentImagePath, true);
-
 		}
-
 	}
 
 	public static void clear() {
@@ -370,7 +379,12 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					addAPeople();
+					ImageEdition.clear();
+					EnterValue.enterAValue(0, 0, (p) -> {
+						addAPeople(EnterValue.txtValue.getText());
+						Main.windowOpen = "ImageEdition";
+
+					}, "enter the people name : ");
 
 				}, null, null,
 				true, true, false, table, true, "add people");
@@ -382,7 +396,12 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					addAPlace();
+					ImageEdition.clear();
+					EnterValue.enterAValue(0, 0, (p) -> {
+						addAPlace(EnterValue.txtValue.getText());
+						Main.windowOpen = "ImageEdition";
+
+					}, "enter the place name : ");
 				}, null, null,
 				true, true, false, table, true, "add place");
 	}
@@ -545,9 +564,9 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
-		for (FileHandle f : handle.list()) {
+		for (String people : Main.peopleData.keySet()) {
 
-			peopleNames.add(f.nameWithoutExtension());
+			peopleNames.add(people);
 		}
 
 		if (!handle.exists()) {
@@ -595,8 +614,8 @@ public class ImageEdition {
 		List<String> placeNames = new ArrayList<String>();
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
-		for (FileHandle f : handle.list()) {
-			placeNames.add(f.nameWithoutExtension());
+		for (String place : Main.placeData.keySet()) {
+			placeNames.add(place);
 		}
 
 		if (!handle.exists()) {
@@ -612,7 +631,7 @@ public class ImageEdition {
 			if (i < maxPlace - 1) {
 				i += 1;
 				List<String> placeList = new ArrayList<>();
-				placeList.add(ImageData.IMAGE_PATH + "/places/" + place + ".jpg");
+				placeList.add(ImageData.IMAGE_PATH + "/150/" + place + ".jpg");
 				placeList.add("images/place outline.png");
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
@@ -719,11 +738,13 @@ public class ImageEdition {
 
 	public static void addPlace(String placeToAdd, String currentImagePath, boolean isReloadImageEdition) {
 		Main.placeData.put(placeToAdd, Main.placeData.get(placeToAdd) + 1);
-
 		ImageData imageData = Main.getCurrentImageData(currentImagePath);
 		List<String> places = imageData.getPlaces();
+
 		places = Main.addToList(places, placeToAdd);
+
 		imageData.setPlaces(places);
+
 		if (isReloadImageEdition) {
 			load();
 			theCurrentImagePath = currentImagePath;
@@ -790,7 +811,7 @@ public class ImageEdition {
 		ImageData.saveImagesData();
 	}
 
-	public static void addAPlace() {
+	public static void addAPlace(String name) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -807,22 +828,27 @@ public class ImageEdition {
 					if (chooser.getSelectedFile() != null) {
 						fileRessource = chooser.getSelectedFile();
 						if (Main.isAnImage(fileRessource.toString())) {
-							movePlace(fileRessource);
-							savePlaceDataToFile();
-							Main.reload(false);
+							movePlace(fileRessource, name);
 
+							Main.placeData.put(name, 0);
+
+							ImageEdition.savePlaceDataToFile();
+						} else {
+							Main.infoText = "the file isn't an image or is not suported";
 						}
 
 					}
 					f.dispose();
 
 				}
+				Main.openWindow = true;
+
 			}
 
 		}).start();
 	}
 
-	public static void addAPeople() {
+	public static void addAPeople(String name) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -840,41 +866,65 @@ public class ImageEdition {
 
 						fileRessource = chooser.getSelectedFile();
 						if (Main.isAnImage(fileRessource.toString())) {
-							movePeople(fileRessource);
-							String name = fileRessource.getName().substring(0,
-									fileRessource.getName().lastIndexOf("."));
+							movePeople(fileRessource, name);
+							// String name = fileRessource.getName().substring(0,
+							// fileRessource.getName().lastIndexOf("."));
 							Main.peopleData.put(name, 0);
 
 							ImageEdition.savePeopleDataToFile();
-							// Main.reload(false);
+
+						} else {
+							Main.infoText = "the file isn't an image or is not suported";
 						}
 
 					}
 					f.dispose();
 
 				}
+				Main.openWindow = true;
 			}
 
 		}).start();
 
 	}
 
-	public static void movePeople(File dir) {
+	public static void movePeople(File dir, String name) {
 		FileHandle from = Gdx.files.absolute(dir.toString());
 		byte[] data = from.readBytes();
 
-		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + dir.getName());
+		String[] nameSplit = dir.getPath().replace(".", ",").split(",");
+		String nameWithExtension = name + "."
+				+ nameSplit[nameSplit.length - 1];
+		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + nameWithExtension);
+		FileHandle tobis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + nameWithExtension);
 
 		to.writeBytes(data, false);
-		LoadImage.setSize(dir.toString(), dir.getName(), 150, false);
+		tobis.writeBytes(data, false);
+		// MixOfImage.isInImageData(to.path(), false, "force");
+		LoadImage.setSize(from.path(), nameWithExtension, 150, false);
 	}
 
-	public static void movePlace(File dir) {
+	public static void movePlace(File dir, String name) {
 		FileHandle from = Gdx.files.absolute(dir.toString());
 		byte[] data = from.readBytes();
 
-		FileHandle to = Gdx.files.absolute(ImageData.PLACE_IMAGE_PATH + "/" + dir.getName());
+		String[] nameSplit = dir.getPath().replace(".", ",").split(",");
+		String nameWithExtension = name + "."
+				+ nameSplit[nameSplit.length - 1];
+		FileHandle to = Gdx.files.absolute(ImageData.PLACE_IMAGE_PATH + "/" + nameWithExtension);
+		FileHandle tobis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + nameWithExtension);
+
 		to.writeBytes(data, false);
+		tobis.writeBytes(data, false);
+		// MixOfImage.isInImageData(to.path(), false, "force");
+		LoadImage.setSize(from.path(), nameWithExtension, 150, false);
+
+		// FileHandle from = Gdx.files.absolute(dir.toString());
+		// byte[] data = from.readBytes();
+
+		// FileHandle to = Gdx.files.absolute(ImageData.PLACE_IMAGE_PATH + "/" +
+		// dir.getName());
+		// to.writeBytes(data, false);
 	}
 
 	public static void placePlusPeople() {
@@ -902,11 +952,15 @@ public class ImageEdition {
 
 		// !!!!!!!!!!!! should be sort
 		// same for place
-		Main.peopleData.orderedKeys().sort();
+		// Main.peopleData.orderedKeys().sort();
 		String s = "";
-		for (String people : Main.peopleData.keys()) {
-			s += people + ":" + Main.peopleData.get(people) + "\n";
+		for (Map.Entry<String, Integer> entry : Main.entriesSortedByValues(Main.peopleData, true)) {
+			// System.out.println(entry.getValue());
+			s += entry.getKey() + ":" + entry.getValue() + "\n";
 		}
+		// for (String people : Main.peopleData) {
+		// s += people + ":" + Main.peopleData.get(people) + "\n";
+		// }
 		FileHandle handle = Gdx.files.absolute(ImageData.PEOPLE_SAVE_PATH);
 		InputStream text = new ByteArrayInputStream(s.getBytes());
 		handle.write(text, false);
@@ -915,8 +969,9 @@ public class ImageEdition {
 	public static void savePlaceDataToFile() {
 
 		String s = "";
-		for (String place : Main.placeData.keys()) {
-			s += place + ":" + Main.placeData.get(place);
+		for (Map.Entry<String, Integer> entry : Main.entriesSortedByValues(Main.placeData, true)) {
+			// System.out.println(entry.getValue());
+			s += entry.getKey() + ":" + entry.getValue() + "\n";
 		}
 		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_SAVE_PATH);
 		InputStream text = new ByteArrayInputStream(s.getBytes());
@@ -954,8 +1009,8 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
 
-		for (FileHandle f : handle.list()) {
-			peopleNames.add(f.nameWithoutExtension());
+		for (String people : Main.peopleData.keySet()) {
+			peopleNames.add(people);
 		}
 
 		if (!handle.exists()) {
@@ -967,7 +1022,7 @@ public class ImageEdition {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				peopleList.add(ImageData.IMAGE_PATH + "/peoples/" + people + ".jpg");
+				peopleList.add(ImageData.IMAGE_PATH + "/150/" + people + ".jpg");
 				peopleList.add("images/people outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
@@ -983,7 +1038,7 @@ public class ImageEdition {
 							addPeople(people, theCurrentImagePath, false);
 							addAllPeopleToPlusTable();
 						}, null, null,
-						true, true, false, plusTable, true, "");
+						true, true, false, plusTable, true, people);
 
 				index += 1;
 				if (index >= max) {
@@ -1009,8 +1064,8 @@ public class ImageEdition {
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
 
-		for (FileHandle f : handle.list()) {
-			placeNames.add(f.nameWithoutExtension());
+		for (String place : Main.placeData.keySet()) {
+			placeNames.add(place);
 		}
 
 		if (!handle.exists()) {
@@ -1023,7 +1078,7 @@ public class ImageEdition {
 				i += 1;
 				List<String> placeList = new ArrayList<>();
 
-				placeList.add(ImageData.IMAGE_PATH + "/places/" + place + ".jpg");
+				placeList.add(ImageData.IMAGE_PATH + "/150/" + place + ".jpg");
 
 				// WORK ONLY WITH JPG
 				placeList.add("images/place outline.png");

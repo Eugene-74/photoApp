@@ -90,7 +90,6 @@ public class ImageData {
 
     public String getDate() {
         if (data != null) {
-            // System.out.println("date bis" + data.get("date"));
             if (data.get("date") != null) {
                 return (String) data.get("date");
             }
@@ -106,9 +105,11 @@ public class ImageData {
                 if (!places.isEmpty()) {
                     data.put("places", places);
                 } else {
-                    data.put("places", "");
+
+                    data.put("places", null);
                 }
             }
+            // data.put("places", null);
         }
         return this;
     }
@@ -116,7 +117,7 @@ public class ImageData {
     public List<String> getPlaces() {
         if (data != null) {
 
-            if (data.get("places") != null && !data.get("places").equals("")) {
+            if (data.get("places") != null) {
                 return (List<String>) data.get("places");
             }
         }
@@ -125,17 +126,18 @@ public class ImageData {
     }
 
     public Boolean isInPlaces(String placeLookingFor) {
+        System.out.println(placeLookingFor);
         if (data != null) {
-
-            if (data != null) {
-                if (data.get("places") != null) {
-                    for (String place : (List<String>) data.get("places")) {
-                        if (place.equals(placeLookingFor)) {
-                            return true;
-                        }
+            if (data.get("places") != null && !data.get("places").equals("")) {
+                System.out.println(data.get("places"));
+                for (String place : (List<String>) data.get("places")) {
+                    System.out.println(place + "---" + placeLookingFor);
+                    if (place.equals(placeLookingFor)) {
+                        return true;
                     }
                 }
             }
+
         }
         return false;
 
@@ -148,7 +150,7 @@ public class ImageData {
                 if (!peoples.isEmpty()) {
                     data.put("peoples", peoples);
                 } else {
-                    data.put("peoples", "");
+                    data.put("peoples", null);
                 }
             }
         }

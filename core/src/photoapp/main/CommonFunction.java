@@ -18,8 +18,14 @@ public class CommonFunction {
                 MainImages.open();
             }
         } else if (Main.windowOpen.equals("MainImages")) {
-            MainImages.clear();
-            FileChooser.open();
+            if (MainImages.selectModeIsOn) {
+                MainImages.selectModeIsOn = false;
+                MainImages.reload();
+            } else {
+                MainImages.clear();
+                FileChooser.open();
+
+            }
         } else if (Main.windowOpen.equals("BigPreview")) {
             BigPreview.clear();
             ImageEdition.open(ImageEdition.theCurrentImagePath, true);
