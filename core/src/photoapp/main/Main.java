@@ -476,13 +476,13 @@ public class Main extends ApplicationAdapter {
 
 					cell.setActor(mixOfImages);
 
+					setTip(tip, mixOfImages);
+
 					return;
 				}
 			}
 			placeImageTable.add(mixOfImages);
-		} else
-
-		{
+		} else {
 			if (isMainImage) {
 				if (ImageEdition.currentMainImage != null) {
 					ImageEdition.currentMainImage.remove();
@@ -497,10 +497,16 @@ public class Main extends ApplicationAdapter {
 			}
 
 		}
+
+		setTip(tip, mixOfImages);
+
+	}
+
+	public static void setTip(String tip, MixOfImage mixOfImages) {
 		if (!tip.equals("")) {
+			// System.out.println(tip);
 			mixOfImages.addListener(new TextTooltip(tip, skin));
 		}
-
 	}
 
 	public static Boolean isInTable(Table table, String ImageName) {
@@ -732,6 +738,7 @@ public class Main extends ApplicationAdapter {
 			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
+				System.out.println(inf[0]);
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
@@ -919,5 +926,13 @@ public class Main extends ApplicationAdapter {
 
 		sortedEntries.addAll(map.entrySet());
 		return sortedEntries;
+	}
+
+	public static String error(String fileName, Exception e) {
+		String list = e.getMessage();
+		for (StackTraceElement trace : e.getStackTrace()) {
+			list += trace.toString() + "\n";
+		}
+		return list;
 	}
 }

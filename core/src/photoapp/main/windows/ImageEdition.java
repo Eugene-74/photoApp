@@ -330,7 +330,6 @@ public class ImageEdition {
 
 	public static void load() {
 		Gdx.app.log(fileName, "load");
-
 		if (doNotLoad) {
 			doNotLoad = false;
 			return;
@@ -648,7 +647,7 @@ public class ImageEdition {
 				} else {
 					placeList.add("images/no.png");
 				}
-
+				// System.out.println("place place" + place);
 				Main.placeImage(placeList,
 						"basic button",
 						new Vector2(0, 0),
@@ -656,7 +655,7 @@ public class ImageEdition {
 						(o) -> {
 							addPlace(place, currentImagePath, true);
 						}, null, null,
-						true, true, false, table, true, "place");
+						true, true, false, table, true, place);
 
 				index += 1;
 				if (index >= max) {
@@ -1114,7 +1113,7 @@ public class ImageEdition {
 							addAllPlaceToPlusTable();
 
 						}, null, null,
-						true, true, false, plusTable, true, "");
+						true, true, false, plusTable, true, place);
 
 				index += 1;
 				if (index >= max) {

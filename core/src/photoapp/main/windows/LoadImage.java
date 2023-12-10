@@ -529,6 +529,7 @@ public class LoadImage {
             for (StackTraceElement trace : e.getStackTrace()) {
                 Gdx.app.error("openImageExif", trace.toString());
             }
+            Main.error("openImageExif", e);
 
         }
     }
