@@ -581,7 +581,13 @@ public class ImageEdition {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				peopleList.add(ImageData.IMAGE_PATH + "/150/" + people + ".jpg");
+				FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + people + ".jpg");
+				if (handlebis.exists()) {
+					peopleList.add(ImageData.IMAGE_PATH + "/150/" + people + ".jpg");
+				} else {
+					peopleList.add("images/loading button.png");
+
+				}
 				peopleList.add("images/people outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");

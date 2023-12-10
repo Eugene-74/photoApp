@@ -136,11 +136,7 @@ public class LoadImage {
                 toRemove.clear();
 
             }
-            // else {
-            // Main.infoText = "exporting data of image : " + numberOfImagesExif + "/" +
-            // numberOfImagesToLoad
-            // + "(if you import a lot of image it will lag, but just wait)";
-            // }
+
         } else if (numberOfImagesExif == -1) {
             progress = MixOfImage.manager.getProgress();
             if (progress != lastProgress) {
@@ -195,6 +191,7 @@ public class LoadImage {
     }
 
     public static void openFile() {
+        numberOfImagesToLoad = 0;
         thread = new Thread() {
             @Override
             public void run() {
@@ -226,7 +223,9 @@ public class LoadImage {
                 } else {
                     f.dispose();
                     clear();
-                    Main.windowOpen = "";
+                    // Main.win
+                    Main.windowOpen = "MainImages";
+                    Main.openWindow = true;
                     // MainImages.open();
                     return;
                 }
@@ -242,6 +241,7 @@ public class LoadImage {
 
                 if (item.isFile()) {
                     if (Main.isAnImage(item.getName())) {
+                        // System.out.println(item.getName());
                         numberOfImagesToLoad += 1;
                     }
                 } else if (item.isDirectory()) {
@@ -418,6 +418,12 @@ public class LoadImage {
                 }
                 if (!peoplesNames.isEmpty()) {
                     imageData.setPeoples(peoplesNames);
+                }
+                for (String p : peoplesNames) {
+                    if (!Main.peopleData.containsKey(p)) {
+                        Main.peopleData.put(p, 0);
+                    }
+
                 }
 
             }
