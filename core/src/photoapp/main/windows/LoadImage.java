@@ -220,6 +220,7 @@ public class LoadImage {
 
                     }
                     f.dispose();
+
                 } else {
                     f.dispose();
                     clear();
@@ -288,11 +289,17 @@ public class LoadImage {
             FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName() + ".json");
             toJson.writeBytes(dataJson, false);
         }
-        System.out.println("set " + dir.getParentFile().toString());
+        // System.out.println("set " + dir.getParentFile().toString());
         openImageExif(dir.getName(), dir.getParentFile().toString());
 
         setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 150, false);
         setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 10, false);
+
+        MixOfImage.manager.finishLoading();
+        clear();
+        Main.windowOpen = "MainImages";
+        Main.openWindow = true;
+        return;
 
     }
 
