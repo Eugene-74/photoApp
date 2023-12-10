@@ -518,11 +518,11 @@ public class LoadImage {
             }
             addImageData(imageData);
 
-        } catch (
+        } catch (Exception e) {
+            for (StackTraceElement trace : e.getStackTrace()) {
+                Gdx.app.error("openImageExif", trace.toString());
+            }
 
-        Exception e) {
-            Gdx.app.error("openImageExif", " -Error " + e);
-        } finally {
         }
     }
 
