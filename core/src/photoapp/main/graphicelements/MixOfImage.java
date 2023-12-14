@@ -205,6 +205,10 @@ public class MixOfImage extends Group {
                 }
 
             }
+            // if (imageName.endsWith("error.png")) {
+            // System.err.println("error");
+            // fileName = Gdx.files.absolute("image/error.png");
+            // }
             texture = isInImageData(imageName, false, "");
             Image image = new Image(texture);
 

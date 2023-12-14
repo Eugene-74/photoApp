@@ -14,6 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -25,6 +28,8 @@ import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -87,9 +92,9 @@ public class Main extends ApplicationAdapter {
 	public static Label labelInfoText;
 	public static List<ImageData> imagesData;
 
-	public static SortedMap<String, Integer> peopleData = new TreeMap<>();
-	public static SortedMap<String, Integer> placeData = new TreeMap<>();
-	public static SortedMap<String, Integer> fileData = new TreeMap<>();
+	public static Map<String, Integer> peopleData = new LinkedHashMap<>();
+	public static Map<String, Integer> placeData = new LinkedHashMap<>();
+	public static Map<String, Integer> fileData = new LinkedHashMap<>();
 
 	public static Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
@@ -118,16 +123,68 @@ public class Main extends ApplicationAdapter {
 	public void iniPreferences() {
 		preferences.putInteger("image load at the same time", 50);
 
-		preferences.putString("text.done", " ");
-		preferences.putInteger("size of main images button", 150);
-
-		preferences.putInteger("size of main images height",
-				preferences.getInteger("size of main images button", 150) * 6);
-		preferences.putInteger("size of main images width",
-				preferences.getInteger("size of main images button", 150) * 9);
 		preferences.putInteger("size of close button", 50);
 		preferences.putInteger("border", 25);
 		preferences.putInteger("little border", 5);
+
+		// Main.preferences.putInteger("size of full width", 1200);
+		// Main.preferences.putInteger("size of full height",
+		// Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+
+		Main.preferences.putInteger("size of full width", 1200);
+		Main.preferences.putInteger("size of full height",
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+
+		Main.preferences.putInteger("size of preview image width", 150);
+		Main.preferences.putInteger("size of preview image height", 150);
+
+		preferences.putInteger("size of main image width", 1200);
+		preferences.putInteger("size of main image height",
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 3
+						- Main.preferences.getInteger("size of preview image height", 150));
+
+		preferences.putInteger("size of total main images width", 1200);
+		preferences.putInteger("size of total main images height",
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+
+		preferences.putInteger("size of main images button", 150);
+		preferences.putInteger("size of full button", 150);
+
+		preferences.putInteger("number of main images width",
+				preferences.getInteger("size of total main images width", 1200)
+						/ preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("size of main images width",
+				preferences.getInteger("number of main images width", 6)
+						* preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("number of main images height",
+				preferences.getInteger("size of total main images height", 1200)
+						/ preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("size of main images height",
+				Main.preferences.getInteger("number of main images height", 9)
+						* preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("number of full width",
+				preferences.getInteger("size of full width", 1200)
+						/ preferences.getInteger("size of full button", 150));
+
+		preferences.putInteger("size of full width",
+				preferences.getInteger("number of full width", 6)
+						* preferences.getInteger("size of full button", 150));
+
+		preferences.putInteger("number of full height",
+				preferences.getInteger("size of full height", 1200)
+						/ preferences.getInteger("size of full button", 150));
+
+		preferences.putInteger("size of full height",
+				Main.preferences.getInteger("number of full height", 9)
+						* preferences.getInteger("size of full button", 150));
+
+		Main.preferences.putInteger("image loaded when waiting in ImageEdition", 10);
+
+		preferences.putString("text.done", " ");
 
 		preferences.putInteger("size of links button width", 50);
 		preferences.putInteger("size of links button height", 50);
@@ -175,12 +232,7 @@ public class Main extends ApplicationAdapter {
 
 		skin = new Skin(Gdx.files.internal("bitmapfont/textToolTip.json"));
 		if (brightMode) {
-			System.out.println("open bright mode skin");
-			// TextureAtlas atlas = new
-			// TextureAtlas(Gdx.files.internal("bitmapfont/textFieldBrightmode.atlas"));
 			skinTextField = new Skin(Gdx.files.internal("bitmapfont/textFieldBrightmode.json"));
-			// skinTextField.load(Gdx.files.internal("bitmapfont/textFieldBrightmode.json"));
-			// skinTextField.addRegions(atlas);
 		} else {
 			skinTextField = new Skin(Gdx.files.internal("bitmapfont/textFieldDarkmode.json"));
 		}
@@ -254,6 +306,8 @@ public class Main extends ApplicationAdapter {
 				LoadImage.open();
 			} else if (windowOpen.equals("FileChooser")) {
 				FileChooser.open();
+			} else if (windowOpen.equals("BigPreview")) {
+				BigPreview.open(ImageEdition.theCurrentImagePath);
 			} else if (windowOpen.equals("")) {
 				FileChooser.open();
 			}
@@ -267,37 +321,37 @@ public class Main extends ApplicationAdapter {
 				LoadImage.render();
 			} else if (windowOpen.equals("FileChooser")) {
 				FileChooser.render();
+			} else if (windowOpen.equals("BigPreview")) {
+				BigPreview.render();
+				// BigPreview.laod(ImageEdition.theCurrentImagePath);
 			} else if (windowOpen.equals("")) {
 				FileChooser.open();
 			}
 		}
 
 		if (brightMode) {
-			// ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
 
 			ScreenUtils.clear(Main.preferences.getInteger("brightmode r", 0) / 255f,
 					Main.preferences.getInteger("brightmode g", 0) / 255f,
 					Main.preferences.getInteger("brightmode b", 0) / 255f, 255 / 255f);
 		} else {
-			// ScreenUtils.clear(17 / 255f, 17 / 255f, 17 / 255f, 255 / 255f);
 			ScreenUtils.clear(Main.preferences.getInteger("darkmode r", 0) / 255f,
 					Main.preferences.getInteger("darkmode g", 0) / 255f,
 					Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
 
 		}
 
-		if (!infoText.equals(" "))
-
-		{
+		if (!infoText.equals(" ")) {
 			labelInfoText.setText(infoText);
 		}
+		// System.out.println("act");
 		mainStage.act();
 		mainStage.draw();
 
 		if (!windowOpen.equals("LoadImage")) {
 			updateLoadingText();
 			if (MixOfImage.manager.isFinished()) {
-				infoTextSet(preferences.getString("text.done"), true);
+				infoTextSet(preferences.getString("text.done"), false);
 			}
 		}
 
@@ -504,8 +558,9 @@ public class Main extends ApplicationAdapter {
 
 	public static void setTip(String tip, MixOfImage mixOfImages) {
 		if (!tip.equals("")) {
-			// System.out.println(tip);
-			mixOfImages.addListener(new TextTooltip(tip, skin));
+			TextTooltip textToolTip = new TextTooltip(tip, skin);
+			textToolTip.setInstant(true);
+			mixOfImages.addListener(textToolTip);
 		}
 	}
 
@@ -738,10 +793,11 @@ public class Main extends ApplicationAdapter {
 			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
-				System.out.println(inf[0]);
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
+		System.err.println(peopleData);
+
 	}
 
 	public static void openPlaceData() {
@@ -763,6 +819,10 @@ public class Main extends ApplicationAdapter {
 				placeData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
+		for (java.util.Map.Entry<String, Integer> entry : entriesSortedByValues(placeData, true)) {
+
+		}
+
 	}
 
 	public static void openFileData() {
@@ -934,5 +994,63 @@ public class Main extends ApplicationAdapter {
 			list += trace.toString() + "\n";
 		}
 		return list;
+	}
+
+	public static void openFile(int type, final Consumer<Object> after, final Consumer<Object> doElse) {
+		Thread threade = new Thread() {
+			@Override
+			public void run() {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+						| UnsupportedLookAndFeelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				JFileChooser chooser = new JFileChooser();
+				try {
+					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+						| UnsupportedLookAndFeelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				chooser.setFileSelectionMode(type);
+				JFrame f = new JFrame();
+				f.setVisible(true);
+				f.toFront();
+				f.setVisible(false);
+				int res = chooser.showSaveDialog(f);
+				f.dispose();
+				f.setAlwaysOnTop(isAlive());
+
+				File fileRessource = null;
+				if (res == JFileChooser.APPROVE_OPTION) {
+					if (chooser.getSelectedFile() != null) {
+						fileRessource = chooser.getSelectedFile();
+						if (after != null) {
+							after.accept((File) fileRessource);
+						}
+
+					} else {
+						Main.infoText = "export has been stoped";
+
+					}
+
+				} else {
+					Main.infoText = "export has been stoped";
+
+					if (doElse != null) {
+						doElse.accept(fileRessource);
+					}
+				}
+				f.dispose();
+
+			}
+
+		};
+		threade.start();
 	}
 }

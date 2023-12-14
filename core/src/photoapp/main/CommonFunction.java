@@ -11,6 +11,10 @@ public class CommonFunction {
         if (Main.windowOpen.equals("ImageEdition")) {
             if (ImageEdition.plusTableOpen) {
                 ImageEdition.plusTable.clear();
+                ImageEdition.plusPeople = false;
+                ImageEdition.plusPlace = false;
+                ImageEdition.bigPreview = false;
+
                 ImageEdition.open(ImageEdition.theCurrentImagePath, false);
                 ImageEdition.plusTableOpen = false;
             } else {
@@ -27,6 +31,7 @@ public class CommonFunction {
 
             }
         } else if (Main.windowOpen.equals("BigPreview")) {
+            ImageEdition.bigPreview = false;
             BigPreview.clear();
             ImageEdition.open(ImageEdition.theCurrentImagePath, true);
         } else if (Main.windowOpen.equals("Parameter")) {

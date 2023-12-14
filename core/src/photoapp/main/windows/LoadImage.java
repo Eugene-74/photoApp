@@ -7,6 +7,9 @@ import java.util.List;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.filechooser.FileSystemView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -17,6 +20,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.TimeUtils;
 import com.drew.imaging.ImageMetadataReader;
+import com.drew.lang.annotations.Nullable;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
@@ -192,47 +196,66 @@ public class LoadImage {
 
     public static void openFile() {
         numberOfImagesToLoad = 0;
-        thread = new Thread() {
-            @Override
-            public void run() {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                JFrame f = new JFrame();
-                f.setVisible(true);
-                f.toFront();
-                f.setVisible(false);
-                int res = chooser.showSaveDialog(f);
-                f.dispose();
-                File fileRessource = null;
-                if (res == JFileChooser.APPROVE_OPTION) {
-                    if (chooser.getSelectedFile() != null) {
-                        fileRessource = chooser.getSelectedFile();
-                        if (Main.isAnImage(fileRessource.toString())) {
-                            numberOfImagesToLoad = 1;
-                            time = TimeUtils.millis();
-                            openImageInAFile(fileRessource);
-                        } else {
-                            time = TimeUtils.millis();
-                            countImageToLoad(fileRessource);
-                            openImageOfAFile(fileRessource);
+        // thread = new Thread() {
+        // @Override
+        // public void run() {
+        // JFileChooser chooser = new JFileChooser();
+        // chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        // JFrame f = new JFrame();
+        // f.setVisible(true);
+        // f.toFront();
+        // f.setVisible(false);
+        // int res = chooser.showSaveDialog(f);
+        // f.dispose();
+        // File fileRessource = null;
+        // if (res == JFileChooser.APPROVE_OPTION) {
+        // if (chooser.getSelectedFile() != null) {
+        // fileRessource = chooser.getSelectedFile();
+        // if (Main.isAnImage(fileRessource.toString())) {
+        // numberOfImagesToLoad = 1;
+        // time = TimeUtils.millis();
+        // openImageInAFile(fileRessource);
+        // } else {
+        // time = TimeUtils.millis();
+        // countImageToLoad(fileRessource);
+        // openImageOfAFile(fileRessource);
 
-                        }
+        // }
+
+        // }
+        // f.dispose();
+
+        // } else {
+        // f.dispose();
+        // clear();
+        // // Main.win
+        // Main.windowOpen = "MainImages";
+        // Main.openWindow = true;
+        // // MainImages.open();
+        // return;
+        // }
+        // }
+        // };
+        // thread.start();
+        Main.openFile(JFileChooser.FILES_AND_DIRECTORIES,
+                (fileRessource) -> {
+                    if (Main.isAnImage(fileRessource.toString())) {
+                        numberOfImagesToLoad = 1;
+                        time = TimeUtils.millis();
+                        openImageInAFile((File) fileRessource);
+                    } else {
+                        time = TimeUtils.millis();
+                        countImageToLoad((File) fileRessource);
+                        openImageOfAFile((File) fileRessource);
 
                     }
-                    f.dispose();
-
-                } else {
-                    f.dispose();
+                }, (fileRessource) -> {
+                    // f.dispose();
                     clear();
-                    // Main.win
                     Main.windowOpen = "MainImages";
                     Main.openWindow = true;
-                    // MainImages.open();
                     return;
-                }
-            }
-        };
-        thread.start();
+                });
     }
 
     private static void countImageToLoad(File fileRessource) {
@@ -303,43 +326,22 @@ public class LoadImage {
 
     }
 
-    public static void exportImages() {
+    public static void exportImages(@Nullable String fileName) {
+        ImageData.openDataOfImages(fileName);
 
-        Thread threade = new Thread() {
-            @Override
-            public void run() {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-                JFrame f = new JFrame();
-                f.setVisible(true);
-                f.toFront();
-                f.setVisible(false);
-                int res = chooser.showSaveDialog(f);
-                f.dispose();
-                File fileRessource = null;
-                if (res == JFileChooser.APPROVE_OPTION) {
-                    if (chooser.getSelectedFile() != null) {
-                        fileRessource = chooser.getSelectedFile();
-                        for (ImageData imageData : Main.imagesData) {
-                            String imageName = imageData.getName();
+        Main.openFile(JFileChooser.DIRECTORIES_ONLY,
+                (fileRessource) -> {
+                    for (ImageData imageData : Main.imagesData) {
+                        String imageName = imageData.getName();
 
-                            FileHandle from = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageName);
-                            byte[] data = from.readBytes();
+                        FileHandle from = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageName);
+                        byte[] data = from.readBytes();
 
-                            FileHandle to = Gdx.files.absolute(fileRessource + "/" + imageName);
-                            to.writeBytes(data, false);
-                        }
-                        Main.infoText = "export done";
-
+                        FileHandle to = Gdx.files.absolute(fileRessource + "/" + imageName);
+                        to.writeBytes(data, false);
                     }
-                    f.dispose();
-
-                }
-            }
-
-        };
-        threade.start();
-
+                    Main.infoText = "export done";
+                }, null);
     }
 
     public static void setSizeAfterLoad(String imagePath, Integer size) {
@@ -427,8 +429,16 @@ public class LoadImage {
                     imageData.setPeoples(peoplesNames);
                 }
                 for (String p : peoplesNames) {
+                    String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
+                    p = p.replaceAll(characterFilter, "");
                     if (!Main.peopleData.containsKey(p)) {
+
                         Main.peopleData.put(p, 0);
+
+                        File from = new File("images/no image people.png");
+
+                        ImageEdition.movePeople(from, p, false);
+
                     }
 
                 }

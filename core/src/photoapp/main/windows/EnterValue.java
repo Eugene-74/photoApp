@@ -55,7 +55,10 @@ public class EnterValue {
                 (o) -> {
                     clear();
                     if (after != null) {
-                        after.accept(txtValue.getText());
+                        String value = txtValue.getText();
+                        String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
+                        value = value.replaceAll(characterFilter, "");
+                        after.accept(value);
                     }
                 }, null, null,
                 true, true, false, validationTable, true, "validate");

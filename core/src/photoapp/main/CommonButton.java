@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.drew.lang.annotations.Nullable;
 
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.LoadImage;
@@ -50,5 +51,17 @@ public class CommonButton {
                     CommonFunction.back();
                 }, null, null,
                 true, true, false, table, true, "back");
+    }
+
+    public static void createExport(Table table, @Nullable String fileName, String desciption) {
+
+        Main.placeImage(List.of("images/export.png", "images/outline.png"), "basic button",
+                new Vector2(0, 0),
+                Main.mainStage,
+                (o) -> {
+                    Main.infoTextSet("export start", true);
+                    LoadImage.exportImages(fileName);
+                }, null, null,
+                true, true, false, table, true, desciption);
     }
 }

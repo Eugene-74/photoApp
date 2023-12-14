@@ -82,8 +82,7 @@ public class Keybord implements InputProcessor {
             MainImages.previousImages();
 
         } else if (Main.windowOpen.equals("BigPreview")) {
-            BigPreview.clear();
-            ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+            BigPreview.previousImage(ImageEdition.theCurrentImagePath);
 
         }
     }
@@ -96,8 +95,8 @@ public class Keybord implements InputProcessor {
             MainImages.nextImages();
 
         } else if (Main.windowOpen.equals("BigPreview")) {
-            BigPreview.clear();
-            ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+            // ImageEdition.bigPreview = true;
+            BigPreview.nextImage(ImageEdition.theCurrentImagePath);
 
         }
 
