@@ -55,10 +55,12 @@ public class EnterValue {
                 (o) -> {
                     clear();
                     if (after != null) {
-                        String value = txtValue.getText();
-                        String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
-                        value = value.replaceAll(characterFilter, "");
-                        after.accept(value);
+                        // TODO place at the right spot
+                        // String value = txtValue.getText();
+                        // String characterFilter =
+                        // "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
+                        // value = value.replaceAll(characterFilter, "");
+                        after.accept(txtValue.getText());
                     }
                 }, null, null,
                 true, true, false, validationTable, true, "validate");
