@@ -390,11 +390,8 @@ public class ImageEdition {
 				(o) -> {
 					ImageEdition.clear();
 					EnterValue.enterAValue(0, 0, (p) -> {
-						String value = EnterValue.txtValue.getText();
-						String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
-						value = value.replaceAll(characterFilter, "");
 
-						addAPeople(value);
+						addAPeople((String) p);
 						// Main.windowOpen = "ImageEdition";
 
 					}, "enter the people name : ");
@@ -411,7 +408,7 @@ public class ImageEdition {
 				(o) -> {
 					ImageEdition.clear();
 					EnterValue.enterAValue(0, 0, (p) -> {
-						addAPlace(EnterValue.txtValue.getText());
+						addAPlace((String) p);
 						Main.windowOpen = "ImageEdition";
 
 					}, "enter the place name : ");

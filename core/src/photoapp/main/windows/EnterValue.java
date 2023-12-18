@@ -55,18 +55,21 @@ public class EnterValue {
                 (o) -> {
                     clear();
                     if (after != null) {
-                        // TODO place at the right spot
-                        // String value = txtValue.getText();
-                        // String characterFilter =
-                        // "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
-                        // value = value.replaceAll(characterFilter, "");
-                        after.accept(txtValue.getText());
+                        // System.out.println(EnterValue.txtValue.getText());
+
+                        String value = EnterValue.txtValue.getText();
+                        String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
+                        value = value.replaceAll(characterFilter, "").replace("/", "").replace("\\", "").replace(".",
+                                "");
+                        // System.out.println(value);
+
+                        after.accept(value);
                     }
                 }, null, null,
                 true, true, false, validationTable, true, "validate");
     }
 
-    private static void clear() {
+    public static void clear() {
         validationTable.clear();
         textTable.clear();
 

@@ -1,6 +1,7 @@
 package photoapp.main;
 
 import photoapp.main.windows.BigPreview;
+import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.MainImages;
@@ -37,6 +38,10 @@ public class CommonFunction {
         } else if (Main.windowOpen.equals("Parameter")) {
             Parameter.clear();
             FileChooser.open();
+        } else if (Main.windowOpen.equals("EnterValue")) {
+            EnterValue.clear();
+            Main.openWindow = true;
+            Main.windowOpen = "MainImages";
         }
     }
 }

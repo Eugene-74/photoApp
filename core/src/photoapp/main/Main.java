@@ -1035,12 +1035,12 @@ public class Main extends ApplicationAdapter {
 						}
 
 					} else {
-						Main.infoText = "export has been stoped";
+						Main.infoText = "loading has been stoped";
 
 					}
 
 				} else {
-					Main.infoText = "export has been stoped";
+					Main.infoText = "loading has been stoped";
 
 					if (doElse != null) {
 						doElse.accept(fileRessource);
