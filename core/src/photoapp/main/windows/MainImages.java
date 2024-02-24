@@ -121,10 +121,8 @@ public class MainImages {
                     }, null, null,
                     true, true, false, mainTable, true, "love the selected images");
             mainTable.row();
-            CommonButton.createBack(mainTable);
 
         } else {
-            CommonButton.createBack(mainTable);
 
             Main.placeImage(List.of("images/selected.png", "images/outline.png"), "basic button",
                     new Vector2(0, 0),
@@ -140,6 +138,9 @@ public class MainImages {
                     }, null, null,
                     true, true, false, mainTable, true, "select images");
         }
+        mainTable.row();
+        CommonButton.createExport(mainTable, null, "export the file image");
+        CommonButton.createBack(mainTable);
 
     }
 

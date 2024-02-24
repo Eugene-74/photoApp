@@ -12,13 +12,24 @@ import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -31,6 +42,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -39,8 +52,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -49,6 +64,7 @@ import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Directory;
@@ -58,6 +74,7 @@ import com.drew.metadata.Tag;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.windows.BigPreview;
+import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.Keybord;
@@ -70,14 +87,16 @@ public class Main extends ApplicationAdapter {
 	public static Preferences preferences;
 	public static Table infoTable;
 	public static Table linkTable;
+
 	static Integer numberOfLoadedImages = 0;
 	public static Label labelInfoText;
 	public static List<ImageData> imagesData;
 
-	public static OrderedMap<String, Integer> peopleData = new OrderedMap<>();
-	public static OrderedMap<String, Integer> placeData = new OrderedMap<>();
+	public static Map<String, Integer> peopleData = new LinkedHashMap<>();
+	public static Map<String, Integer> placeData = new LinkedHashMap<>();
+	public static Map<String, Integer> fileData = new LinkedHashMap<>();
 
-	Label.LabelStyle label1Style = new Label.LabelStyle();
+	public static Label.LabelStyle label1Style = new Label.LabelStyle();
 	public static String infoText = " ";
 	public static String windowOpen = "Main";
 	Integer newProgress;
@@ -98,20 +117,74 @@ public class Main extends ApplicationAdapter {
 	public static Boolean brightMode = false;
 	public static Boolean darkMode = false;
 	static Skin skin;
+	public static Skin skinTextField;
+	public static boolean openWindow;
 
 	public void iniPreferences() {
 		preferences.putInteger("image load at the same time", 50);
 
-		preferences.putString("text.done", " ");
-		preferences.putInteger("size of main images button", 150);
-
-		preferences.putInteger("size of main images height",
-				preferences.getInteger("size of main images button", 150) * 6);
-		preferences.putInteger("size of main images width",
-				preferences.getInteger("size of main images button", 150) * 9);
 		preferences.putInteger("size of close button", 50);
 		preferences.putInteger("border", 25);
 		preferences.putInteger("little border", 5);
+
+		// Main.preferences.putInteger("size of full width", 1200);
+		// Main.preferences.putInteger("size of full height",
+		// Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+
+		Main.preferences.putInteger("size of full width", 1200);
+		Main.preferences.putInteger("size of full height",
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+
+		Main.preferences.putInteger("size of preview image width", 150);
+		Main.preferences.putInteger("size of preview image height", 150);
+
+		preferences.putInteger("size of main image width", 1200);
+		preferences.putInteger("size of main image height",
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 3
+						- Main.preferences.getInteger("size of preview image height", 150));
+
+		preferences.putInteger("size of total main images width", 1200);
+		preferences.putInteger("size of total main images height",
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+
+		preferences.putInteger("size of main images button", 150);
+		preferences.putInteger("size of full button", 150);
+
+		preferences.putInteger("number of main images width",
+				preferences.getInteger("size of total main images width", 1200)
+						/ preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("size of main images width",
+				preferences.getInteger("number of main images width", 6)
+						* preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("number of main images height",
+				preferences.getInteger("size of total main images height", 1200)
+						/ preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("size of main images height",
+				Main.preferences.getInteger("number of main images height", 9)
+						* preferences.getInteger("size of main images button", 150));
+
+		preferences.putInteger("number of full width",
+				preferences.getInteger("size of full width", 1200)
+						/ preferences.getInteger("size of full button", 150));
+
+		preferences.putInteger("size of full width",
+				preferences.getInteger("number of full width", 6)
+						* preferences.getInteger("size of full button", 150));
+
+		preferences.putInteger("number of full height",
+				preferences.getInteger("size of full height", 1200)
+						/ preferences.getInteger("size of full button", 150));
+
+		preferences.putInteger("size of full height",
+				Main.preferences.getInteger("number of full height", 9)
+						* preferences.getInteger("size of full button", 150));
+
+		Main.preferences.putInteger("image loaded when waiting in ImageEdition", 10);
+
+		preferences.putString("text.done", " ");
 
 		preferences.putInteger("size of links button width", 50);
 		preferences.putInteger("size of links button height", 50);
@@ -123,7 +196,23 @@ public class Main extends ApplicationAdapter {
 		preferences.putInteger("size of big preview height",
 				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
 		brightMode = preferences.getBoolean("option brightmode", false);
-		darkMode = preferences.getBoolean("option darkmode", false);
+		// darkMode = preferences.getBoolean("option darkmode", false);
+
+		preferences.putInteger("darkmode r", 17);
+		preferences.putInteger("darkmode g", 17);
+		preferences.putInteger("darkmode b", 17);
+
+		preferences.putInteger("brightmode r", 35);
+		preferences.putInteger("brightmode g", 180);
+		preferences.putInteger("brightmode b", 255);
+
+		preferences.putInteger("enter darkmode r", 30);
+		preferences.putInteger("enter darkmode g", 30);
+		preferences.putInteger("enter darkmode b", 30);
+
+		preferences.putInteger("enter brightmode r", 45);
+		preferences.putInteger("enter brightmode g", 190);
+		preferences.putInteger("enter brightmode b", 255);
 
 	}
 
@@ -142,7 +231,11 @@ public class Main extends ApplicationAdapter {
 		Gdx.graphics.setSystemCursor(SystemCursor.Hand);
 
 		skin = new Skin(Gdx.files.internal("bitmapfont/textToolTip.json"));
-
+		if (brightMode) {
+			skinTextField = new Skin(Gdx.files.internal("bitmapfont/textFieldBrightmode.json"));
+		} else {
+			skinTextField = new Skin(Gdx.files.internal("bitmapfont/textFieldDarkmode.json"));
+		}
 		createMultiplexer();
 
 		createInfoTable();
@@ -150,9 +243,10 @@ public class Main extends ApplicationAdapter {
 		createCloseButton();
 		createLinkButton();
 
-		ImageData.openDataOfImages();
+		// ImageData.openDataOfImages();
 		openPlaceData();
 		openPeopleData();
+		openFileData();
 
 		System.out.println("starting");
 
@@ -166,6 +260,7 @@ public class Main extends ApplicationAdapter {
 		ImageEdition.create();
 		Parameter.create();
 		BigPreview.create();
+		EnterValue.create();
 
 		FileChooser.open();
 	}
@@ -195,36 +290,67 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
+		// if (windowOpen.equals("")) {
+		// FileChooser.open();
+		// }
 		MixOfImage.manager.update();
-		if (windowOpen.equals("ImageEdition")) {
-			ImageEdition.render();
-		} else if (windowOpen.equals("MainImages")) {
-			MainImages.render();
-		} else if (windowOpen.equals("LoadImage")) {
-			LoadImage.render();
-		} else if (windowOpen.equals("FileChooser")) {
-			FileChooser.render();
+		if (openWindow) {
+			openWindow = false;
+			if (windowOpen.equals("ImageEdition")) {
+				ImageEdition.create();
+				ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+			} else if (windowOpen.equals("MainImages")) {
+				MainImages.open();
+			} else if (windowOpen.equals("LoadImage")) {
+				LoadImage.open();
+			} else if (windowOpen.equals("FileChooser")) {
+				FileChooser.open();
+			} else if (windowOpen.equals("BigPreview")) {
+				BigPreview.open(ImageEdition.theCurrentImagePath);
+			} else if (windowOpen.equals("")) {
+				FileChooser.open();
+			}
+		} else {
+
+			if (windowOpen.equals("ImageEdition")) {
+				ImageEdition.render();
+			} else if (windowOpen.equals("MainImages")) {
+				MainImages.render();
+			} else if (windowOpen.equals("LoadImage")) {
+				LoadImage.render();
+			} else if (windowOpen.equals("FileChooser")) {
+				FileChooser.render();
+			} else if (windowOpen.equals("BigPreview")) {
+				BigPreview.render();
+				// BigPreview.laod(ImageEdition.theCurrentImagePath);
+			} else if (windowOpen.equals("")) {
+				FileChooser.open();
+			}
 		}
 
 		if (brightMode) {
-			ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
-		} else if (darkMode) {
-			ScreenUtils.clear(17 / 255f, 17 / 255f, 17 / 255f, 255 / 255f);
+
+			ScreenUtils.clear(Main.preferences.getInteger("brightmode r", 0) / 255f,
+					Main.preferences.getInteger("brightmode g", 0) / 255f,
+					Main.preferences.getInteger("brightmode b", 0) / 255f, 255 / 255f);
 		} else {
-			ScreenUtils.clear(112 / 255f, 131 / 255f, 255 / 255f, 255 / 255f);
+			ScreenUtils.clear(Main.preferences.getInteger("darkmode r", 0) / 255f,
+					Main.preferences.getInteger("darkmode g", 0) / 255f,
+					Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
 
 		}
 
 		if (!infoText.equals(" ")) {
 			labelInfoText.setText(infoText);
 		}
+		// System.out.println("act");
 		mainStage.act();
 		mainStage.draw();
 
 		if (!windowOpen.equals("LoadImage")) {
 			updateLoadingText();
 			if (MixOfImage.manager.isFinished()) {
-				infoTextSet(preferences.getString("text.done"), true);
+				infoTextSet(preferences.getString("text.done"), false);
 			}
 		}
 
@@ -291,7 +417,6 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void clear() {
-		// mainStage.clear();
 		if (windowOpen.equals("ImageEdition")) {
 			ImageEdition.clear();
 		} else if (windowOpen.equals("MainImages")) {
@@ -404,13 +529,13 @@ public class Main extends ApplicationAdapter {
 
 					cell.setActor(mixOfImages);
 
+					setTip(tip, mixOfImages);
+
 					return;
 				}
 			}
 			placeImageTable.add(mixOfImages);
-		} else
-
-		{
+		} else {
 			if (isMainImage) {
 				if (ImageEdition.currentMainImage != null) {
 					ImageEdition.currentMainImage.remove();
@@ -425,10 +550,17 @@ public class Main extends ApplicationAdapter {
 			}
 
 		}
-		if (!tip.equals("")) {
-			mixOfImages.addListener(new TextTooltip(tip, skin));
-		}
 
+		setTip(tip, mixOfImages);
+
+	}
+
+	public static void setTip(String tip, MixOfImage mixOfImages) {
+		if (!tip.equals("")) {
+			TextTooltip textToolTip = new TextTooltip(tip, skin);
+			textToolTip.setInstant(true);
+			mixOfImages.addListener(textToolTip);
+		}
 	}
 
 	public static Boolean isInTable(Table table, String ImageName) {
@@ -501,7 +633,9 @@ public class Main extends ApplicationAdapter {
 
 	public static List<String> addToList(List<String> firstList, String toAdd) {
 		List<String> newList = new ArrayList<String>();
-
+		if (firstList == null) {
+			firstList = new ArrayList<String>();
+		}
 		for (String inList : firstList) {
 			newList.add(inList);
 
@@ -530,9 +664,10 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static Boolean isAnImage(String imagePath) {
-		if (imagePath.endsWith(".HEIC") || imagePath.endsWith(".png") || imagePath.endsWith(".PNG")
+		if (imagePath.endsWith(".png") || imagePath.endsWith(".PNG")
 				|| imagePath.endsWith(".jpg") || imagePath.endsWith(".JPG") || imagePath.endsWith(".HEIF")
 				|| imagePath.endsWith(".HEVC")) {
+			// imagePath.endsWith(".HEIC") ||
 			return true;
 		}
 		return false;
@@ -588,10 +723,12 @@ public class Main extends ApplicationAdapter {
 						/ Main.preferences.getInteger("size of main images button");
 				Integer row = Main.preferences.getInteger("size of main images height")
 						/ Main.preferences.getInteger("size of main images button");
-				range = row * column;
-				addRange = row * column / 2;
+				range = row * column
+						+ Main.preferences.getInteger("image loaded when waiting in MainImages", column * row) * 2;
+				addRange = column * row / 2;
+
 			} else if (Main.windowOpen.equals("ImageEdition")) {
-				range = 7;
+				range = 7 + Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5);
 			}
 
 			ArrayList<String> toUnput = new ArrayList<String>();
@@ -655,10 +792,11 @@ public class Main extends ApplicationAdapter {
 			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
-
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
+		System.err.println(peopleData);
+
 	}
 
 	public static void openPlaceData() {
@@ -678,6 +816,31 @@ public class Main extends ApplicationAdapter {
 				String[] inf = imageInfo.split(":");
 
 				placeData.put(inf[0], Integer.parseInt(inf[1]));
+			}
+		}
+		for (java.util.Map.Entry<String, Integer> entry : entriesSortedByValues(placeData, true)) {
+
+		}
+
+	}
+
+	public static void openFileData() {
+		FileHandle handle = Gdx.files.absolute(ImageData.FILE_SAVE_PATH);
+
+		if (!handle.exists()) {
+			return;
+		} else {
+			InputStream infos = handle.read();
+			String infosString = new BufferedReader(new InputStreamReader(infos))
+					.lines().collect(Collectors.joining("\n"));
+			if (infosString.equals("") || infosString.equals("\n")) {
+				return;
+			}
+			String[] imagesInfo = infosString.split("\n");
+			for (String imageInfo : imagesInfo) {
+				String[] inf = imageInfo.split(":");
+
+				fileData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
 	}
@@ -792,5 +955,101 @@ public class Main extends ApplicationAdapter {
 		}
 		nameWithout150 += ListImageName[ListImageName.length - 1];
 		return nameWithout150;
+	}
+
+	// public static void sortList(OrderedMap<String, Integer> map) {
+	// OrderedMap<String, Integer> result = new OrderedMap<String, Integer>();
+	// for (Entry<String, Integer> entrie : map.val) {
+	// result.put(entrie.key, entrie.value);
+	// }
+
+	// }
+	public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map,
+			Boolean reverse) {
+
+		SortedSet<Map.Entry<K, V>> sortedEntries = new TreeSet<Map.Entry<K, V>>(
+				new Comparator<Map.Entry<K, V>>() {
+					@Override
+					public int compare(Map.Entry<K, V> e1, Map.Entry<K, V> e2) {
+						int res;
+						if (reverse) {
+
+							res = -e1.getValue().compareTo(e2.getValue());
+						} else {
+							res = e1.getValue().compareTo(e2.getValue());
+
+						}
+						return res != 0 ? res : 1;
+					}
+				});
+
+		sortedEntries.addAll(map.entrySet());
+		return sortedEntries;
+	}
+
+	public static String error(String fileName, Exception e) {
+		String list = e.getMessage();
+		for (StackTraceElement trace : e.getStackTrace()) {
+			list += trace.toString() + "\n";
+		}
+		return list;
+	}
+
+	public static void openFile(int type, final Consumer<Object> after, final Consumer<Object> doElse) {
+		Thread threade = new Thread() {
+			@Override
+			public void run() {
+				try {
+					UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+						| UnsupportedLookAndFeelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				JFileChooser chooser = new JFileChooser();
+				try {
+					UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+
+				} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+						| UnsupportedLookAndFeelException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				chooser.setFileSelectionMode(type);
+				JFrame f = new JFrame();
+				f.setVisible(true);
+				f.toFront();
+				f.setVisible(false);
+				int res = chooser.showSaveDialog(f);
+				f.dispose();
+				f.setAlwaysOnTop(isAlive());
+
+				File fileRessource = null;
+				if (res == JFileChooser.APPROVE_OPTION) {
+					if (chooser.getSelectedFile() != null) {
+						fileRessource = chooser.getSelectedFile();
+						if (after != null) {
+							after.accept((File) fileRessource);
+						}
+
+					} else {
+						Main.infoText = "loading has been stoped";
+
+					}
+
+				} else {
+					Main.infoText = "loading has been stoped";
+
+					if (doElse != null) {
+						doElse.accept(fileRessource);
+					}
+				}
+				f.dispose();
+
+			}
+
+		};
+		threade.start();
 	}
 }

@@ -3,11 +3,13 @@ package photoapp.main.windows;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
+import photoapp.main.CommonButton;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
@@ -20,7 +22,6 @@ public class FileChooser {
 
     public static void create() {
 
-        setPref();
         createFileTable();
         createButtonTable();
 
@@ -36,7 +37,7 @@ public class FileChooser {
     }
 
     public static void reload() {
-
+        open();
     }
 
     public static void clear() {
@@ -47,8 +48,8 @@ public class FileChooser {
     public static void createFileTable() {
         fileTable = new Table();
 
-        fileTable.setSize(Main.preferences.getInteger("size of file table width"),
-                Main.preferences.getInteger("size of file table height"));
+        fileTable.setSize(Main.preferences.getInteger("size of full width"),
+                Main.preferences.getInteger("size of full height"));
 
         fileTable.setPosition(
                 Main.preferences.getInteger("border"),
@@ -59,24 +60,19 @@ public class FileChooser {
         buttonTable = new Table();
 
         buttonTable.setSize(
-                Gdx.graphics.getWidth() - Main.preferences.getInteger("size of file table width")
+                Gdx.graphics.getWidth() - Main.preferences.getInteger("size of full width")
                         - Main.preferences.getInteger("border") * 3,
                 Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
         buttonTable.setPosition(
-                Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
+                Main.preferences.getInteger("size of full width") + Main.preferences.getInteger("border") * 2,
                 Main.preferences.getInteger("border"));
     }
 
-    public static void setPref() {
-        Main.preferences.putInteger("size of file table width", 1200);
-        Main.preferences.putInteger("size of file table height", 800);
-    }
-
     public static void openFile(String name) {
-        if (name.equals("")) {
-            MainImages.open();
-            clear();
-        }
+        Main.imagesData = new ArrayList<ImageData>();
+        ImageData.openDataOfImages(name);
+        MainImages.open();
+        clear();
     }
 
     public static void placeButton() {
@@ -85,13 +81,15 @@ public class FileChooser {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    addAFile();
-                }, (o) -> {
+                    FileChooser.clear();
+                    EnterValue.enterAValue(0, 0, (p) -> {
 
-                    // Main.overlayTable.setPosition(, buttonTable.getY());
+                        addAFile((String) p);
+                        Main.openWindow = true;
+                        Main.windowOpen = "FileChooser";
 
-                }, (o) -> {
-                },
+                    }, "enter the file name : ");
+                }, null, null,
                 true, true, false, buttonTable, true, "add a file");
 
         buttonTable.row();
@@ -107,92 +105,92 @@ public class FileChooser {
 
         buttonTable.row();
 
-        addExport();
+        CommonButton.createExport(buttonTable, null, "export all files");
     }
 
-    public static void addExport() {
-        Main.placeImage(List.of("images/export.png", "images/outline.png"), "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    Main.infoTextSet("export start", true);
-                    LoadImage.exportImages();
-                }, null, null,
-                true, true, false, buttonTable, true, "export a file");
-    }
+    public static void addAFile(String name) {
+        if (!Main.fileData.containsKey(name)) {
+            Main.fileData.put(name, 0);
+            Main.infoTextSet("file created succefuly", true);
+        } else {
+            Main.infoTextSet("this file already exist", true);
 
-    public static void addAFile() {
-
-        MixOfImage.stopLoading();
-        addFileTable = new Table();
-        addFileTable.setPosition(0, 0);
-        addFileTable.setSize(100, 100);
-
-        Main.mainStage.addActor(addFileTable);
-
+        }
     }
 
     public static void placeFileChooserButton() {
+        try {
 
-        placeButton();
+            placeButton();
 
-        Integer maxByLine = 3;
-        Integer index = 0;
-        List<String> names = new ArrayList<String>();
+            Integer column = Main.preferences.getInteger("number of full width");
+            Integer row = Main.preferences.getInteger("number of full height");
 
-        File handle = new File(ImageData.IMAGE_PATH);
+            Integer maxByLine = column;
+            Integer index = 1;
+            List<String> names = new ArrayList<String>();
 
-        Main.placeImage(List.of("images/allFile.png", "images/outline.png"),
-                "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    openFile("");
-                }, null, null,
-                true, true, false, fileTable, true, "allFile");
+            Main.placeImage(List.of("images/allFile.png", "images/outline.png"),
+                    "full button",
+                    new Vector2(0, 0),
+                    Main.mainStage,
+                    (o) -> {
+                        openFile(null);
+                    }, null, null,
+                    true, true, false, fileTable, true, "allFile");
 
-        for (File name : handle.listFiles()) {
-            if (name.isDirectory()) {
+            File handle = new File(ImageData.IMAGE_PATH);
 
-                if (!name.getName().equals("150")
-                        && !name.getName().equals("bin")
-                        && !name.getName().equals("peoples")
-                        && !name.getName().equals("places")) {
+            if (!handle.exists())
 
-                    names.add(name.toString());
+            {
+                handle.mkdirs();
+            }
+            for (Entry<String, Integer> entry : Main.fileData.entrySet()) {
+                names.add(entry.getKey());
+            }
+            Integer totalMax;
+            if (names.size() < column * row) {
+                totalMax = names.size();
+            } else {
+                totalMax = column * row - 1;
+            }
+            Integer i = 0;
+
+            for (String name : names) {
+                if (i < totalMax) {
+                    i += 1;
+                    List<String> placeList = new ArrayList<>();
+                    placeList.add("images/file.png");
+                    placeList.add("images/outline.png");
+
+                    Main.placeImage(placeList,
+                            "full button",
+                            new Vector2(0, 0),
+                            Main.mainStage,
+                            (o) -> {
+                                openFile(name);
+                                if (Main.placeData.get(name) != null) {
+                                    Main.fileData.put(name, Main.placeData.get(name) + 1);
+                                } else {
+                                    Main.fileData.put(name, 0);
+                                }
+                            }, null, null,
+                            true, true, false, fileTable, true, name);
+
+                    index += 1;
+                    if (index >= maxByLine) {
+                        fileTable.row();
+                        index = 0;
+
+                    }
                 }
             }
-        }
+        } catch (
 
-        if (!handle.exists()) {
-            handle.mkdirs();
-        }
-        Integer totalMax = 5;
-        Integer i = 0;
-
-        for (String name : names) {
-            if (i < totalMax) {
-                i += 1;
-                List<String> placeList = new ArrayList<>();
-                placeList.add("images/file.png");
-                placeList.add("images/outline.png");
-
-                Main.placeImage(placeList,
-                        "basic button",
-                        new Vector2(0, 0),
-                        Main.mainStage,
-                        (o) -> {
-                            openFile(name);
-                        }, null, null,
-                        true, true, false, fileTable, true, name);
-
-                index += 1;
-                if (index >= maxByLine) {
-                    fileTable.row();
-                    index = 0;
-
-                }
-            }
+        Exception e) {
+            Gdx.app.error("placeFileChooserButton", " -Error " + e);
+        } finally {
         }
 
     }

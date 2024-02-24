@@ -20,6 +20,12 @@ com.badlogic.gdx.graphics.Color: {
 		b: 1
 		a: 1
 	}
+	RGBA_255_255_255_255: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	fond: {
@@ -29,6 +35,10 @@ com.badlogic.gdx.scenes.scene2d.ui.Skin$TintedDrawable: {
 	black: {
 		name: white-pixel
 		color: RGBA_0_0_0_255
+	}
+	wite: {
+		name: white-pixel
+		color: RGBA_255_255_255_255
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
@@ -42,7 +52,7 @@ com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
 com.badlogic.gdx.scenes.scene2d.ui.TextField$TextFieldStyle: {
 	default: {
 		font: dominican
-		fontColor: RGBA_221_255_255_255
+		fontColor: RGBA_255_255_255_255
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextTooltip$TextTooltipStyle: {
