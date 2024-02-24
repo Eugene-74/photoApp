@@ -168,7 +168,6 @@ public class Main extends ApplicationAdapter {
 		BigPreview.create();
 
 		FileChooser.open();
-
 	}
 
 	public static void createMultiplexer() {
