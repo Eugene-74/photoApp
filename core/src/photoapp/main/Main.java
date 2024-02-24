@@ -263,6 +263,7 @@ public class Main extends ApplicationAdapter {
 		EnterValue.create();
 
 		FileChooser.open();
+
 	}
 
 	public static void createMultiplexer() {
@@ -1034,12 +1035,12 @@ public class Main extends ApplicationAdapter {
 						}
 
 					} else {
-						Main.infoText = "loading has been stoped";
+						Main.infoText = "export has been stoped";
 
 					}
 
 				} else {
-					Main.infoText = "loading has been stoped";
+					Main.infoText = "export has been stoped";
 
 					if (doElse != null) {
 						doElse.accept(fileRessource);

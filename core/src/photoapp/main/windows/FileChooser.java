@@ -83,8 +83,7 @@ public class FileChooser {
                 (o) -> {
                     FileChooser.clear();
                     EnterValue.enterAValue(0, 0, (p) -> {
-
-                        addAFile((String) p);
+                        addAFile(EnterValue.txtValue.getText());
                         Main.openWindow = true;
                         Main.windowOpen = "FileChooser";
 
@@ -123,11 +122,14 @@ public class FileChooser {
 
             placeButton();
 
-            Integer column = Main.preferences.getInteger("number of full width");
-            Integer row = Main.preferences.getInteger("number of full height");
+            Integer column = Main.preferences.getInteger("size of full width")
+                    / Main.preferences.getInteger("size of full button");
+            Integer row = Main.preferences.getInteger("size of full height")
+                    / Main.preferences.getInteger("size of full button");
+            // Integer maxByLine;
 
-            Integer maxByLine = column;
-            Integer index = 1;
+            Integer maxByLine = row;
+            Integer index = 0;
             List<String> names = new ArrayList<String>();
 
             Main.placeImage(List.of("images/allFile.png", "images/outline.png"),
@@ -146,14 +148,14 @@ public class FileChooser {
             {
                 handle.mkdirs();
             }
-            for (Entry<String, Integer> entry : Main.fileData.entrySet()) {
+            for (Entry<String, Integer> entry : Main.entriesSortedByValues(Main.fileData, true)) {
                 names.add(entry.getKey());
             }
             Integer totalMax;
             if (names.size() < column * row) {
                 totalMax = names.size();
             } else {
-                totalMax = column * row - 1;
+                totalMax = column * row;
             }
             Integer i = 0;
 

@@ -430,9 +430,7 @@ public class LoadImage {
                 }
                 for (String p : peoplesNames) {
                     String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
-                    p = p.replaceAll(characterFilter, "").replace("/", "").replace("\\", "").replace(".",
-                            "");
-
+                    p = p.replaceAll(characterFilter, "");
                     if (!Main.peopleData.containsKey(p)) {
 
                         Main.peopleData.put(p, 0);
