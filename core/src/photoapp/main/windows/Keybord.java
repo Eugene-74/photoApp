@@ -6,27 +6,47 @@ import com.badlogic.gdx.InputProcessor;
 
 import photoapp.main.CommonFunction;
 import photoapp.main.Main;
+import photoapp.main.storage.ImageData;
 
 public class Keybord implements InputProcessor {
+    public static boolean crtl = false; 
 
     @Override
     public boolean keyDown(int keycode) {
-
+System.out.println(keycode);
+    if(crtl){
+        System.out.println("control");
+    }
         if ((keycode == Keys.LEFT) || keycode == Keys.UP
                 || keycode == Input.Keys.Z) {
             previous();
         } else if ((keycode == Keys.RIGHT || keycode == Keys.DOWN
                 || keycode == Keys.S)) {
             next();
-        } else if (keycode == Keys.ESCAPE) {
+        }else if ((keycode ==70 ) &&(crtl)) {
+            // = (signe sur le +)
+            Main.iconSize(true);
+        }else if ((keycode ==13) &&(crtl)) {
+            // - (signe sur le -)
+            Main.iconSize(false);
+        }else if ((keycode == Keys.D) &&(crtl)) {
+            if (Main.windowOpen == "ImageEdition"){
+                ImageEdition.moveToDeleteAnImage(ImageData.getImageDataIfExist(ImageEdition.theCurrentImagePath),ImageEdition.theCurrentImagePath);
+
+            }
+        }else if (keycode == Keys.ESCAPE) {
             CommonFunction.back();
+        }else if (keycode == Keys.CONTROL_LEFT) {
+            crtl = true;
         }
 
         return false;
     }
 
     public boolean keyUp(int keycode) {
-
+        if (keycode == Keys.CONTROL_LEFT) {
+            crtl = false;
+        }
         return false;
     }
 
@@ -66,11 +86,21 @@ public class Keybord implements InputProcessor {
 
     @Override
     public boolean scrolled(float amountX, float amountY) {
-        if (amountY > 0) {
-            next();
-        } else if (amountY < 0) {
-            previous();
+        if(crtl){
+            if (amountY > 0) {
+                Main.iconSize(false); // unzoom
+            } else if (amountY < 0) {
+                Main.iconSize(true); //zoom
+            }
+        }else{
+
+            if (amountY > 0) {
+                next();
+            } else if (amountY < 0) {
+                previous();
+            }
         }
+
         return false;
     }
 

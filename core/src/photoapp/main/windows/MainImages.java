@@ -109,7 +109,7 @@ public class MainImages {
                         reload();
 
                     }, null, null,
-                    true, true, false, mainTable, true, "delete the selected images");
+                    true, true, false, mainTable, true, "delete selected images");
             Main.placeImage(List.of("images/love.png", "images/outline.png"), "basic button",
                     new Vector2(0, 0),
                     Main.mainStage,
@@ -119,7 +119,7 @@ public class MainImages {
                         reload();
 
                     }, null, null,
-                    true, true, false, mainTable, true, "love the selected images");
+                    true, true, false, mainTable, true, "love selected images");
             mainTable.row();
 
         } else {
@@ -139,7 +139,7 @@ public class MainImages {
                     true, true, false, mainTable, true, "select images");
         }
         mainTable.row();
-        CommonButton.createExport(mainTable, null, "export the file image");
+        CommonButton.createExport(mainTable, null, "export fil image");
         CommonButton.createBack(mainTable);
 
     }
@@ -191,7 +191,7 @@ public class MainImages {
                 Main.preferences.getInteger("size of main images height"));
         imagesTable.setPosition(
                 Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - imagesTable.getHeight());
+                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - imagesTable.getHeight()-Main.preferences.getInteger("size of infoLabel width"));
 
         Main.mainStage.addActor(imagesTable);
 

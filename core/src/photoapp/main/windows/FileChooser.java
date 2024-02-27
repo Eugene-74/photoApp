@@ -11,7 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
-import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 
 public class FileChooser {
@@ -28,7 +27,7 @@ public class FileChooser {
     }
 
     public static void open() {
-        Main.windowOpen = "File Chooser";
+        Main.windowOpen = "FileChooser";
 
         Main.mainStage.addActor(fileTable);
         Main.mainStage.addActor(buttonTable);
@@ -37,6 +36,7 @@ public class FileChooser {
     }
 
     public static void reload() {
+        clear();
         open();
     }
 
@@ -100,7 +100,7 @@ public class FileChooser {
                     Parameter.open();
                     clear();
                 }, null, null,
-                true, true, false, buttonTable, true, "open the parameter");
+                true, true, false, buttonTable, true, "open parameter");
 
         buttonTable.row();
 

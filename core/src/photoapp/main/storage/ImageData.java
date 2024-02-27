@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.Main;
 import photoapp.main.windows.LoadImage;
@@ -22,6 +21,8 @@ public class ImageData {
     public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/people.csv";
     public final static String PLACE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/place.csv";
     public final static String FILE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/file.csv";
+
+    public final static String TEXT_PATH = "text/text-";
 
     public final static String IMAGE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/userImages";
     public final static String PEOPLE_IMAGE_PATH = System.getenv("APPDATA").replace("\\", "/")

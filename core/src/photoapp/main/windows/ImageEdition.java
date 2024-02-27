@@ -9,18 +9,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Array;
@@ -53,8 +49,8 @@ public class ImageEdition {
 	public static Boolean reloadOnce = false;
 
 	static Table dateTable;
-	static Label dateLabel;
-	static Label.LabelStyle datelabelStyle = new Label.LabelStyle();
+	public static Label dateLabel;
+	public static Label.LabelStyle datelabelStyle = new Label.LabelStyle();
 
 	static public Long lastImageChange = (long) 0;
 	static public Boolean imageWithGoodQuality = false;
@@ -91,7 +87,10 @@ public class ImageEdition {
 		datelabelStyle.font = myFont;
 		datelabelStyle.fontColor = Color.BLACK;
 		dateLabel = new Label(" ", datelabelStyle);
-		dateTable.setPosition(10, Gdx.graphics.getHeight() - 10 - dateLabel.getHeight());
+		dateTable.setSize(200, 50);
+		dateLabel.setSize(200, 10);
+		dateTable.setPosition(Main.preferences.getInteger("border"), Gdx.graphics.getHeight() - Main.preferences.getInteger("border")*2);
+		
 
 		Main.mainStage.addActor(dateTable);
 	}
@@ -197,34 +196,35 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					if (imageData != null) {
+					moveToDeleteAnImage(imageData,currentImagePath);
+					// if (imageData != null) {
 
-						Integer index = 0;
-						if (!toDelete.isEmpty()) {
-							for (ImageData delet : toDelete) {
-								if (delet.equals(imageData)) {
+					// 	Integer index = 0;
+					// 	if (!toDelete.isEmpty()) {
+					// 		for (ImageData delet : toDelete) {
+					// 			if (delet.equals(imageData)) {
 
-									toDelete.removeIndex(index);
-									open(currentImagePath, true);
-									return;
+					// 				toDelete.removeIndex(index);
+					// 				open(currentImagePath, true);
+					// 				return;
 
-								}
-								index += 1;
-							}
-							toDelete.add(imageData);
+					// 			}
+					// 			index += 1;
+					// 		}
+					// 		toDelete.add(imageData);
 
-						}
+					// 	}
 
-						if (index == 0) {
-							toDelete.add(imageData);
+					// 	if (index == 0) {
+					// 		toDelete.add(imageData);
 
-						}
-						open(currentImagePath, true);
-					} else {
-						Gdx.app.error(fileName, "error null");
-					}
+					// 	}
+					// 	open(currentImagePath, true);
+					// } else {
+					// 	Gdx.app.error(fileName, "error null");
+					// }
 				}, null, null,
-				true, true, false, table, true, "delete the image");
+				true, true, false, table, true, "delete image");
 
 		Main.placeImage(List.of("images/next.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
@@ -247,7 +247,7 @@ public class ImageEdition {
 					ImageData.saveImagesData();
 					load();
 				}, null, null,
-				true, true, false, table, true, "rotate to the right");
+				true, true, false, table, true, "rotate right");
 		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
@@ -263,7 +263,7 @@ public class ImageEdition {
 					load();
 
 				}, null, null,
-				true, true, false, table, true, "rotate to the left");
+				true, true, false, table, true, "rotate left");
 		table.row();
 
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
@@ -275,7 +275,7 @@ public class ImageEdition {
 						String coords = imageData.getCoords();
 						Main.openInAMap(coords);
 					}, null, null,
-					true, true, false, table, true, "open the map");
+					true, true, false, table, true, "open map");
 		}
 		table.row();
 
@@ -309,6 +309,35 @@ public class ImageEdition {
 			open(theCurrentImagePath, true);
 		}
 	}
+
+public static void moveToDeleteAnImage(ImageData imageData,String currentImagePath){
+	if (imageData != null) {
+
+		Integer index = 0;
+		if (!toDelete.isEmpty()) {
+			for (ImageData delet : toDelete) {
+				if (delet.equals(imageData)) {
+
+					toDelete.removeIndex(index);
+					open(currentImagePath, true);
+					return;
+
+				}
+				index += 1;
+			}
+			toDelete.add(imageData);
+
+		}
+
+		if (index == 0) {
+			toDelete.add(imageData);
+
+		}
+		open(currentImagePath, true);
+	} else {
+		Gdx.app.error(fileName, "error null");
+	}
+}
 
 	public static void clear() {
 		Gdx.app.log(fileName, "clear");
@@ -941,7 +970,7 @@ public class ImageEdition {
 				(o) -> {
 					openPlusPeople();
 				}, null, null,
-				true, true, false, table, true, "see more people");
+				true, true, false, table, true, "more people");
 	}
 
 	public static void placePlusPlace() {
@@ -952,7 +981,7 @@ public class ImageEdition {
 					openPlusPlace();
 
 				}, null, null,
-				true, true, false, table, true, "see more place");
+				true, true, false, table, true, "more place");
 	}
 
 	public static void savePeopleDataToFile() {

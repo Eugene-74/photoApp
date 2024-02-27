@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.Thread.State;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -14,14 +13,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.EnumMap;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -38,12 +33,8 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -52,27 +43,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.JsonReader;
-import com.badlogic.gdx.utils.JsonValue;
 import com.badlogic.gdx.utils.Null;
 import com.badlogic.gdx.utils.ObjectMap;
-import com.badlogic.gdx.utils.OrderedMap;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.ObjectMap.Entry;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.Tag;
 
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.storage.Text;
 import photoapp.main.windows.BigPreview;
 import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
@@ -86,7 +68,7 @@ public class Main extends ApplicationAdapter {
 	public static Stage mainStage;
 	public static Preferences preferences;
 	public static Table infoTable;
-	public static Table linkTable;
+	public static Table linkTable, sizeTable;
 
 	static Integer numberOfLoadedImages = 0;
 	public static Label labelInfoText;
@@ -119,11 +101,30 @@ public class Main extends ApplicationAdapter {
 	static Skin skin;
 	public static Skin skinTextField;
 	public static boolean openWindow;
+	public static Integer x, y, x3, y3;
+	
+	public static Integer iconSize = 100;
+	public static Integer imageSize = 200;
+	public static Integer littleIcon = 50;
+	public static Integer zoom = 0;
 
-	public void iniPreferences() {
+	public static void main(){
+		
+	}
+
+	public static void iniPreferences() {
+		x = Gdx.graphics.getWidth();
+		y = Gdx.graphics.getHeight();
+		x3 = x / 3;
+
+		preferences.putInteger("size of infoLabel width", 100);
+		preferences.putInteger("size of infoLabel height", 10);
+
+		preferences.putInteger("size of basic button", iconSize);
+
 		preferences.putInteger("image load at the same time", 50);
 
-		preferences.putInteger("size of close button", 50);
+		preferences.putInteger("size of close button", littleIcon);
 		preferences.putInteger("border", 25);
 		preferences.putInteger("little border", 5);
 
@@ -131,65 +132,76 @@ public class Main extends ApplicationAdapter {
 		// Main.preferences.putInteger("size of full height",
 		// Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
 
-		Main.preferences.putInteger("size of full width", 1200);
+		Main.preferences.putInteger("size of full width", 2 * x3-preferences.getInteger("border", 25)*2);
 		Main.preferences.putInteger("size of full height",
 				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
 
-		Main.preferences.putInteger("size of preview image width", 150);
-		Main.preferences.putInteger("size of preview image height", 150);
 
-		preferences.putInteger("size of main image width", 1200);
+		preferences.putInteger("size of main image width", 2 * x3-preferences.getInteger("border", 25)*2);
+				Main.preferences.putInteger("size of preview image width", (x3*2-preferences.getInteger("border", 25)*2)/7);
+				Main.preferences.putInteger("size of preview image height", preferences.getInteger("size of preview image width"));
+
+		
 		preferences.putInteger("size of main image height",
 				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 3
-						- Main.preferences.getInteger("size of preview image height", 150));
+						- Main.preferences.getInteger("size of preview image height", imageSize));
 
-		preferences.putInteger("size of total main images width", 1200);
+		
+
+		
+
+		preferences.putInteger("size of total main images width", 2 * x3);
 		preferences.putInteger("size of total main images height",
 				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
 
-		preferences.putInteger("size of main images button", 150);
-		preferences.putInteger("size of full button", 150);
+		preferences.putInteger("size of main images button", imageSize);
+		preferences.putInteger("size of full button", imageSize);
 
 		preferences.putInteger("number of main images width",
-				preferences.getInteger("size of total main images width", 1200)
-						/ preferences.getInteger("size of main images button", 150));
+				preferences.getInteger("size of total main images width", 2 * x3)
+						/ preferences.getInteger("size of main images button", imageSize));
 
 		preferences.putInteger("size of main images width",
 				preferences.getInteger("number of main images width", 6)
-						* preferences.getInteger("size of main images button", 150));
+						* preferences.getInteger("size of main images button", imageSize));
 
 		preferences.putInteger("number of main images height",
-				preferences.getInteger("size of total main images height", 1200)
-						/ preferences.getInteger("size of main images button", 150));
+				preferences.getInteger("size of total main images height", 2 * x3)
+						/ preferences.getInteger("size of main images button", imageSize));
 
 		preferences.putInteger("size of main images height",
 				Main.preferences.getInteger("number of main images height", 9)
-						* preferences.getInteger("size of main images button", 150));
+						* preferences.getInteger("size of main images button", imageSize));
 
 		preferences.putInteger("number of full width",
-				preferences.getInteger("size of full width", 1200)
-						/ preferences.getInteger("size of full button", 150));
+				preferences.getInteger("size of full width", 2 * x3)
+						/ preferences.getInteger("size of full button", imageSize));
 
 		preferences.putInteger("size of full width",
 				preferences.getInteger("number of full width", 6)
-						* preferences.getInteger("size of full button", 150));
+						* preferences.getInteger("size of full button", imageSize));
 
 		preferences.putInteger("number of full height",
-				preferences.getInteger("size of full height", 1200)
-						/ preferences.getInteger("size of full button", 150));
+				preferences.getInteger("size of full height", 2 * x3)
+						/ preferences.getInteger("size of full button", imageSize));
 
 		preferences.putInteger("size of full height",
 				Main.preferences.getInteger("number of full height", 9)
-						* preferences.getInteger("size of full button", 150));
+						* preferences.getInteger("size of full button", imageSize));
 
 		Main.preferences.putInteger("image loaded when waiting in ImageEdition", 10);
 
 		preferences.putString("text.done", " ");
 
-		preferences.putInteger("size of links button width", 50);
-		preferences.putInteger("size of links button height", 50);
+		preferences.putInteger("size of links button width", littleIcon);
+		preferences.putInteger("size of links button height", littleIcon);
+		preferences.putInteger("size of link button", littleIcon);
 
-		preferences.putInteger("size of link button", 50);
+
+		preferences.putInteger("size of size button width", littleIcon);
+		preferences.putInteger("size of size button height", littleIcon);
+		preferences.putInteger("size of size button", littleIcon);
+		
 
 		preferences.putInteger("size of big preview width",
 				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
@@ -216,10 +228,29 @@ public class Main extends ApplicationAdapter {
 
 	}
 
+	public static void iconSize(boolean plus) {
+		if (plus && zoom<40) {
+			System.out.println("plus");
+			iconSize = iconSize + 2;
+			imageSize = imageSize + 4;
+			littleIcon = littleIcon + 1;
+			zoom +=1;
+		} else if (zoom >-30 && !plus) {
+			System.out.println("minus");
+			iconSize = iconSize - 2;
+			imageSize = imageSize - 4;
+			littleIcon = littleIcon - 1;
+			zoom -=1;
+		}
+		iniPreferences();
+		reload(false);
+	}
+
 	@Override
 	public void create() {
 		preferences = Gdx.app.getPreferences("graphic params");
 		iniPreferences();
+		Text.openText("en");
 
 		MixOfImage.manager.load("images/loading button.png", Texture.class);
 		MixOfImage.manager.load("images/error.png", Texture.class);
@@ -238,10 +269,11 @@ public class Main extends ApplicationAdapter {
 		}
 		createMultiplexer();
 
-		createInfoTable();
-
 		createCloseButton();
 		createLinkButton();
+
+		createSizeTable();
+		createSizeButton();
 
 		// ImageData.openDataOfImages();
 		openPlaceData();
@@ -254,15 +286,18 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
-
+		ImageEdition.create();
 		FileChooser.create();
 		MainImages.create();
-		ImageEdition.create();
 		Parameter.create();
 		BigPreview.create();
 		EnterValue.create();
 
+		createInfoTable();
+
 		FileChooser.open();
+
+		
 
 	}
 
@@ -406,12 +441,18 @@ public class Main extends ApplicationAdapter {
 
 	public void createInfoTable() {
 		infoTable = new Table();
-		infoTable.setPosition(10, 10);
-
+		
+		infoTable.setPosition(Main.preferences.getInteger("border")+ImageEdition.dateLabel.getWidth(), Gdx.graphics.getHeight()-Main.preferences.getInteger("border")*2);
+		
+		Float size = (float) 1;
 		BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/dominican.fnt"));
+		myFont.getData().setScale(size);
+		
 		label1Style.font = myFont;
 		label1Style.fontColor = Color.RED;
 		labelInfoText = new Label(" ", label1Style);
+		infoTable.setSize(preferences.getInteger("size of infoLabel width"), preferences.getInteger("size of infoLabel height"));
+		labelInfoText.setSize(preferences.getInteger("size of infoLabel width"), preferences.getInteger("size of infoLabel height"));
 		infoTable.addActor(labelInfoText);
 
 		mainStage.addActor(infoTable);
@@ -557,7 +598,13 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void setTip(String tip, MixOfImage mixOfImages) {
+		
 		if (!tip.equals("")) {
+			if(!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)&& !Main.fileData.containsKey(tip)){
+			
+				tip=preferences.getString("text "+tip,"no text");
+			
+			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
 			textToolTip.setInstant(true);
 			mixOfImages.addListener(textToolTip);
@@ -796,7 +843,7 @@ public class Main extends ApplicationAdapter {
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
-		System.err.println(peopleData);
+		// System.err.println(peopleData);
 
 	}
 
@@ -856,6 +903,21 @@ public class Main extends ApplicationAdapter {
 		mainStage.addActor(linkTable);
 	}
 
+	public static void createSizeTable() {
+		sizeTable = new Table();
+
+		sizeTable.setSize(
+				preferences.getInteger("size of size button width") * 2,
+				preferences.getInteger("size of size button height"));
+		System.out.println(Gdx.graphics.getWidth() - sizeTable.getWidth()- linkTable.getWidth() - preferences.getInteger("little border"));
+		System.out.println(Gdx.graphics.getWidth());
+		sizeTable.setPosition(
+				Gdx.graphics.getWidth() - sizeTable.getWidth()
+						- linkTable.getWidth() - preferences.getInteger("little border"),
+				preferences.getInteger("little border"));
+		mainStage.addActor(sizeTable);
+	}
+
 	public static void createLinkButton() {
 
 		createLinkTable();
@@ -867,7 +929,26 @@ public class Main extends ApplicationAdapter {
 					Gdx.net.openURI("https://discord.gg/Q2HhZucmxU");
 
 				}, null, null,
-				true, true, false, linkTable, true, "open the discord");
+				true, true, false, linkTable, true, "open discord");
+
+	}
+
+	public static void createSizeButton() {
+
+		placeImage(List.of("images/plus.png"), "size button",
+				new Vector2(0, 0),
+				mainStage,
+				(o) -> {
+					iconSize(true);
+				}, null, null,
+				true, true, false, sizeTable, true, "plus size button");
+		placeImage(List.of("images/moins.png"), "size button",
+				new Vector2(0, 0),
+				mainStage,
+				(o) -> {
+					iconSize(false);
+				}, null, null,
+				true, true, false, sizeTable, true, "minus size button");
 
 	}
 
