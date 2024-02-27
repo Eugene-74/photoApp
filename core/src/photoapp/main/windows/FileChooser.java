@@ -82,7 +82,7 @@ public class FileChooser {
                 Main.mainStage,
                 (o) -> {
                     FileChooser.clear();
-                    EnterValue.enterAValue(0, 0, (p) -> {
+                    EnterValue.enterAValue((p) -> {
                         addAFile(EnterValue.txtValue.getText());
                         Main.openWindow = true;
                         Main.windowOpen = "FileChooser";

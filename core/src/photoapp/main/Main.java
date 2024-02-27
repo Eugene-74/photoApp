@@ -43,6 +43,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.ui.TextTooltip;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
@@ -56,6 +57,7 @@ import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.storage.Text;
 import photoapp.main.windows.BigPreview;
+import photoapp.main.windows.DateEdition;
 import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
@@ -116,6 +118,8 @@ public class Main extends ApplicationAdapter {
 		x = Gdx.graphics.getWidth();
 		y = Gdx.graphics.getHeight();
 		x3 = x / 3;
+
+		iconSize = (x3-preferences.getInteger("border")*2) /4;
 
 		preferences.putInteger("size of infoLabel width", 100);
 		preferences.putInteger("size of infoLabel height", 10);
@@ -231,13 +235,11 @@ public class Main extends ApplicationAdapter {
 	public static void iconSize(boolean plus) {
 		if (plus && zoom<40) {
 			System.out.println("plus");
-			iconSize = iconSize + 2;
 			imageSize = imageSize + 4;
 			littleIcon = littleIcon + 1;
 			zoom +=1;
 		} else if (zoom >-30 && !plus) {
 			System.out.println("minus");
-			iconSize = iconSize - 2;
 			imageSize = imageSize - 4;
 			littleIcon = littleIcon - 1;
 			zoom -=1;
@@ -292,6 +294,7 @@ public class Main extends ApplicationAdapter {
 		Parameter.create();
 		BigPreview.create();
 		EnterValue.create();
+		DateEdition.create();
 
 		createInfoTable();
 
@@ -308,7 +311,8 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void updateLoadingText() {
-		if (Main.infoText == "loading ." && TimeUtils.millis() - lastTimebis >= 500) {
+		
+		if ((Main.infoText == "loading ." ||  !Main.infoText.startsWith("loading"))&& TimeUtils.millis() - lastTimebis >= 500) {
 			Main.infoTextSet("loading ..", false);
 			lastTimebis = TimeUtils.millis();
 
@@ -375,7 +379,6 @@ public class Main extends ApplicationAdapter {
 					Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
 
 		}
-
 		if (!infoText.equals(" ")) {
 			labelInfoText.setText(infoText);
 		}
@@ -383,11 +386,13 @@ public class Main extends ApplicationAdapter {
 		mainStage.act();
 		mainStage.draw();
 
-		if (!windowOpen.equals("LoadImage")) {
-			updateLoadingText();
+		if (!windowOpen.equals("LoadImage")&& infoText.startsWith("loading")) {
 			if (MixOfImage.manager.isFinished()) {
 				infoTextSet(preferences.getString("text.done"), false);
 			}
+		}
+		if (!MixOfImage.manager.isFinished()){
+			updateLoadingText();
 		}
 
 		if (!MixOfImage.willBeLoad.isEmpty()
@@ -432,9 +437,9 @@ public class Main extends ApplicationAdapter {
 
 	public static void infoTextSet(String info, Boolean force) {
 		if (Main.preferences.getBoolean("infoIsOn", true) || force) {
-
-			labelInfoText.setText(info);
 			infoText = info;
+			labelInfoText.setText(info);
+			
 		}
 
 	}
@@ -563,7 +568,7 @@ public class Main extends ApplicationAdapter {
 
 		});
 
-		if (inTable) {
+		if (inTable && placeImageTable != null) {
 			for (Cell cell : placeImageTable.getCells()) {
 				String[] imageNameList = imageNames.get(0).split("/");
 
@@ -1133,5 +1138,31 @@ public class Main extends ApplicationAdapter {
 
 		};
 		threade.start();
+	}
+
+	public static void setTip(String tip, Label dateLabel) {
+		if (!tip.equals("")) {
+			if(!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)&& !Main.fileData.containsKey(tip)){
+			
+				tip=preferences.getString("text "+tip,"no text");
+			
+			}
+			TextTooltip textToolTip = new TextTooltip(tip, skin);
+			textToolTip.setInstant(true);
+			dateLabel.addListener(textToolTip);
+		}
+	}
+
+	public static void setTip(String tip, TextField dateLabel) {
+		if (!tip.equals("")) {
+			if(!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)&& !Main.fileData.containsKey(tip)){
+			
+				tip=preferences.getString("text "+tip,"no text");
+			
+			}
+			TextTooltip textToolTip = new TextTooltip(tip, skin);
+			textToolTip.setInstant(true);
+			dateLabel.addListener(textToolTip);
+		}
 	}
 }

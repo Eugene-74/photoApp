@@ -30,3 +30,12 @@ info:Enable/disable the information
 dark mode:Enable dark mode
 bright mode:Enable bright mode
 open parameter:Open the parameter
+date label:Change the date of the image
+day:day
+month:month
+year:year
+hour:hour
+min:minute
+s:second
+error date:error in the date format
+no date:No date for this images ...

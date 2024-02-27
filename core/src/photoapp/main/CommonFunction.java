@@ -1,6 +1,7 @@
 package photoapp.main;
 
 import photoapp.main.windows.BigPreview;
+import photoapp.main.windows.DateEdition;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.MainImages;
@@ -37,6 +38,9 @@ public class CommonFunction {
         } else if (Main.windowOpen.equals("Parameter")) {
             Parameter.clear();
             FileChooser.open();
+        }else if (Main.windowOpen.equals("DateEdition")) {
+            DateEdition.clear();
+            ImageEdition.open(ImageEdition.theCurrentImagePath,true);
         }
     }
 }

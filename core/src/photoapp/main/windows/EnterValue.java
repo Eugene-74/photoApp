@@ -4,18 +4,11 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.ScreenUtils;
 
 import photoapp.main.Main;
 
@@ -25,7 +18,7 @@ public class EnterValue {
     public static Table textTable;
     public static Label label;
 
-    public static void enterAValue(Integer x, Integer y, final Consumer<Object> after, String name) {
+    public static void enterAValue(final Consumer<Object> after, String name) {
         Main.windowOpen = "EnterValue";
 
         open(name, after);

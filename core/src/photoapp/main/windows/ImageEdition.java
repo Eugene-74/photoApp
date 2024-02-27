@@ -17,8 +17,10 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
@@ -88,11 +90,20 @@ public class ImageEdition {
 		datelabelStyle.fontColor = Color.BLACK;
 		dateLabel = new Label(" ", datelabelStyle);
 		dateTable.setSize(200, 50);
-		dateLabel.setSize(200, 10);
-		dateTable.setPosition(Main.preferences.getInteger("border"), Gdx.graphics.getHeight() - Main.preferences.getInteger("border")*2);
-		
+		dateLabel.setSize(200, 50);
+		dateTable.setPosition(Main.preferences.getInteger("border"), Gdx.graphics.getHeight() -dateLabel.getHeight()- Main.preferences.getInteger("border"));
+	
+		dateLabel.addListener( new ClickListener() {
 
-		Main.mainStage.addActor(dateTable);
+			@Override
+			public void clicked(InputEvent event, float x, float y) {
+
+				DateEdition.open();
+				
+			}
+		});
+		Main.setTip("date label", dateLabel);
+			Main.mainStage.addActor(dateTable);
 	}
 
 	public static void open(String currentImagePath, boolean OpenMain) {
@@ -110,21 +121,32 @@ public class ImageEdition {
 
 		if (imageData.getDate() != null) {
 			try {
+				String date = "";
+				
 
 				String[] nomMois = { "January", "February", "March", "April", "May", "June", "July",
 						"August", "Septembre", "Octobrer", "Novembrer", "Decembrer" };
-				String date = "";
+				
 				String[] dateSplit = imageData.getDate().split(" ");
 				String[] daySplit = dateSplit[0].split(":");
 				String[] hourSplit = dateSplit[1].split(":");
-				date += daySplit[2] + "  " + nomMois[Integer.parseInt(daySplit[1]) - 1] + "  " + daySplit[0];
-				date += "\n";
-				date += hourSplit[0] + "h " + hourSplit[1] + "min " + hourSplit[2] + "s ";
+				System.out.println(daySplit[0]+"-"+daySplit[1]+"-"+daySplit[2]);
+				System.out.println(hourSplit[0]+"-"+hourSplit[1]+"-"+hourSplit[2]);
 
-				// dateTable.addActor(dateLabel);
+				if(daySplit[0].equals("0000")&& daySplit[1].equals("00")&& daySplit[2].equals("00")
+				&& hourSplit[0].equals("00")&& hourSplit[1].equals("00")&& hourSplit[2].equals("00")){
+					date = Main.preferences.getString("text no date");
+					System.out.println("no date");
+				}else{
+					date += daySplit[2] + "  " + nomMois[Integer.parseInt(daySplit[1]) - 1] + "  " + daySplit[0];
+					date += "\n";
+					date += hourSplit[0] + "h " + hourSplit[1] + "min " + hourSplit[2] + "s ";
+
+				}
 				dateLabel.setText(date);
 			} catch (Exception e) {
 				System.err.println("bug when loading the image");
+				
 			} finally {
 			}
 		} else {
@@ -418,7 +440,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				Main.mainStage,
 				(o) -> {
 					ImageEdition.clear();
-					EnterValue.enterAValue(0, 0, (p) -> {
+					EnterValue.enterAValue((p) -> {
 						String value = EnterValue.txtValue.getText();
 						String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
 						value = value.replaceAll(characterFilter, "");
@@ -439,7 +461,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				Main.mainStage,
 				(o) -> {
 					ImageEdition.clear();
-					EnterValue.enterAValue(0, 0, (p) -> {
+					EnterValue.enterAValue((p) -> {
 						addAPlace(EnterValue.txtValue.getText());
 						Main.windowOpen = "ImageEdition";
 
