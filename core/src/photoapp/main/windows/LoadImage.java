@@ -1,15 +1,10 @@
 package photoapp.main.windows;
 
 import java.io.File;
-import java.lang.Thread.State;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.filechooser.FileSystemView;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -74,7 +69,6 @@ public class LoadImage {
                 String[] nameList = imagePath.split("/");
                 String imageName = nameList[nameList.length - 1];
 
-                // System.out.println(nameList[nameList.length - 2]);
                 openImageExif(imageName, nameList[nameList.length - 2]);
                 numberOfImagesExif += 1;
                 Main.infoText = "exporting data of image : " + numberOfImagesExif + "/" + numberOfImagesToLoad
@@ -91,12 +85,14 @@ public class LoadImage {
                 for (String imagePath : toLoad) {
                     String[] ListImageName = imagePath.split("/");
                     String fileName150 = ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1];
+                    String fileName100 = ImageData.IMAGE_PATH + "/100/" + ListImageName[ListImageName.length - 1];
                     String fileName10 = ImageData.IMAGE_PATH + "/10/" + ListImageName[ListImageName.length - 1];
 
                     FileHandle fileHandle150 = new FileHandle(fileName150);
+                    FileHandle fileHandle100 = new FileHandle(fileName100);
                     FileHandle fileHandle10 = new FileHandle(fileName10);
 
-                    if (fileHandle150.exists() && fileHandle10.exists()) {
+                    if (fileHandle150.exists() && fileHandle100.exists() && fileHandle10.exists()) {
                         toRemove.add(imagePath);
                         numberOfImagesLoaded += 1;
                     }
@@ -152,8 +148,9 @@ public class LoadImage {
                 for (int i = 0; i < max; i++) {
 
                     if (isLoading.contains(toLoad.get(i)) && MixOfImage.manager.isLoaded(toLoad.get(i))) {
-                        setSizeAfterLoad(toLoad.get(i), 150);
-                        setSizeAfterLoad(toLoad.get(i), 10);
+                        setSizeAfterLoad(toLoad.get(i), 150, false);
+                        setSizeAfterLoad(toLoad.get(i), 100, true);
+                        setSizeAfterLoad(toLoad.get(i), 10, true);
 
                         toRemove.add(toLoad.get(i));
                         numberOfImagesLoaded += 1;
@@ -161,7 +158,7 @@ public class LoadImage {
 
                     } else if (!isLoading.contains(toLoad.get(i))) {
 
-                        MixOfImage.loadImage(toLoad.get(i));
+                        MixOfImage.loadImage(toLoad.get(i), true, false);
                         isLoading.add(toLoad.get(i));
                     }
                 }
@@ -265,7 +262,6 @@ public class LoadImage {
 
                 if (item.isFile()) {
                     if (Main.isAnImage(item.getName())) {
-                        // System.out.println(item.getName());
                         numberOfImagesToLoad += 1;
                     }
                 } else if (item.isDirectory()) {
@@ -312,11 +308,18 @@ public class LoadImage {
             FileHandle toJson = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + dir.getName() + ".json");
             toJson.writeBytes(dataJson, false);
         }
-        // System.out.println("set " + dir.getParentFile().toString());
         openImageExif(dir.getName(), dir.getParentFile().toString());
+        System.out.println(dir.getPath() + "path ..." + dir.getName());
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/150", dir.getName(), 150, false, false);
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), 100, false, false);
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/10", dir.getName(), 10, false, false);
 
-        setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 150, false);
-        setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 10, false);
+        // setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 150,
+        // false);
+        // setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 100,
+        // false);
+        // setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 10,
+        // false);
 
         MixOfImage.manager.finishLoading();
         clear();
@@ -344,7 +347,7 @@ public class LoadImage {
                 }, null);
     }
 
-    public static void setSizeAfterLoad(String imagePath, Integer size) {
+    public static void setSizeAfterLoad(String imagePath, Integer size, boolean isSquare) {
         String[] nameList = imagePath.split("/");
         String imageName = nameList[nameList.length - 1];
 
@@ -354,7 +357,25 @@ public class LoadImage {
 
         Texture texture = MixOfImage.manager.get(imagePath, Texture.class);
 
-        Pixmap pixmap = resize(textureToPixmap(texture), size, size, true);
+        Pixmap pixmap;
+        if (isSquare) {
+            // if (texture.getHeight() > texture.getWidth()) {
+            pixmap = resize(textureToPixmap(texture), size, size, true);
+            // } else {
+            // pixmap = resize(textureToPixmap(texture), size, size, true);
+
+            // }
+        } else {
+            if (texture.getHeight() > texture.getWidth()) {
+                pixmap = resize(textureToPixmap(texture), size, (int) (size * texture.getHeight() / texture.getWidth()),
+                        false);
+            } else {
+                pixmap = resize(textureToPixmap(texture), (int) (size * texture.getWidth() / texture.getHeight()), size,
+                        false);
+
+            }
+        }
+
         FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size);
 
         if (!handle.exists()) {
@@ -364,12 +385,6 @@ public class LoadImage {
         PixmapIO.writePNG(fh, pixmap);
         pixmap.dispose();
 
-    }
-
-    public static void setSizeForce(String imagePath, Integer size) {
-        String[] ListImageName = imagePath.split("/");
-        setSize(imagePath, ListImageName[ListImageName.length - 1], size, true);
-        setSizeAfterLoad(imagePath, size);
     }
 
     public static void openImageExif(String imageName, String directory) {
@@ -553,16 +568,22 @@ public class LoadImage {
         }
     }
 
-    public static void setSize(String imagePath, String imageName, Integer size, Boolean force) {
+    public static void setSize(String departurePath, String imageName, Integer size, String type, Boolean force,
+            boolean isSquare) {
         // String[] ImageSplit = imagePath.split("/");
         FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size + "/" + imageName);
 
         if (!handlebis.exists()) {
             if (force) {
-                MixOfImage.isInImageData(imagePath, false, "force");
-
+                // MixOfImage.isInImageData(imagePath, false, "force");
+                MixOfImage.isInImageData(imageName,
+                        true,
+                        false, isSquare);
             } else {
-                MixOfImage.isInImageData(imagePath, false, "firstloading");
+                // MixOfImage.isInImageData(imagePath, false, "firstloading");
+                MixOfImage.isInImageData(imageName,
+                        false,
+                        true, isSquare);
             }
 
         } else {

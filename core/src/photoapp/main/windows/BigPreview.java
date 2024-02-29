@@ -32,7 +32,7 @@ public class BigPreview {
         Main.mainStage.addActor(BigPreviewTable);
         clear();
 
-        ImageEdition.theCurrentImagePath = imageName;
+        ImageEdition.theCurrentImageName = imageName;
 
         Main.placeImage(List.of(ImageData.IMAGE_PATH + "/" + imageName),
                 "big preview",
@@ -41,7 +41,7 @@ public class BigPreview {
                 (o) -> {
                     // System.err.println("click");
                     CommonFunction.back();
-                }, null, null, false, true, false, BigPreviewTable, false, "");
+                }, null, null, false, true, false, BigPreviewTable, true, false, "");
         imageWithGoodQuality = false;
 
     }
@@ -58,7 +58,7 @@ public class BigPreview {
 
     public static void load() {
 
-        open(ImageEdition.theCurrentImagePath);
+        open(ImageEdition.theCurrentImageName);
 
     }
 
@@ -66,16 +66,16 @@ public class BigPreview {
         ImageEdition.bigPreview = false;
 
         clear();
-        ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+        ImageEdition.open(ImageEdition.theCurrentImageName, true);
 
     }
 
-    public static void previousImage(String theCurrentImagePath) {
+    public static void previousImage(String theCurrentImageName) {
 
         ImageData previous = null;
         for (ImageData imageData : Main.imagesData) {
             if ((imageData.getName())
-                    .equals(ImageEdition.theCurrentImagePath)) {
+                    .equals(ImageEdition.theCurrentImageName)) {
 
                 if (previous == null) {
                     open(
@@ -93,17 +93,17 @@ public class BigPreview {
             previous = imageData;
 
         }
-        MainImages.imageI = Main.getImageDataIndex(ImageEdition.theCurrentImagePath);
+        MainImages.imageI = Main.getImageDataIndex(ImageEdition.theCurrentImageName);
 
         Main.checkToUnload(null);
     }
 
-    public static void nextImage(String theCurrentImagePath) {
+    public static void nextImage(String theCurrentImageName) {
 
         boolean next = false;
         for (ImageData imageData : Main.imagesData) {
             if ((imageData.getName())
-                    .equals(ImageEdition.theCurrentImagePath)) {
+                    .equals(ImageEdition.theCurrentImageName)) {
                 next = true;
             } else if (next) {
 
@@ -122,15 +122,15 @@ public class BigPreview {
             open(Main.imagesData.get(0).getName());
 
         }
-        MainImages.imageI = Main.getImageDataIndex(ImageEdition.theCurrentImagePath);
+        MainImages.imageI = Main.getImageDataIndex(ImageEdition.theCurrentImageName);
         Main.checkToUnload(null);
     }
 
     public static void render() {
         if (!imageWithGoodQuality
-                && MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" + ImageEdition.theCurrentImagePath)) {
+                && MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" + ImageEdition.theCurrentImageName)) {
             clear();
-            BigPreview.open(ImageEdition.theCurrentImagePath);
+            BigPreview.open(ImageEdition.theCurrentImageName);
             imageWithGoodQuality = true;
         }
     }

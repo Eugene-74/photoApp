@@ -30,7 +30,6 @@ public class Text {
         for (String texteInfo : textesInfo) {
             String[] texte = texteInfo.split(":");
             Main.preferences.putString("text "+texte[0], texte[1]);
-            System.out.println(("text "+texte[0]+" --- "+ texte[1]));
         }
 		
     }

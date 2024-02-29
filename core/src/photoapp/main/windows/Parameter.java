@@ -69,7 +69,7 @@ public class Parameter {
                     }
                     Main.preferences.flush();
                 }, null, null,
-                true, true, false, parameterTable, true, "info");
+                true, true, false, parameterTable, true, true, "info");
 
         List<String> darkmodeList = new ArrayList<String>();
         darkmodeList.add("images/mode.png");
@@ -99,7 +99,7 @@ public class Parameter {
                     }
                     Main.preferences.flush();
                 }, null, null,
-                true, true, false, parameterTable, true, "dark mode");
+                true, true, false, parameterTable, true, true, "dark mode");
 
         List<String> brightmodeList = new ArrayList<String>();
         brightmodeList.add("images/mode.png");
@@ -129,7 +129,7 @@ public class Parameter {
                     }
                     Main.preferences.flush();
                 }, null, null,
-                true, true, false, parameterTable, true, "bright mode");
+                true, true, false, parameterTable, true, true, "bright mode");
 
     }
 

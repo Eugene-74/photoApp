@@ -103,23 +103,23 @@ public class Main extends ApplicationAdapter {
 	static Skin skin;
 	public static Skin skinTextField;
 	public static boolean openWindow;
-	public static Integer x, y, x3, y3;
-	
+	public static Integer x, y, x4;
+
 	public static Integer iconSize = 100;
 	public static Integer imageSize = 200;
 	public static Integer littleIcon = 50;
 	public static Integer zoom = 0;
 
-	public static void main(){
-		
+	public static void main() {
+
 	}
 
 	public static void iniPreferences() {
 		x = Gdx.graphics.getWidth();
 		y = Gdx.graphics.getHeight();
-		x3 = x / 3;
+		x4 = x / 4;
 
-		iconSize = (x3-preferences.getInteger("border")*2) /4;
+		iconSize = (x4 - preferences.getInteger("border") * 2) / 4;
 
 		preferences.putInteger("size of infoLabel width", 100);
 		preferences.putInteger("size of infoLabel height", 10);
@@ -132,29 +132,29 @@ public class Main extends ApplicationAdapter {
 		preferences.putInteger("border", 25);
 		preferences.putInteger("little border", 5);
 
+		Main.preferences.putInteger("size of date", 50);
+
 		// Main.preferences.putInteger("size of full width", 1200);
 		// Main.preferences.putInteger("size of full height",
 		// Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
 
-		Main.preferences.putInteger("size of full width", 2 * x3-preferences.getInteger("border", 25)*2);
+		Main.preferences.putInteger("size of full width", 3 * x4 - preferences.getInteger("border", 25) * 2);
 		Main.preferences.putInteger("size of full height",
 				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
 
+		preferences.putInteger("size of main image width", 3 * x4 - preferences.getInteger("border", 25) * 2);
 
-		preferences.putInteger("size of main image width", 2 * x3-preferences.getInteger("border", 25)*2);
-				Main.preferences.putInteger("size of preview image width", (x3*2-preferences.getInteger("border", 25)*2)/7);
-				Main.preferences.putInteger("size of preview image height", preferences.getInteger("size of preview image width"));
+		preferences.putInteger("size of preview image", y / 10);
 
-		
+		preferences.putInteger("number of preview image",
+				preferences.getInteger("size of main image width") / preferences.getInteger("size of preview image"));
+
 		preferences.putInteger("size of main image height",
-				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 3
-						- Main.preferences.getInteger("size of preview image height", imageSize));
+				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 4
+						- preferences.getInteger("size of preview image")
+						- Main.preferences.getInteger("size of date"));
 
-		
-
-		
-
-		preferences.putInteger("size of total main images width", 2 * x3);
+		preferences.putInteger("size of total main images width", 3 * x4 - preferences.getInteger("border", 25) * 2);
 		preferences.putInteger("size of total main images height",
 				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
 
@@ -162,23 +162,23 @@ public class Main extends ApplicationAdapter {
 		preferences.putInteger("size of full button", imageSize);
 
 		preferences.putInteger("number of main images width",
-				preferences.getInteger("size of total main images width", 2 * x3)
+				preferences.getInteger("size of total main images width")
 						/ preferences.getInteger("size of main images button", imageSize));
 
 		preferences.putInteger("size of main images width",
 				preferences.getInteger("number of main images width", 6)
-						* preferences.getInteger("size of main images button", imageSize));
+						* preferences.getInteger("size of main images button", imageSize) - 1);
 
 		preferences.putInteger("number of main images height",
-				preferences.getInteger("size of total main images height", 2 * x3)
+				preferences.getInteger("size of total main images height", 3 * x4)
 						/ preferences.getInteger("size of main images button", imageSize));
 
 		preferences.putInteger("size of main images height",
 				Main.preferences.getInteger("number of main images height", 9)
-						* preferences.getInteger("size of main images button", imageSize));
+						* preferences.getInteger("size of main images button", imageSize) - 1);
 
 		preferences.putInteger("number of full width",
-				preferences.getInteger("size of full width", 2 * x3)
+				preferences.getInteger("size of full width", 3 * x4)
 						/ preferences.getInteger("size of full button", imageSize));
 
 		preferences.putInteger("size of full width",
@@ -186,7 +186,7 @@ public class Main extends ApplicationAdapter {
 						* preferences.getInteger("size of full button", imageSize));
 
 		preferences.putInteger("number of full height",
-				preferences.getInteger("size of full height", 2 * x3)
+				preferences.getInteger("size of full height", 3 * x4)
 						/ preferences.getInteger("size of full button", imageSize));
 
 		preferences.putInteger("size of full height",
@@ -201,11 +201,9 @@ public class Main extends ApplicationAdapter {
 		preferences.putInteger("size of links button height", littleIcon);
 		preferences.putInteger("size of link button", littleIcon);
 
-
 		preferences.putInteger("size of size button width", littleIcon);
 		preferences.putInteger("size of size button height", littleIcon);
 		preferences.putInteger("size of size button", littleIcon);
-		
 
 		preferences.putInteger("size of big preview width",
 				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
@@ -230,19 +228,19 @@ public class Main extends ApplicationAdapter {
 		preferences.putInteger("enter brightmode g", 190);
 		preferences.putInteger("enter brightmode b", 255);
 
+		preferences.putString("image error", "images/error.png");
+
 	}
 
 	public static void iconSize(boolean plus) {
-		if (plus && zoom<40) {
-			System.out.println("plus");
+		if (plus && zoom < 40) {
 			imageSize = imageSize + 4;
 			littleIcon = littleIcon + 1;
-			zoom +=1;
-		} else if (zoom >-30 && !plus) {
-			System.out.println("minus");
+			zoom += 1;
+		} else if (zoom > -30 && !plus) {
 			imageSize = imageSize - 4;
 			littleIcon = littleIcon - 1;
-			zoom -=1;
+			zoom -= 1;
 		}
 		iniPreferences();
 		reload(false);
@@ -250,6 +248,11 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create() {
+
+		// MixOfImage.createAnImage("C:/Users/eugen/AppData/Roaming/.photoapp/userImages",
+		// "C:/Users/eugen/AppData/Roaming/.photoapp/userImages/test", "test.jpg", 100,
+		// false, true);
+
 		preferences = Gdx.app.getPreferences("graphic params");
 		iniPreferences();
 		Text.openText("en");
@@ -300,8 +303,6 @@ public class Main extends ApplicationAdapter {
 
 		FileChooser.open();
 
-		
-
 	}
 
 	public static void createMultiplexer() {
@@ -311,8 +312,9 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void updateLoadingText() {
-		
-		if ((Main.infoText == "loading ." ||  !Main.infoText.startsWith("loading"))&& TimeUtils.millis() - lastTimebis >= 500) {
+
+		if ((Main.infoText == "loading ." || !Main.infoText.startsWith("loading"))
+				&& TimeUtils.millis() - lastTimebis >= 500) {
 			Main.infoTextSet("loading ..", false);
 			lastTimebis = TimeUtils.millis();
 
@@ -330,107 +332,112 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void render() {
-		// if (windowOpen.equals("")) {
-		// FileChooser.open();
-		// }
-		MixOfImage.manager.update();
-		if (openWindow) {
-			openWindow = false;
-			if (windowOpen.equals("ImageEdition")) {
-				ImageEdition.create();
-				ImageEdition.open(ImageEdition.theCurrentImagePath, true);
-			} else if (windowOpen.equals("MainImages")) {
-				MainImages.open();
-			} else if (windowOpen.equals("LoadImage")) {
-				LoadImage.open();
-			} else if (windowOpen.equals("FileChooser")) {
-				FileChooser.open();
-			} else if (windowOpen.equals("BigPreview")) {
-				BigPreview.open(ImageEdition.theCurrentImagePath);
-			} else if (windowOpen.equals("")) {
-				FileChooser.open();
-			}
-		} else {
+		try {
 
-			if (windowOpen.equals("ImageEdition")) {
-				ImageEdition.render();
-			} else if (windowOpen.equals("MainImages")) {
-				MainImages.render();
-			} else if (windowOpen.equals("LoadImage")) {
-				LoadImage.render();
-			} else if (windowOpen.equals("FileChooser")) {
-				FileChooser.render();
-			} else if (windowOpen.equals("BigPreview")) {
-				BigPreview.render();
-				// BigPreview.laod(ImageEdition.theCurrentImagePath);
-			} else if (windowOpen.equals("")) {
-				FileChooser.open();
-			}
-		}
-
-		if (brightMode) {
-
-			ScreenUtils.clear(Main.preferences.getInteger("brightmode r", 0) / 255f,
-					Main.preferences.getInteger("brightmode g", 0) / 255f,
-					Main.preferences.getInteger("brightmode b", 0) / 255f, 255 / 255f);
-		} else {
-			ScreenUtils.clear(Main.preferences.getInteger("darkmode r", 0) / 255f,
-					Main.preferences.getInteger("darkmode g", 0) / 255f,
-					Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
-
-		}
-		if (!infoText.equals(" ")) {
-			labelInfoText.setText(infoText);
-		}
-		// System.out.println("act");
-		mainStage.act();
-		mainStage.draw();
-
-		if (!windowOpen.equals("LoadImage")&& infoText.startsWith("loading")) {
-			if (MixOfImage.manager.isFinished()) {
-				infoTextSet(preferences.getString("text.done"), false);
-			}
-		}
-		if (!MixOfImage.manager.isFinished()){
-			updateLoadingText();
-		}
-
-		if (!MixOfImage.willBeLoad.isEmpty()
-				&& MixOfImage.isOnLoading.size() < preferences.getInteger("image load at the same time")) {
-			Integer placeInLoad = preferences.getInteger("image load at the same time") - MixOfImage.isOnLoading.size();
-			if (placeInLoad > 0) {
-				if (placeInLoad > MixOfImage.willBeLoad.size()) {
-					placeInLoad = MixOfImage.willBeLoad.size();
-				}
-				for (int i = 0; i < placeInLoad; i++) {
-					MixOfImage.loadImage(MixOfImage.willBeLoad.get(0));
-					MixOfImage.willBeLoad.remove(0);
-				}
-			}
-		}
-		if (TimeUtils.millis() - lastTime > 500) {
-			lastTime = TimeUtils.millis();
-			List<String> toRemoveFromIsOnLoading = new ArrayList<String>();
-			Boolean loadToDo = false;
-			for (String imagePath : MixOfImage.isOnLoading) {
-				if (MixOfImage.manager.isLoaded(imagePath)) {
-					toRemoveFromIsOnLoading.add(imagePath);
-
-				}
-			}
-			for (String imagePath : toRemoveFromIsOnLoading) {
-
-				MixOfImage.isOnLoading.remove(imagePath);
-
-				MixOfImage.isLoaded.put(imagePath,
-						getImageDataIndex(imagePath.split("/")[imagePath.split("/").length - 1]));
-				loadToDo = true;
-			}
-			if (loadToDo) {
+			// if (windowOpen.equals("")) {
+			// FileChooser.open();
+			// }
+			MixOfImage.manager.update();
+			if (openWindow) {
+				openWindow = false;
 				if (windowOpen.equals("ImageEdition")) {
-					ImageEdition.load();
+					ImageEdition.create();
+					ImageEdition.open(ImageEdition.theCurrentImageName, true);
+				} else if (windowOpen.equals("MainImages")) {
+					MainImages.open();
+				} else if (windowOpen.equals("LoadImage")) {
+					LoadImage.open();
+				} else if (windowOpen.equals("FileChooser")) {
+					FileChooser.open();
+				} else if (windowOpen.equals("BigPreview")) {
+					BigPreview.open(ImageEdition.theCurrentImageName);
+				} else if (windowOpen.equals("")) {
+					FileChooser.open();
+				}
+			} else {
+
+				if (windowOpen.equals("ImageEdition")) {
+					ImageEdition.render();
+				} else if (windowOpen.equals("MainImages")) {
+					MainImages.render();
+				} else if (windowOpen.equals("LoadImage")) {
+					LoadImage.render();
+				} else if (windowOpen.equals("FileChooser")) {
+					FileChooser.render();
+				} else if (windowOpen.equals("BigPreview")) {
+					BigPreview.render();
+					// BigPreview.laod(ImageEdition.theCurrentImageName);
+				} else if (windowOpen.equals("")) {
+					FileChooser.open();
 				}
 			}
+
+			if (brightMode) {
+
+				ScreenUtils.clear(Main.preferences.getInteger("brightmode r", 0) / 255f,
+						Main.preferences.getInteger("brightmode g", 0) / 255f,
+						Main.preferences.getInteger("brightmode b", 0) / 255f, 255 / 255f);
+			} else {
+				ScreenUtils.clear(Main.preferences.getInteger("darkmode r", 0) / 255f,
+						Main.preferences.getInteger("darkmode g", 0) / 255f,
+						Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
+
+			}
+			if (!infoText.equals(" ")) {
+				labelInfoText.setText(infoText);
+			}
+			mainStage.act();
+			mainStage.draw();
+
+			if (!windowOpen.equals("LoadImage") && infoText.startsWith("loading")) {
+				if (MixOfImage.manager.isFinished()) {
+					infoTextSet(preferences.getString("text.done"), false);
+				}
+			}
+			if (!MixOfImage.manager.isFinished()) {
+				updateLoadingText();
+			}
+
+			if (!MixOfImage.willBeLoad.isEmpty()
+					&& MixOfImage.isOnLoading.size() < preferences.getInteger("image load at the same time")) {
+				Integer placeInLoad = preferences.getInteger("image load at the same time")
+						- MixOfImage.isOnLoading.size();
+				if (placeInLoad > 0) {
+					if (placeInLoad > MixOfImage.willBeLoad.size()) {
+						placeInLoad = MixOfImage.willBeLoad.size();
+					}
+					for (int i = 0; i < placeInLoad; i++) {
+						MixOfImage.loadImage(MixOfImage.willBeLoad.get(0), false, false);
+						MixOfImage.willBeLoad.remove(0);
+					}
+				}
+			}
+			if (TimeUtils.millis() - lastTime > 500) {
+				lastTime = TimeUtils.millis();
+				List<String> toRemoveFromIsOnLoading = new ArrayList<String>();
+				Boolean loadToDo = false;
+				for (String imagePath : MixOfImage.isOnLoading) {
+					if (MixOfImage.manager.isLoaded(imagePath)) {
+						toRemoveFromIsOnLoading.add(imagePath);
+
+					}
+				}
+				for (String imagePath : toRemoveFromIsOnLoading) {
+
+					MixOfImage.isOnLoading.remove(imagePath);
+
+					MixOfImage.isLoaded.put(imagePath,
+							getImageDataIndex(imagePath.split("/")[imagePath.split("/").length - 1]));
+					loadToDo = true;
+				}
+				if (loadToDo) {
+					if (windowOpen.equals("ImageEdition")) {
+						ImageEdition.load();
+					}
+				}
+			}
+		} catch (Exception e) {
+			error("render", e);
 		}
 
 	}
@@ -439,25 +446,28 @@ public class Main extends ApplicationAdapter {
 		if (Main.preferences.getBoolean("infoIsOn", true) || force) {
 			infoText = info;
 			labelInfoText.setText(info);
-			
+
 		}
 
 	}
 
 	public void createInfoTable() {
 		infoTable = new Table();
-		
-		infoTable.setPosition(Main.preferences.getInteger("border")+ImageEdition.dateLabel.getWidth(), Gdx.graphics.getHeight()-Main.preferences.getInteger("border")*2);
-		
+
+		infoTable.setPosition(Main.preferences.getInteger("border") + ImageEdition.dateLabel.getWidth(),
+				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+
 		Float size = (float) 1;
 		BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/dominican.fnt"));
 		myFont.getData().setScale(size);
-		
+
 		label1Style.font = myFont;
 		label1Style.fontColor = Color.RED;
 		labelInfoText = new Label(" ", label1Style);
-		infoTable.setSize(preferences.getInteger("size of infoLabel width"), preferences.getInteger("size of infoLabel height"));
-		labelInfoText.setSize(preferences.getInteger("size of infoLabel width"), preferences.getInteger("size of infoLabel height"));
+		infoTable.setSize(preferences.getInteger("size of infoLabel width"),
+				preferences.getInteger("size of infoLabel height"));
+		labelInfoText.setSize(preferences.getInteger("size of infoLabel width"),
+				preferences.getInteger("size of infoLabel height"));
 		infoTable.addActor(labelInfoText);
 
 		mainStage.addActor(infoTable);
@@ -486,27 +496,40 @@ public class Main extends ApplicationAdapter {
 	public static void placeImage(List<String> imageNames, String prefSizeName,
 			Vector2 position, Stage mainStage,
 			final Consumer<Object> onClicked, final Consumer<Object> onEnter, final Consumer<Object> onExit,
-			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean setSize,
+			boolean isSquare, boolean inTable, boolean isMainImage, Table placeImageTable, boolean force,
+			boolean setSize,
 			String tip) {
 
 		MixOfImage mixOfImages;
 		Integer width;
 		Integer height;
 
+		String departurePath = null;
+		Integer size = null;
+
 		if (setSize) {
 			if (isSquare) {
 				width = preferences.getInteger("size of " + prefSizeName, 100);
 				height = preferences.getInteger("size of " + prefSizeName, 100);
+				mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName, force,
+						isSquare);
 
 			} else {
 				width = preferences.getInteger("size of " + prefSizeName + " height");
 				height = preferences.getInteger("size of " + prefSizeName + " width");
+				mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName,
+						force,
+						isSquare);
+
 			}
-			mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName);
 			mixOfImages.setPosition(position.x, position.y + 1);
 
 		} else {
-			mixOfImages = new MixOfImage(imageNames, 0, 0, prefSizeName);
+			// mixOfImages = new MixOfImage(imageNames, 0, 0, prefSizeName, false);
+
+			mixOfImages = new MixOfImage(imageNames, 0, 0, prefSizeName,
+					force,
+					isSquare);
 
 			float widthBis = mixOfImages.getWidth();
 			float heightBis = mixOfImages.getHeight();
@@ -530,7 +553,10 @@ public class Main extends ApplicationAdapter {
 				width = preferences.getInteger("size of " + prefSizeName + " width");
 
 			}
-			mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName);
+			// mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName, false);
+			mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName,
+					false,
+					isSquare);
 			mixOfImages.setPosition(0, 0);
 		}
 
@@ -603,12 +629,13 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void setTip(String tip, MixOfImage mixOfImages) {
-		
+
 		if (!tip.equals("")) {
-			if(!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)&& !Main.fileData.containsKey(tip)){
-			
-				tip=preferences.getString("text "+tip,"no text");
-			
+			if (!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)
+					&& !Main.fileData.containsKey(tip)) {
+
+				tip = preferences.getString("text " + tip, "no text");
+
 			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
 			textToolTip.setInstant(true);
@@ -636,7 +663,7 @@ public class Main extends ApplicationAdapter {
 					System.out.println("closing");
 					dispose();
 					System.exit(0);
-				}, null, null, true, false, false, ImageEdition.table, true, "close");
+				}, null, null, true, false, false, ImageEdition.table, true, true, "close");
 	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
@@ -781,7 +808,8 @@ public class Main extends ApplicationAdapter {
 				addRange = column * row / 2;
 
 			} else if (Main.windowOpen.equals("ImageEdition")) {
-				range = 7 + Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5);
+				range = preferences.getInteger("number of preview image")
+						+ Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5);
 			}
 
 			ArrayList<String> toUnput = new ArrayList<String>();
@@ -914,8 +942,6 @@ public class Main extends ApplicationAdapter {
 		sizeTable.setSize(
 				preferences.getInteger("size of size button width") * 2,
 				preferences.getInteger("size of size button height"));
-		System.out.println(Gdx.graphics.getWidth() - sizeTable.getWidth()- linkTable.getWidth() - preferences.getInteger("little border"));
-		System.out.println(Gdx.graphics.getWidth());
 		sizeTable.setPosition(
 				Gdx.graphics.getWidth() - sizeTable.getWidth()
 						- linkTable.getWidth() - preferences.getInteger("little border"),
@@ -934,7 +960,7 @@ public class Main extends ApplicationAdapter {
 					Gdx.net.openURI("https://discord.gg/Q2HhZucmxU");
 
 				}, null, null,
-				true, true, false, linkTable, true, "open discord");
+				true, true, false, linkTable, true, true, "open discord");
 
 	}
 
@@ -946,14 +972,14 @@ public class Main extends ApplicationAdapter {
 				(o) -> {
 					iconSize(true);
 				}, null, null,
-				true, true, false, sizeTable, true, "plus size button");
+				true, true, false, sizeTable, true, true, "plus size button");
 		placeImage(List.of("images/moins.png"), "size button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
 					iconSize(false);
 				}, null, null,
-				true, true, false, sizeTable, true, "minus size button");
+				true, true, false, sizeTable, true, true, "minus size button");
 
 	}
 
@@ -1022,6 +1048,16 @@ public class Main extends ApplicationAdapter {
 
 	}
 
+	public static String nameRemoveLastFolder(String name) {
+		String nameWithoutFolder = "";
+		String[] ListImageName = name.split("/");
+		for (int i = 0; i < ListImageName.length - 2; i++) {
+			nameWithoutFolder += ListImageName[i] + "/";
+		}
+		nameWithoutFolder += ListImageName[ListImageName.length - 1];
+		return nameWithoutFolder;
+	}
+
 	/**
 	 * Given a decimal longitudinal coordinate such as <i>-79.982195</i> it will
 	 * be necessary to know whether it is a latitudinal or longitudinal
@@ -1034,23 +1070,6 @@ public class Main extends ApplicationAdapter {
 	 *      (wikipedia)</a>
 	 */
 
-	public static String nameWithoutToNameWithout150(String name) {
-		String nameWithout150 = "";
-		String[] ListImageName = name.split("/");
-		for (int i = 0; i < ListImageName.length - 2; i++) {
-			nameWithout150 += ListImageName[i] + "/";
-		}
-		nameWithout150 += ListImageName[ListImageName.length - 1];
-		return nameWithout150;
-	}
-
-	// public static void sortList(OrderedMap<String, Integer> map) {
-	// OrderedMap<String, Integer> result = new OrderedMap<String, Integer>();
-	// for (Entry<String, Integer> entrie : map.val) {
-	// result.put(entrie.key, entrie.value);
-	// }
-
-	// }
 	public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map,
 			Boolean reverse) {
 
@@ -1142,10 +1161,11 @@ public class Main extends ApplicationAdapter {
 
 	public static void setTip(String tip, Label dateLabel) {
 		if (!tip.equals("")) {
-			if(!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)&& !Main.fileData.containsKey(tip)){
-			
-				tip=preferences.getString("text "+tip,"no text");
-			
+			if (!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)
+					&& !Main.fileData.containsKey(tip)) {
+
+				tip = preferences.getString("text " + tip, "no text");
+
 			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
 			textToolTip.setInstant(true);
@@ -1155,14 +1175,48 @@ public class Main extends ApplicationAdapter {
 
 	public static void setTip(String tip, TextField dateLabel) {
 		if (!tip.equals("")) {
-			if(!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)&& !Main.fileData.containsKey(tip)){
-			
-				tip=preferences.getString("text "+tip,"no text");
-			
+			if (!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)
+					&& !Main.fileData.containsKey(tip)) {
+
+				tip = preferences.getString("text " + tip, "no text");
+
 			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
 			textToolTip.setInstant(true);
 			dateLabel.addListener(textToolTip);
 		}
+	}
+
+	public static boolean max(Float a, Float b) {
+		if (a > b) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public static float maxValue(Float a, Float b) {
+		if (a > b) {
+			return a;
+		} else {
+			return b;
+		}
+	}
+
+	public static List<String> departurePathAndImageNameAndFolder(String path) {
+		String[] ListImageName = path.split("/");
+		String folder = ListImageName[ListImageName.length - 2];
+		String departurePath = "";
+		for (int i = 0; i < ListImageName.length - 2; i++) {
+			if (i != ListImageName.length - 3) {
+				departurePath += ListImageName[i] + "/";
+
+			} else {
+				departurePath += ListImageName[i];
+
+			}
+		}
+		String imageName = ListImageName[ListImageName.length - 1];
+		return List.of(departurePath, imageName, folder);
 	}
 }

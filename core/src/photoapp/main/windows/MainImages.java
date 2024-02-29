@@ -89,14 +89,14 @@ public class MainImages {
                 Main.mainStage,
                 (o) -> {
                     nextImages();
-                }, null, null, true, true, false, mainTable, true, "next images");
+                }, null, null, true, true, false, mainTable, true, true, "next images");
         Main.placeImage(List.of("images/previous up.png", "images/outline.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
                     previousImages();
                 }, null, null,
-                true, true, false, mainTable, true, "previous images");
+                true, true, false, mainTable, true, true, "previous images");
         mainTable.row();
         if (selectModeIsOn) {
 
@@ -109,7 +109,7 @@ public class MainImages {
                         reload();
 
                     }, null, null,
-                    true, true, false, mainTable, true, "delete selected images");
+                    true, true, false, mainTable, true, true, "delete selected images");
             Main.placeImage(List.of("images/love.png", "images/outline.png"), "basic button",
                     new Vector2(0, 0),
                     Main.mainStage,
@@ -119,7 +119,7 @@ public class MainImages {
                         reload();
 
                     }, null, null,
-                    true, true, false, mainTable, true, "love selected images");
+                    true, true, false, mainTable, true, true, "love selected images");
             mainTable.row();
 
         } else {
@@ -136,7 +136,7 @@ public class MainImages {
                         reload();
 
                     }, null, null,
-                    true, true, false, mainTable, true, "select images");
+                    true, true, false, mainTable, true, true, "select images");
         }
         mainTable.row();
         CommonButton.createExport(mainTable, null, "export fil image");
@@ -191,7 +191,8 @@ public class MainImages {
                 Main.preferences.getInteger("size of main images height"));
         imagesTable.setPosition(
                 Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - imagesTable.getHeight()-Main.preferences.getInteger("size of infoLabel width"));
+                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - imagesTable.getHeight()
+                        - Main.preferences.getInteger("size of infoLabel width"));
 
         Main.mainStage.addActor(imagesTable);
 
@@ -235,14 +236,14 @@ public class MainImages {
                     String imageName = imageData.getName();
 
                     if (MixOfImage.toPlaceList.contains(imageData.getName())
-                            && MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/" + imageData.getName())
+                            && MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/100/" + imageData.getName())
                             || isFirstLoading) {
                         MixOfImage.toPlaceList.remove(imageData.getName());
 
                         List<String> placeImageList = new ArrayList<String>();
                         if (imageWithGoodQuality) {
 
-                            placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
+                            placeImageList.add(ImageData.IMAGE_PATH + "/100/" + imageName);
                             if (selectModeIsOn) {
                                 placeImageList.add("images/redOutline.png");
 
@@ -290,7 +291,7 @@ public class MainImages {
                                                     reload();
                                                 }
                                             }
-                                        }, null, true, true, false, imagesTable, true, "");
+                                        }, null, true, true, false, imagesTable, true, true, "");
                             } else {
 
                                 Main.placeImage(placeImageList,
@@ -301,11 +302,11 @@ public class MainImages {
                                             clear();
                                             Main.unLoadAll();
                                             ImageEdition.open(imageName, true);
-                                        }, null, null, true, true, false, imagesTable, true, "");
+                                        }, null, null, true, true, false, imagesTable, true, true, "");
                             }
                         } else {
-                            if (MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/" + imageName)) {
-                                placeImageList.add(ImageData.IMAGE_PATH + "/150/" + imageName);
+                            if (MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/100/" + imageName)) {
+                                placeImageList.add(ImageData.IMAGE_PATH + "/100/" + imageName);
 
                             } else {
                                 placeImageList.add(ImageData.IMAGE_PATH + "/10/" + imageName);
@@ -331,7 +332,7 @@ public class MainImages {
                                     "main images button",
                                     new Vector2(0, 0),
                                     Main.mainStage,
-                                    null, null, null, true, true, false, imagesTable, true, "");
+                                    null, null, null, true, true, false, imagesTable, true, true, "");
                         }
                         if (index >= column) {
                             imagesTable.row();
@@ -396,7 +397,7 @@ public class MainImages {
     }
 
     public static void render() {
-        if (TimeUtils.millis() - lastImageChange > 100) {
+        if (TimeUtils.millis() - lastImageChange > 200) {
             if (!imageWithGoodQuality) {
                 if (lastImageI == imageI) {
                     imageWithGoodQuality = true;

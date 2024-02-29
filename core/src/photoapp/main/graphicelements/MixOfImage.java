@@ -6,6 +6,8 @@ import java.util.List;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Group;
@@ -13,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.OrderedMap;
 
 import photoapp.main.Main;
-import photoapp.main.storage.ImageData;
 import photoapp.main.windows.LoadImage;
 
 public class MixOfImage extends Group {
@@ -29,6 +30,8 @@ public class MixOfImage extends Group {
     public static List<String> willBeLoad = new ArrayList<String>();
     public static List<String> isOnLoading = new ArrayList<String>();
     public static OrderedMap<String, Integer> isLoaded = new OrderedMap<>();
+    Integer espace = 8;
+    static String errorImagePath = "images/loading button.png";
 
     public static void startToLoadImage(String lookingFor) {
         FileHandle fileName = Gdx.files.absolute(lookingFor);
@@ -41,11 +44,17 @@ public class MixOfImage extends Group {
 
     }
 
-    public static void loadImage(String lookingFor) {
+    public static void loadImage(String lookingFor, boolean instant, boolean force) {
+        // FileHandle fileName = Gdx.files.absolute(lookingFor);
+        // if (!fileName.exists()) {
+        // return;
+        // }
         isOnLoading.add(lookingFor);
-        String[] ListImageName = lookingFor.split("/");
-        if (lookingFor.split("/")[ListImageName.length - 2].equals("150")) {
+        if (instant) {
             manager.load(lookingFor, Texture.class);
+            if (force) {
+                manager.finishLoading();
+            }
         } else {
             new Thread(new Runnable() {
                 @Override
@@ -67,7 +76,6 @@ public class MixOfImage extends Group {
                 }
             }).start();
         }
-
     }
 
     public static void stopLoading() {
@@ -75,180 +83,172 @@ public class MixOfImage extends Group {
         firstLoading = false;
         isLoading = false;
         LoadingList = new ArrayList<String>();
-
+        willBeLoad = new ArrayList<String>();
     }
 
-    public static Texture isInImageData(String lookingFor, boolean wait, String type) {
-        FileHandle fileName = Gdx.files.absolute(lookingFor);
-        String[] ListImageName = lookingFor.split("/");
-
-        if (manager.isLoaded(fileName.path())) {
-            return manager.get(fileName.path(), Texture.class);
+    public static Texture isInImageData(String imageName,
+            boolean force,
+            boolean isFirstLoading, boolean isSquare) {
+        String departurePath = "";
+        if (departurePath == null || departurePath.equals("")) {
+            departurePath = "";
         } else {
+            departurePath = departurePath + "/";
+        }
+        // System.err.println(imageName + " image Path");
+        FileHandle departureHandle = Gdx.files.absolute(departurePath);
+        FileHandle departureImageHandle = Gdx.files.absolute(departurePath + imageName);
+        FileHandle departureSizeImageHandle = Gdx.files.absolute(imageName);
+        FileHandle departureSizeHandle = null;
 
-            isLoading = true;
-            String errorImagePath = "images/loading button.png";
+        if (force) {
+            manager.load(departureSizeImageHandle.path(), Texture.class);
+            manager.finishLoading();
+        }
+        if (manager.isLoaded(departureSizeImageHandle.path())) {
+            return manager.get(departureSizeImageHandle.path(), Texture.class);
+        } else {
             if (!manager.isLoaded(errorImagePath, Texture.class)) {
                 manager.load(errorImagePath, Texture.class);
                 manager.finishLoading();
             }
-            if (type.equals("force")) {
-                manager.load(lookingFor, Texture.class);
-                manager.finishLoading();
+            isLoading = true;
+            manager.load(departureSizeImageHandle.path(), Texture.class);
 
-                return manager.get(lookingFor, Texture.class);
-            } else if (type.equals("firstloading")) {
-                startToLoadImage(lookingFor);
+            if (isFirstLoading) {
+                startToLoadImage(departureSizeImageHandle.path());
                 firstLoading = true;
-                LoadingList.add(fileName.path());
-
+                LoadingList.add(departureSizeImageHandle.path());
                 return manager.get(errorImagePath, Texture.class);
+
             } else {
-                if (fileName.path().split("/")[ListImageName.length - 2].equals("images")) {
-                    manager.load(fileName.path(), Texture.class);
-                    manager.finishLoading();
-                    return manager.get(fileName.path(), Texture.class);
-
-                } else if (fileName.path().split("/")[ListImageName.length - 2].equals("10")) {
-                    fileName = Gdx.files
-                            .absolute(ImageData.IMAGE_PATH + "/10/" + ListImageName[ListImageName.length - 1]);
-                    if (!fileName.exists()) {
-                        LoadImage.setSizeForce(ImageData.IMAGE_PATH + "/" + ListImageName[ListImageName.length - 1],
-                                10);
-                    }
-                    manager.load(fileName.path(), Texture.class);
-                    manager.finishLoading();
-                    return manager.get(fileName.path(), Texture.class);
-                }
-                if (fileName.path().split("/")[ListImageName.length - 2].equals("peoples")
-                        && fileName.path().split("/")[ListImageName.length - 2].equals("places")) {
-                    // && fileName.path().split("/")[ListImageName.length - 2].equals("150")
-                    loadImage(fileName.path());
-                } else {
-                    startToLoadImage(fileName.path());
-                    fileName = Gdx.files
-                            .absolute(ImageData.IMAGE_PATH + "/150/" + ListImageName[ListImageName.length - 1]);
-                    ListImageName = fileName.path().split("/");
-
+                if (!departureSizeImageHandle.exists()) {
+                    // createAnImage(departureHandle.path(), departureSizeHandle.path(), imageName,
+                    // size, isSquare,
+                    // true);
+                    // loadImage(departureSizeHandle.path() + imageName, true, true);
+                    // return manager.get(departureSizeImageHandle.path(), Texture.class);
                 }
 
-                if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
-                    if (fileName.exists()) {
-                        if (!manager.isLoaded(fileName.path())) {
-                            manager.load(fileName.path(), Texture.class);
-                            manager.finishLoading();
-                        }
-                        return manager.get(fileName.path(), Texture.class);
-                    } else {
-                        if (!type.equals("firstloading")) {
-                            Main.infoTextSet("need to load image due to an error of loading", true);
-
-                            Gdx.app.error(fileName.path(), "Do not exist");
-                            if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
-                                Gdx.app.error(fileName.path(), "Creating ...");
-
-                                LoadImage.setSizeForce(Main.nameWithoutToNameWithout150(fileName.path()), 150);
-                                return manager.get(Main.nameWithoutToNameWithout150(fileName.path()), Texture.class);
-
-                            }
-
-                        }
-                        if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
-                            toPlaceList.add(ListImageName[ListImageName.length - 1]);
-                        }
-                    }
-                }
-                if (!toPlaceList.contains(ListImageName[ListImageName.length - 1])) {
-                    toPlaceList.add(ListImageName[ListImageName.length - 1]);
-                }
-                return manager.get(errorImagePath, Texture.class);
             }
         }
+        return manager.get(errorImagePath, Texture.class);
 
     }
 
-    public MixOfImage(List<String> imageNames, float width, float height, String prefSizeName) {
+    // TODO refaire totalement
+    public MixOfImage(List<String> imagePaths, float width, float height, String prefSizeName,
+            boolean force, boolean isSquare) {
+
         FileHandle fileName = null;
         Texture texture;
-        for (String imageName : imageNames) {
+
+        for (String imagePath : imagePaths) {
             Integer rotation = 0;
-            imageName = imageName.replace("\\", "/");
-            String[] ListImageName = imageName.split("/");
-
-            if (imageName.split("/")[ListImageName.length - 2].equals("userImages")
-                    || imageName.split("/")[ListImageName.length - 2].equals("150")
-                    || imageName.split("/")[ListImageName.length - 2].equals("10")
-                    || imageName.split("/")[ListImageName.length - 2].equals("peoples")
-                    || imageName.split("/")[ListImageName.length - 2].equals("places")) {
-
-                fileName = Gdx.files.absolute(imageName);
-                if (!Gdx.files.internal(ImageData.IMAGE_PATH + imageName).exists()
-                        && !Gdx.files.internal(imageName).exists()) {
-                    Main.infoTextSet("need to load image due to an error of loading", true);
-
-                    Gdx.app.error(fileName.path(), "Do not exist");
-                    if (fileName.path().split("/")[ListImageName.length - 2].equals("150")) {
-                        Gdx.app.error(fileName.path(), "Creating ...");
-                        LoadImage.setSizeForce(Main.nameWithoutToNameWithout150(fileName.path()), 150);
-
-                    }
-                    // imageName = "images/error.png";
-                    // ListImageName = imageName.split("/");
-                    rotation = 0;
-
-                } else {
-                    if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
-
-                        rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
-
-                    }
-                }
+            imagePath = imagePath.replace("\\", "/");
+            List<String> list = Main.departurePathAndImageNameAndFolder(imagePath);
+            String departurePath = list.get(0);
+            String[] ListImageName = imagePath.split("/");
+            String folder = list.get(2);
+            if (!folder.equals("images")) {
+                fileName = Gdx.files.absolute(imagePath);
 
             }
-            // if (imageName.endsWith("error.png")) {
-            // System.err.println("error");
-            // fileName = Gdx.files.absolute("image/error.png");
+            // System.err.println("file" + fileName);
+            if (!Gdx.files.internal(imagePath).exists()) {
+                Gdx.app.error(fileName.path(), "Do not exist");
+
+                Main.infoTextSet("need to load image due to an error of loading", true);
+                if (folder.equals("150")
+                        || folder.equals("100")
+                        || folder.equals("10")) {
+
+                    Gdx.app.error(fileName.path(), "Creating ...");
+
+                    Integer size = Integer.parseInt(folder);
+                    String imageName = ListImageName[ListImageName.length - 1];
+                    System.out.println("do not exist : " + departurePath + "--" + size);
+                    MixOfImage.createAnImage(departurePath, departurePath + "/" + size, imageName,
+                            size, isSquare,
+                            true);
+                }
+                rotation = 0;
+
+            } else {
+                if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
+
+                    rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+
+                }
+            }
+
             // }
-            texture = isInImageData(imageName, false, "");
+
+            texture = isInImageData(imagePath, force, false,
+                    isSquare);
             Image image = new Image(texture);
 
             if (rotation != 0 && ListImageName.length > 2
-                    && imageName.split("/")[ListImageName.length - 2].equals("150")) {
-                image.rotateBy(rotation);
-                if (width == 150 && height == 150) {
-                    image.setOrigin((width - 8) / 2, (height - 8) / 2);
-                } else {
-                    image.setOrigin((width) / 2, (height) / 2);
+                    && (folder.equals("100")
+                            || folder.equals("10"))) {
+                if (isSquare) {
+
+                    Integer max;
+
+                    if (image.getWidth() > image.getHeight()) {
+                        max = (int) width;
+                    } else {
+                        max = (int) height;
+                    }
+                    image.rotateBy(rotation);
+                    if (width == Main.preferences.getInteger("size of main images button")
+                            && height == Main.preferences.getInteger("size of main images button")) {
+                        image.setOrigin(max / 2 - espace / 2, max / 2 - espace / 2);
+
+                    } else {
+                        image.setOrigin(max / 2, max / 2);
+
+                    }
 
                 }
-                // mettre - 8 en variable
 
             } else if (rotation != 0) {
                 image.rotateBy(rotation);
                 image.setOrigin(width / 2, height / 2);
             }
 
-            if (imageName.endsWith("outline.png") || imageName.endsWith("redOutline.png")) {
+            if (imagePath.endsWith("outline.png") || imagePath.endsWith("redOutline.png")) {
                 image.setName("outline");
             } else {
                 image.setName("image");
             }
 
-            if (imageNames.size() == 1) {
+            if (imagePaths.size() == 1) {
 
-                // if (rotation == 90 || rotation == 270) {
-                // // a changer la h des images rota doit etre <
+                if (isSquare) {
+                    Integer max;
 
-                // // longueur :
-                // setHeight(600);
+                    if (image.getWidth() > image.getHeight()) {
+                        max = (int) image.getWidth();
+                    } else {
+                        max = (int) image.getHeight();
+                    }
+                    setWidth(max);
+                    setHeight(max);
+                } else {
 
-                // // hauteur :
-                // setWidth(Main.preferences.getInteger("size of " + prefSizeName + " height"));
+                    if (rotation == 90
+                            || rotation == 270) {
+                        Float w = image.getWidth();
+                        Float h = image.getHeight();
+                        setWidth(Main.preferences.getInteger("size of main image height"));
+                        setHeight(Main.preferences.getInteger("size of main image height") * h / w);
+                    } else {
+                        setWidth(image.getWidth());
+                        setHeight(image.getHeight());
+                    }
 
-                // } else {
-                setWidth(image.getWidth());
-                setHeight(image.getHeight());
-                // }
+                }
 
             }
 
@@ -265,6 +265,50 @@ public class MixOfImage extends Group {
 
     }
 
+    public static void createAnImage(String departurePath, String arrivalPath, String imageName, Integer size,
+            boolean isSquare, boolean force) {
+        if (departurePath == null || departurePath.equals("")) {
+            departurePath = "";
+        } else {
+            departurePath = departurePath + "/";
+        }
+
+        FileHandle departureImageHandle = Gdx.files.absolute(departurePath + imageName);
+        FileHandle arrivalImageHandle = Gdx.files.absolute(arrivalPath + "/" + imageName);
+        FileHandle departureHandle = Gdx.files.absolute(departurePath);
+        FileHandle arrivalHandle = Gdx.files.absolute(arrivalPath);
+
+        if (!departureHandle.exists()) {
+            return;
+        } else {
+            if (!arrivalHandle.exists()) {
+                arrivalHandle.mkdirs();
+            }
+            loadImage(departureImageHandle.path(), true, force);
+            Texture texture = manager.get(departureImageHandle.path(), Texture.class);
+            Pixmap pixmap = null;
+            if (size != null) {
+                if (isSquare) {
+                    pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture), size, size, true);
+                } else {
+                    if (texture.getHeight() > texture.getWidth()) {
+                        pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture), size,
+                                (int) (size * texture.getHeight() / texture.getWidth()),
+                                false);
+                    } else {
+                        pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture),
+                                (int) (size * texture.getWidth() / texture.getHeight()), size,
+                                false);
+
+                    }
+                }
+            }
+
+            PixmapIO.writePNG(arrivalImageHandle, pixmap);
+            pixmap.dispose();
+        }
+    }
+
     @Override
     public void setSize(float width, float height) {
         super.setSize(width, height);// super : celle de mon parents ici group
@@ -272,11 +316,11 @@ public class MixOfImage extends Group {
             if (actor.getName().equals("image") && width == Main.preferences.getInteger("size of main images button")
                     && height == Main.preferences.getInteger("size of main images button")) {
 
-                actor.setSize(Main.preferences.getInteger("size of main images button") - 8,
-                        Main.preferences.getInteger("size of main images button") - 8);
+                actor.setSize(Main.preferences.getInteger("size of main images button") - espace,
+                        Main.preferences.getInteger("size of main images button") - espace);
                 // mettre - 8 en variable
 
-                actor.setPosition(8 / 2, 8 / 2);
+                actor.setPosition(espace / 2, espace / 2);
             } else if (!actor.getName().endsWith("outline")
                     && width == Main.preferences.getInteger("size of basic button")
                     && height == Main.preferences.getInteger("size of basic button")) {

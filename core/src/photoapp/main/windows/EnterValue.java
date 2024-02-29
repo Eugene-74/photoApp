@@ -54,7 +54,7 @@ public class EnterValue {
                         after.accept(value);
                     }
                 }, null, null,
-                true, true, false, validationTable, true, "validate");
+                true, true, false, validationTable, true, true, "validate");
     }
 
     private static void clear() {

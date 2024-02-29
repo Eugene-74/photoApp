@@ -89,7 +89,7 @@ public class FileChooser {
 
                     }, "enter the file name : ");
                 }, null, null,
-                true, true, false, buttonTable, true, "add a file");
+                true, true, false, buttonTable, true, true, "add a file");
 
         buttonTable.row();
 
@@ -100,7 +100,7 @@ public class FileChooser {
                     Parameter.open();
                     clear();
                 }, null, null,
-                true, true, false, buttonTable, true, "open parameter");
+                true, true, false, buttonTable, true, true, "open parameter");
 
         buttonTable.row();
 
@@ -139,7 +139,7 @@ public class FileChooser {
                     (o) -> {
                         openFile(null);
                     }, null, null,
-                    true, true, false, fileTable, true, "allFile");
+                    true, true, false, fileTable, true, true, "allFile");
 
             File handle = new File(ImageData.IMAGE_PATH);
 
@@ -178,7 +178,7 @@ public class FileChooser {
                                     Main.fileData.put(name, 0);
                                 }
                             }, null, null,
-                            true, true, false, fileTable, true, name);
+                            true, true, false, fileTable, true, true, name);
 
                     index += 1;
                     if (index >= maxByLine) {

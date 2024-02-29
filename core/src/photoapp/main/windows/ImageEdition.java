@@ -43,7 +43,7 @@ public class ImageEdition {
 	static String nameOfFolderOfLoadedFolder = "";
 	static Integer totalNumberOfLoadedImages = 0;
 	static Array<ImageData> toDelete = new Array<ImageData>();
-	public static String theCurrentImagePath;
+	public static String theCurrentImageName;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	static String lastPreview = "";
 	public static String imageOpen = "";
@@ -56,6 +56,8 @@ public class ImageEdition {
 
 	static public Long lastImageChange = (long) 0;
 	static public Boolean imageWithGoodQuality = false;
+	static public Boolean previewWithGoodQuality = false;
+
 	// static public String imageQualityPath;
 
 	static public Boolean plusTableOpen = false;
@@ -91,53 +93,51 @@ public class ImageEdition {
 		dateLabel = new Label(" ", datelabelStyle);
 		dateTable.setSize(200, 50);
 		dateLabel.setSize(200, 50);
-		dateTable.setPosition(Main.preferences.getInteger("border"), Gdx.graphics.getHeight() -dateLabel.getHeight()- Main.preferences.getInteger("border"));
-	
-		dateLabel.addListener( new ClickListener() {
+		dateTable.setPosition(Main.preferences.getInteger("border"),
+				Gdx.graphics.getHeight() - dateLabel.getHeight() - Main.preferences.getInteger("border"));
+
+		dateLabel.addListener(new ClickListener() {
 
 			@Override
 			public void clicked(InputEvent event, float x, float y) {
 
 				DateEdition.open();
-				
+
 			}
 		});
 		Main.setTip("date label", dateLabel);
-			Main.mainStage.addActor(dateTable);
+		Main.mainStage.addActor(dateTable);
 	}
 
-	public static void open(String currentImagePath, boolean OpenMain) {
+	public static void open(String currentImageName, boolean OpenMain) {
 		Gdx.app.log(fileName, "open");
-		ImageData imageData = Main.getCurrentImageData(currentImagePath);
+		ImageData imageData = Main.getCurrentImageData(currentImageName);
 
 		Main.windowOpen = "ImageEdition";
 
 		dateTable.addActor(dateLabel);
 
-		theCurrentImagePath = currentImagePath;
+		theCurrentImageName = currentImageName;
 		imageWithGoodQuality = false;
+
 		table.clear();
 		previewTable.clear();
 
 		if (imageData.getDate() != null) {
 			try {
 				String date = "";
-				
 
 				String[] nomMois = { "January", "February", "March", "April", "May", "June", "July",
 						"August", "Septembre", "Octobrer", "Novembrer", "Decembrer" };
-				
+
 				String[] dateSplit = imageData.getDate().split(" ");
 				String[] daySplit = dateSplit[0].split(":");
 				String[] hourSplit = dateSplit[1].split(":");
-				System.out.println(daySplit[0]+"-"+daySplit[1]+"-"+daySplit[2]);
-				System.out.println(hourSplit[0]+"-"+hourSplit[1]+"-"+hourSplit[2]);
 
-				if(daySplit[0].equals("0000")&& daySplit[1].equals("00")&& daySplit[2].equals("00")
-				&& hourSplit[0].equals("00")&& hourSplit[1].equals("00")&& hourSplit[2].equals("00")){
+				if (daySplit[0].equals("0000") && daySplit[1].equals("00") && daySplit[2].equals("00")
+						&& hourSplit[0].equals("00") && hourSplit[1].equals("00") && hourSplit[2].equals("00")) {
 					date = Main.preferences.getString("text no date");
-					System.out.println("no date");
-				}else{
+				} else {
 					date += daySplit[2] + "  " + nomMois[Integer.parseInt(daySplit[1]) - 1] + "  " + daySplit[0];
 					date += "\n";
 					date += hourSplit[0] + "h " + hourSplit[1] + "min " + hourSplit[2] + "s ";
@@ -146,7 +146,7 @@ public class ImageEdition {
 				dateLabel.setText(date);
 			} catch (Exception e) {
 				System.err.println("bug when loading the image");
-				
+
 			} finally {
 			}
 		} else {
@@ -160,18 +160,23 @@ public class ImageEdition {
 			MainImages.mainTable.clear();
 		}
 		if (OpenMain) {
-			openMainImage(currentImagePath, false);
+			// System.out.println(currentImagePath + "image path..//");
+			openMainImage(currentImageName, false);
 
 		}
 
-		placePreviewImage(currentImagePath);
+		// if(previewWithGoodQuality){
+		placePreviewImage(theCurrentImageName, false);
+		// }else{
+		// placePreviewImage(theCurrentImageName,10);
+		// }
 		// TODO rotation of the images fo place and people
-		placeImageOfPeoples(currentImagePath);
+		placeImageOfPeoples(currentImageName);
 		placePlusPeople();
 		placeAddPeople();
 
 		table.row();
-		placeImageOfPlaces(currentImagePath);
+		placeImageOfPlaces(currentImageName);
 		placePlusPlace();
 		placeAddPlace();
 
@@ -189,7 +194,7 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					// ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
+					// ImageData imageData = Main.getCurrentImageData(theCurrentImageName);
 					if (imageData.getLoved()) {
 						imageData.setLoved(false);
 					} else {
@@ -197,15 +202,15 @@ public class ImageEdition {
 					}
 					reload(false);
 				}, null, null,
-				true, true, false, table, true, "love");
+				true, true, false, table, true, true, "love");
 		table.row();
 		Main.placeImage(List.of("images/previous.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					previousImage(currentImagePath);
+					previousImage(currentImageName);
 				}, null, null,
-				true, true, false, table, true, "previous image");
+				true, true, false, table, true, true, "previous image");
 
 		List<String> deletImages = new ArrayList<>();
 		deletImages.add("images/delete.png");
@@ -218,48 +223,48 @@ public class ImageEdition {
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					moveToDeleteAnImage(imageData,currentImagePath);
+					moveToDeleteAnImage(imageData, currentImageName);
 					// if (imageData != null) {
 
-					// 	Integer index = 0;
-					// 	if (!toDelete.isEmpty()) {
-					// 		for (ImageData delet : toDelete) {
-					// 			if (delet.equals(imageData)) {
+					// Integer index = 0;
+					// if (!toDelete.isEmpty()) {
+					// for (ImageData delet : toDelete) {
+					// if (delet.equals(imageData)) {
 
-					// 				toDelete.removeIndex(index);
-					// 				open(currentImagePath, true);
-					// 				return;
+					// toDelete.removeIndex(index);
+					// open(currentImagePath, true);
+					// return;
 
-					// 			}
-					// 			index += 1;
-					// 		}
-					// 		toDelete.add(imageData);
+					// }
+					// index += 1;
+					// }
+					// toDelete.add(imageData);
 
-					// 	}
+					// }
 
-					// 	if (index == 0) {
-					// 		toDelete.add(imageData);
+					// if (index == 0) {
+					// toDelete.add(imageData);
 
-					// 	}
-					// 	open(currentImagePath, true);
+					// }
+					// open(currentImagePath, true);
 					// } else {
-					// 	Gdx.app.error(fileName, "error null");
+					// Gdx.app.error(fileName, "error null");
 					// }
 				}, null, null,
-				true, true, false, table, true, "delete image");
+				true, true, false, table, true, true, "delete image");
 
 		Main.placeImage(List.of("images/next.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					nextImage(currentImagePath);
-				}, null, null, true, true, false, table, true, "next image");
+					nextImage(currentImageName);
+				}, null, null, true, true, false, table, true, true, "next image");
 		table.row();
 		Main.placeImage(List.of("images/right.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					ImageData rotaImageData = Main.getCurrentImageData(theCurrentImagePath);
+					ImageData rotaImageData = Main.getCurrentImageData(theCurrentImageName);
 					Integer rotation = rotaImageData.getRotation();
 					rotation -= 90;
 					if (rotation < 0) {
@@ -269,12 +274,12 @@ public class ImageEdition {
 					ImageData.saveImagesData();
 					load();
 				}, null, null,
-				true, true, false, table, true, "rotate right");
+				true, true, false, table, true, true, "rotate right");
 		Main.placeImage(List.of("images/left.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
-					ImageData rotaImageData = Main.getCurrentImageData(theCurrentImagePath);
+					ImageData rotaImageData = Main.getCurrentImageData(theCurrentImageName);
 					Integer rotation = rotaImageData.getRotation();
 					rotation += 90;
 					if (rotation > 360) {
@@ -285,7 +290,7 @@ public class ImageEdition {
 					load();
 
 				}, null, null,
-				true, true, false, table, true, "rotate left");
+				true, true, false, table, true, true, "rotate left");
 		table.row();
 
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
@@ -297,7 +302,7 @@ public class ImageEdition {
 						String coords = imageData.getCoords();
 						Main.openInAMap(coords);
 					}, null, null,
-					true, true, false, table, true, "open map");
+					true, true, false, table, true, true, "open map");
 		}
 		table.row();
 
@@ -313,7 +318,7 @@ public class ImageEdition {
 		} else if (plusPlace) {
 			openPlusPlace();
 		} else if (bigPreview) {
-			BigPreview.open(currentImagePath);
+			BigPreview.open(currentImageName);
 		}
 
 	}
@@ -328,38 +333,38 @@ public class ImageEdition {
 		if (returnToZero) {
 			open(Main.imagesData.get(0).getName(), true);
 		} else {
-			open(theCurrentImagePath, true);
+			open(theCurrentImageName, true);
 		}
 	}
 
-public static void moveToDeleteAnImage(ImageData imageData,String currentImagePath){
-	if (imageData != null) {
+	public static void moveToDeleteAnImage(ImageData imageData, String currentImagePath) {
+		if (imageData != null) {
 
-		Integer index = 0;
-		if (!toDelete.isEmpty()) {
-			for (ImageData delet : toDelete) {
-				if (delet.equals(imageData)) {
+			Integer index = 0;
+			if (!toDelete.isEmpty()) {
+				for (ImageData delet : toDelete) {
+					if (delet.equals(imageData)) {
 
-					toDelete.removeIndex(index);
-					open(currentImagePath, true);
-					return;
+						toDelete.removeIndex(index);
+						open(currentImagePath, true);
+						return;
 
+					}
+					index += 1;
 				}
-				index += 1;
+				toDelete.add(imageData);
+
 			}
-			toDelete.add(imageData);
 
+			if (index == 0) {
+				toDelete.add(imageData);
+
+			}
+			open(currentImagePath, true);
+		} else {
+			Gdx.app.error(fileName, "error null");
 		}
-
-		if (index == 0) {
-			toDelete.add(imageData);
-
-		}
-		open(currentImagePath, true);
-	} else {
-		Gdx.app.error(fileName, "error null");
 	}
-}
 
 	public static void clear() {
 		Gdx.app.log(fileName, "clear");
@@ -387,40 +392,45 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 		}
 
 		Main.windowOpen = "ImageEdition";
+		// if(previewWithGoodQuality){
+		placePreviewImage(theCurrentImageName, false);
+		// }else{
+		// placePreviewImage(theCurrentImageName,10);
+		// }
 
-		placePreviewImage(theCurrentImagePath);
-
-		openMainImage(theCurrentImagePath, false);
+		openMainImage(theCurrentImageName, false);
 
 	}
 
 	public static void reloadPeople() {
-		placeImageOfPeoples(theCurrentImagePath);
+		placeImageOfPeoples(theCurrentImageName);
 	}
 
 	public static void reloadPlace() {
-		placeImageOfPlaces(theCurrentImagePath);
+		placeImageOfPlaces(theCurrentImageName);
 	}
 
 	public static void reloadPeopleAndPlace() {
-		placeImageOfPeoples(theCurrentImagePath);
-		placeImageOfPlaces(theCurrentImagePath);
+		placeImageOfPeoples(theCurrentImageName);
+		placeImageOfPlaces(theCurrentImageName);
 
 	}
 
 	public static void openMainImage(String imageName, Boolean force) {
 		Main.mainStage.getActors().get(0);
 		String imagePath = ImageData.IMAGE_PATH + "/" + imageName;
+		System.out.println(imageName + "path..........");
+
 		if (!MixOfImage.manager.isLoaded(imagePath) && !force) {
 			imagePath = ImageData.IMAGE_PATH + "/150/" + imageName;
 
-			Main.placeImage(List.of(imagePath), "main image height", new Vector2(
+			Main.placeImage(List.of(imagePath), "main image", new Vector2(
 					0, 0),
 					Main.mainStage,
 					(o) -> {
 						clear();
 						BigPreview.open(imageName);
-					}, null, null, true, false, true, table, true, "");
+					}, null, null, false, false, true, table, true, false, "");
 		} else {
 			Main.placeImage(List.of(imagePath), "main image", new Vector2(
 					0, 0),
@@ -428,7 +438,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 					(o) -> {
 						clear();
 						BigPreview.open(imageName);
-					}, null, null, false, false, true, table, false, "");
+					}, null, null, false, false, true, table, true, false, "");
 			imageWithGoodQuality = true;
 
 		}
@@ -451,7 +461,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 					}, "enter the people name : ");
 
 				}, null, null,
-				true, true, false, table, true, "add people");
+				true, true, false, table, true, true, "add people");
 	}
 
 	public static void placeAddPlace() {
@@ -467,7 +477,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 					}, "enter the place name : ");
 				}, null, null,
-				true, true, false, table, true, "add place");
+				true, true, false, table, true, true, "add place");
 	}
 
 	public static void createMainImageTable() {
@@ -478,20 +488,24 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 		mainImageTable.setPosition(
 				Main.preferences.getInteger("border"),
-				Gdx.graphics.getHeight() - mainImageTable.getHeight() - Main.preferences.getInteger("border"));
+				Gdx.graphics.getHeight() - mainImageTable.getHeight() - Main.preferences.getInteger("border") * 2
+						- Main.preferences.getInteger("size of date"));
 
 		Main.mainStage.addActor(mainImageTable);
 	}
 
 	public static void createPreviewTable() {
 		previewTable = new Table();
-		previewTable.setSize(Main.preferences.getInteger("size of preview image width") * 5,
-				Main.preferences.getInteger("size of preview image height"));
+		previewTable.setSize(
+				Main.preferences.getInteger("size of preview image")
+						* Main.preferences.getInteger("number of preview image"),
+				Main.preferences.getInteger("size of preview image"));
 		previewTable.setPosition(
 				Main.preferences.getInteger("border") + Main.preferences.getInteger("size of main image width") / 2
 						- previewTable.getWidth() / 2,
-				Gdx.graphics.getHeight() - mainImageTable.getHeight() - previewTable.getHeight()
-						- Main.preferences.getInteger("border") * 2);
+				Gdx.graphics.getHeight() - Main.preferences.getInteger("size of main image height")
+						- Main.preferences.getInteger("size of preview image") * (3 / 2)
+						- Main.preferences.getInteger("border") * 3 - Main.preferences.getInteger("size of date"));
 
 		Main.mainStage.addActor(previewTable);
 	}
@@ -500,18 +514,19 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 		table = new Table();
 
 		table.setSize(
-				Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main images width")
+				Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main image width")
 						- Main.preferences.getInteger("border") * 3,
 				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
 		table.setPosition(
-				Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
+				Main.preferences.getInteger("size of main image width") + Main.preferences.getInteger("border") * 2,
 				Main.preferences.getInteger("border"));
 
 		Main.mainStage.addActor(table);
 	}
 
-	public static void placePreviewImage(String currentImagePath) {
-		if (Main.imagesData.size() >= 7) {
+	public static void placePreviewImage(String currentImagePath, boolean force) {
+		Integer size = 100;
+		if (Main.imagesData.size() >= Main.preferences.getInteger("number of preview image")) {
 
 			Integer index = 0;
 			Integer imageIndex = 0;
@@ -524,14 +539,15 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				index += 1;
 			}
 
-			Integer max = 9;
+			Integer max = Main.preferences.getInteger("number of preview image");
 			index = 0;
 			List<String> previewNames = new ArrayList<String>();
 			Integer maxImageIndex = Main.imagesData.size() - 1;
 
 			// Code de Yann
 			Integer increment = 0;
-			for (int i = -4; i <= 4; i++) {
+			Integer number = (Main.preferences.getInteger("number of preview image")) / 2 + 1;
+			for (int i = -number; i <= number; i++) {
 				if (i + imageIndex > maxImageIndex) {
 					increment = -maxImageIndex - 1;
 				} else if (i + imageIndex < 0) {
@@ -539,24 +555,30 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				} else {
 					increment = 0;
 				}
-				if (i >= 4 || i <= -4) {
-					if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/150/"
+				if (i >= number || i <= -number) {
+
+					if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/100/"
 							+ Main.imagesData.get(i + imageIndex + increment).getName())) {
-						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/150/" +
+
+						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/100/" +
 								Main.imagesData.get(i + imageIndex + increment).getName());
 					}
+
 				} else {
-					previewNames.add(Main.imagesData.get(i + imageIndex + increment).getName());
+					previewNames.add(
+							ImageData.IMAGE_PATH + "/" + Main.imagesData.get(i + imageIndex + increment).getName());
 				}
 			}
 
 			Integer nbr = 0;
 			for (String preview : previewNames) {
-				ImageData imageData = Main.getCurrentImageData(preview);
-				List<String> previewList = new ArrayList<>();
-				previewList.add(ImageData.IMAGE_PATH + "/150/" + preview);
 
-				if (nbr == 3) {
+				ImageData imageData = Main.getCurrentImageData(currentImagePath);
+				List<String> previewList = new ArrayList<>();
+
+				previewList.add(preview);
+
+				if (nbr == number - 1) {
 					previewList.add("images/outlineSelectedPreview.png");
 				} else {
 					previewList.add("images/outlinePreview.png");
@@ -567,30 +589,21 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				if (toDelete.contains(imageData, false)) {
 					previewList.add("images/deleted preview.png");
 				}
+				String imageName = Main.departurePathAndImageNameAndFolder(preview).get(1);
+
 				Main.placeImage(previewList,
 						"preview image",
 						new Vector2(0, 0),
 						Main.mainStage,
 						(o) -> {
-							open(preview, true);
-
-							// ne s'ouvre pas toujours a cause de
-							// a cause du load pour la grande qualite
-							// ||
-							// \/
+							open(imageName, true);
 						},
 						(o) -> {
-							// les ouvre infiniment c'est pas ouf
-							// if (!preview.equals(lastPreview)) {
-
-							showBigPreview(preview);
-
-							// }
-
+							showBigPreview(imageName);
 						}, (o) -> {
 							closeBigPreview(currentImagePath);
 						},
-						false, true, false, previewTable, true, "");
+						true, true, false, previewTable, true, true, "");
 
 				index += 1;
 				if (index >= max) {
@@ -607,6 +620,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 		imageWithGoodQuality = false;
 		imageOpen = preview;
+		System.out.println("preview" + preview);
 		openMainImage(preview, false);
 
 		reloadOnce = true;
@@ -629,23 +643,23 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 		List<String> peopleNames = new ArrayList<String>();
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
+		if (!handle.exists()) {
+			handle.mkdirs();
+		}
 		// Main.entriesSortedByValues(, true)
 		for (Entry<String, Integer> entry : Main.peopleData.entrySet()) {
 			peopleNames.add(entry.getKey());
 		}
 
-		if (!handle.exists()) {
-			handle.mkdirs();
-		}
 		Integer maxPeople = 6;
 		Integer i = 0;
 		for (String people : peopleNames) {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/150/" + people + ".png");
+				FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/100/" + people + ".png");
 				if (handlebis.exists()) {
-					peopleList.add(ImageData.IMAGE_PATH + "/150/" + people + ".png");
+					peopleList.add(ImageData.IMAGE_PATH + "/100/" + people + ".png");
 				} else {
 					peopleList.add("images/error.png");
 				}
@@ -665,7 +679,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 							addPeople(people, currentImagePath, true);
 
 						}, null, null,
-						true, true, false, table, true, people);
+						true, true, false, table, true, true, people);
 
 				index += 1;
 				if (index >= max) {
@@ -703,7 +717,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 			if (i < maxPlace - 1) {
 				i += 1;
 				List<String> placeList = new ArrayList<>();
-				placeList.add(ImageData.IMAGE_PATH + "/150/" + place + ".png");
+				placeList.add(ImageData.PLACE_IMAGE_PATH + "/100/" + place + ".png");
 				placeList.add("images/place outline.png");
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
@@ -718,7 +732,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 						(o) -> {
 							addPlace(place, currentImagePath, true);
 						}, null, null,
-						true, true, false, table, true, place);
+						true, true, false, table, true, true, place);
 
 				index += 1;
 				if (index >= max) {
@@ -731,8 +745,10 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 	}
 
 	public static void nextImage(String currentImagePath) {
+		System.out.println("next");
 		lastImageChange = TimeUtils.millis();
 		imageWithGoodQuality = false;
+		previewWithGoodQuality = false;
 		indexLoaded = 0;
 
 		boolean next = false;
@@ -765,6 +781,8 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 	public static void previousImage(String currentImagePath) {
 		lastImageChange = TimeUtils.millis();
 		imageWithGoodQuality = false;
+		previewWithGoodQuality = false;
+
 		indexLoaded = 0;
 
 		ImageData previous = null;
@@ -805,7 +823,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 		if (isReloadImageEdition) {
 			reloadPeople();
-			theCurrentImagePath = currentImagePath;
+			theCurrentImageName = currentImagePath;
 
 		}
 	}
@@ -821,7 +839,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 		if (isReloadImageEdition) {
 			reloadPlace();
-			theCurrentImagePath = currentImagePath;
+			theCurrentImageName = currentImagePath;
 
 		}
 	}
@@ -962,8 +980,9 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 		to.writeBytes(data, false);
 		tobis.writeBytes(data, false);
-		System.out.println(to.path() + " test " + nameWithExtension);
-		LoadImage.setSize(to.path(), nameWithExtension, 150, false);
+		// LoadImage.setSize(to.path(), nameWithExtension, 100, false);
+		MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), 100, false, false);
+
 		// ImageEdition.load();
 	}
 
@@ -981,7 +1000,8 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 		to.writeBytes(data, false);
 		tobis.writeBytes(data, false);
 
-		LoadImage.setSize(to.path(), nameWithExtension, 150, false);
+		// LoadImage.setSize(to.path(), nameWithExtension, 100, false);
+		MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), 100, false, false);
 
 	}
 
@@ -992,7 +1012,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				(o) -> {
 					openPlusPeople();
 				}, null, null,
-				true, true, false, table, true, "more people");
+				true, true, false, table, true, true, "more people");
 	}
 
 	public static void placePlusPlace() {
@@ -1003,7 +1023,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 					openPlusPlace();
 
 				}, null, null,
-				true, true, false, table, true, "more place");
+				true, true, false, table, true, true, "more place");
 	}
 
 	public static void savePeopleDataToFile() {
@@ -1066,28 +1086,27 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 		plusTableOpen = true;
 		plusTable.clear();
 		createPlusTable();
-		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
+		ImageData imageData = Main.getCurrentImageData(theCurrentImageName);
 		float max = plusTable.getWidth() / Main.preferences.getInteger("size of basic button");
 		Integer index = 0;
 		List<String> peopleNames = new ArrayList<String>();
 
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
-
+		if (!handle.exists()) {
+			handle.mkdirs();
+		}
 		for (Entry<String, Integer> entry : Main.peopleData.entrySet()) {
 
 			peopleNames.add(entry.getKey());
 		}
 
-		if (!handle.exists()) {
-			handle.mkdirs();
-		}
 		float maxPeople = max * plusTable.getHeight() / Main.preferences.getInteger("size of basic button") - 1;
 		Integer i = 0;
 		for (String people : peopleNames) {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				peopleList.add(ImageData.IMAGE_PATH + "/150/" + people + ".png");
+				peopleList.add(ImageData.IMAGE_PATH + "/100/" + people + ".png");
 				peopleList.add("images/people outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
@@ -1100,10 +1119,10 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 						new Vector2(0, 0),
 						Main.mainStage,
 						(o) -> {
-							addPeople(people, theCurrentImagePath, false);
+							addPeople(people, theCurrentImageName, false);
 							addAllPeopleToPlusTable();
 						}, null, null,
-						true, true, false, plusTable, true, people);
+						true, true, false, plusTable, true, true, people);
 
 				index += 1;
 				if (index >= max) {
@@ -1122,7 +1141,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 		plusTableOpen = true;
 		plusTable.clear();
 		createPlusTable();
-		ImageData imageData = Main.getCurrentImageData(theCurrentImagePath);
+		ImageData imageData = Main.getCurrentImageData(theCurrentImageName);
 		float max = plusTable.getWidth() / Main.preferences.getInteger("size of basic button");
 		Integer index = 0;
 		List<String> placeNames = new ArrayList<String>();
@@ -1144,7 +1163,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				i += 1;
 				List<String> placeList = new ArrayList<>();
 
-				placeList.add(ImageData.IMAGE_PATH + "/150/" + place + ".png");
+				placeList.add(ImageData.IMAGE_PATH + "/100/" + place + ".png");
 
 				// WORK ONLY WITH JPG
 				placeList.add("images/place outline.png");
@@ -1160,11 +1179,11 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 						Main.mainStage,
 						(o) -> {
 
-							addPlace(place, theCurrentImagePath, false);
+							addPlace(place, theCurrentImageName, false);
 							addAllPlaceToPlusTable();
 
 						}, null, null,
-						true, true, false, plusTable, true, place);
+						true, true, false, plusTable, true, true, place);
 
 				index += 1;
 				if (index >= max) {
@@ -1181,7 +1200,7 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 	}
 
 	public static void render() {
-		if (TimeUtils.millis() - lastImageChange > 200) {
+		if (TimeUtils.millis() - lastImageChange > 300) {
 			if (!imageWithGoodQuality) {
 
 				if (!imageOpen.equals("")) {
@@ -1193,12 +1212,12 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 						lastImage = imageOpen;
 					}
 				} else {
-					if (lastImage.equals(theCurrentImagePath)) {
-						openMainImage(theCurrentImagePath, true);
+					if (lastImage.equals(theCurrentImageName)) {
+						openMainImage(theCurrentImageName, true);
 						imageWithGoodQuality = true;
 
 					} else {
-						lastImage = theCurrentImagePath;
+						lastImage = theCurrentImageName;
 					}
 
 				}
@@ -1206,9 +1225,14 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 				lastImageChange = TimeUtils.millis();
 
 			}
+			// if (!previewWithGoodQuality) {
+			// placePreviewImage(theCurrentImageName, true);
+			// previewWithGoodQuality = true;
+			// }
+
 			if (indexLoaded < Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5)) {
 				indexLoaded += 1;
-				Integer index = Main.getImageDataIndex(theCurrentImagePath);
+				Integer index = Main.getImageDataIndex(theCurrentImageName);
 				Integer index1 = index + indexLoaded;
 				Integer index2 = index - indexLoaded;
 				if (index1 >= Main.imagesData.size()) {
@@ -1225,7 +1249,6 @@ public static void moveToDeleteAnImage(ImageData imageData,String currentImagePa
 
 					if (!MixOfImage.manager
 							.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName())) {
-						// System.out.println(Main.imagesData.get(index1).getName());
 						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName());
 					}
 					if (!MixOfImage.manager

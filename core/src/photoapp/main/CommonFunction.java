@@ -16,7 +16,7 @@ public class CommonFunction {
                 ImageEdition.plusPlace = false;
                 ImageEdition.bigPreview = false;
 
-                ImageEdition.open(ImageEdition.theCurrentImagePath, false);
+                ImageEdition.open(ImageEdition.theCurrentImageName, false);
                 ImageEdition.plusTableOpen = false;
             } else {
                 ImageEdition.clear();
@@ -34,13 +34,13 @@ public class CommonFunction {
         } else if (Main.windowOpen.equals("BigPreview")) {
             ImageEdition.bigPreview = false;
             BigPreview.clear();
-            ImageEdition.open(ImageEdition.theCurrentImagePath, true);
+            ImageEdition.open(ImageEdition.theCurrentImageName, true);
         } else if (Main.windowOpen.equals("Parameter")) {
             Parameter.clear();
             FileChooser.open();
-        }else if (Main.windowOpen.equals("DateEdition")) {
+        } else if (Main.windowOpen.equals("DateEdition")) {
             DateEdition.clear();
-            ImageEdition.open(ImageEdition.theCurrentImagePath,true);
+            ImageEdition.open(ImageEdition.theCurrentImageName, true);
         }
     }
 }

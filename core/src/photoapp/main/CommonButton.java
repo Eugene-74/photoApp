@@ -19,7 +19,7 @@ public class CommonButton {
                     LoadImage.open();
                     // Main.reload(false);
                 }, null, null,
-                true, true, false, table, true, "add images");
+                true, true, false, table, true, true, "add images");
     }
 
     public static void createRefreshButton(Table table) {
@@ -30,7 +30,7 @@ public class CommonButton {
 
                     Main.reload(false);
                 }, null, null,
-                true, true, false, table, true, "refresh");
+                true, true, false, table, true, true, "refresh");
     }
 
     public static void createSaveButton(Table table) {
@@ -40,7 +40,7 @@ public class CommonButton {
                 (o) -> {
                     ImageEdition.save();
                 }, null, null,
-                true, true, false, table, true, "save");
+                true, true, false, table, true, true, "save");
     }
 
     public static void createBack(Table table) {
@@ -50,7 +50,7 @@ public class CommonButton {
                 (o) -> {
                     CommonFunction.back();
                 }, null, null,
-                true, true, false, table, true, "back");
+                true, true, false, table, true, true, "back");
     }
 
     public static void createExport(Table table, @Nullable String fileName, String desciption) {
@@ -62,6 +62,6 @@ public class CommonButton {
                     Main.infoTextSet("export start", true);
                     LoadImage.exportImages(fileName);
                 }, null, null,
-                true, true, false, table, true, desciption);
+                true, true, false, table, true, true, desciption);
     }
 }
