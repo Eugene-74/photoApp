@@ -16,7 +16,7 @@ buildscript {
 allprojects {
     apply plugin: "eclipse"
 
-    version = '0.2.10'
+    version = '0.3.0'
     ext {
         appName = "PhotoApp"
         gdxVersion = '1.12.0'

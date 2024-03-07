@@ -1210,9 +1210,7 @@ public class ImageEdition {
 				Integer imageIndex = Main.getImageDataIndex(theCurrentImageName);
 				Integer maxImageIndex = Main.imagesData.size() - 1;
 
-				System.out.println("start for");
 				for (int i = -number; i <= number; i++) {
-					System.out.println("test");
 
 					if (i + imageIndex > maxImageIndex) {
 						increment = -maxImageIndex - 1;

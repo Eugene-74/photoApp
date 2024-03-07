@@ -161,6 +161,7 @@ public class MixOfImage extends Group {
             String departurePath = list.get(0);
             String[] ListImageName = imagePath.split("/");
             String folder = list.get(2);
+
             if (!folder.equals("images")) {
                 fileName = Gdx.files.absolute(imagePath);
 
@@ -206,22 +207,6 @@ public class MixOfImage extends Group {
             } else {
                 max = (int) height;
             }
-            image.rotateBy(rotation);
-            if (width == Main.graphic.getInteger("size of main images button")
-                    && height == Main.graphic.getInteger("size of main images button")) {
-                image.setOrigin((max - espace) / 2, (max - espace) / 2);
-
-            } else {
-
-                image.setOrigin(width / 2, height / 2);
-
-            }
-
-            if (imagePath.endsWith("outline.png") || imagePath.endsWith("redOutline.png")) {
-                image.setName("outline");
-            } else {
-                image.setName("image");
-            }
 
             if (imagePaths.size() == 1) {
 
@@ -251,6 +236,28 @@ public class MixOfImage extends Group {
 
                 }
 
+            }
+
+            image.rotateBy(rotation);
+            if (width == Main.graphic.getInteger("size of main images button")
+                    && height == Main.graphic.getInteger("size of main images button")) {
+                image.setOrigin((max - espace) / 2, (max - espace) / 2);
+
+            } else {
+                if (rotation == 90 || rotation == 270) {
+                    image.setOrigin(getWidth() / 2, getHeight() / 2);
+
+                } else {
+                    image.setOrigin(width / 2, height / 2);
+
+                }
+
+            }
+
+            if (imagePath.endsWith("outline.png") || imagePath.endsWith("redOutline.png")) {
+                image.setName("outline");
+            } else {
+                image.setName("image");
             }
 
             addActor(image);

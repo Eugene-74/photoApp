@@ -460,6 +460,7 @@ public class LoadImage {
 
             }
             Metadata metadata = null;
+            // System.out.println(file);
             if (file.read() != null) {
                 metadata = ImageMetadataReader.readMetadata(file.read());
             }
