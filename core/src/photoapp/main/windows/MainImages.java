@@ -23,6 +23,7 @@ public class MainImages {
     public static Integer nextToNotLoad = 0;
     public static Boolean selectModeIsOn = false;
     public static ArrayList<ImageData> selectedList = new ArrayList<ImageData>();
+    public static boolean change = true;
 
     // public static ArrayList<String> imagesWithPoorQuality = new
     // ArrayList<String>();
@@ -30,6 +31,7 @@ public class MainImages {
     // ArrayList<String>();
     public static Boolean imageWithGoodQuality = false;
     static public Long lastImageChange = (long) 0;
+    static Integer max = 0;
 
     public static void create() {
         createMainTable();
@@ -139,7 +141,7 @@ public class MainImages {
                     true, true, false, mainTable, true, true, "select images");
         }
         mainTable.row();
-        CommonButton.createExport(mainTable, null, "export fil image");
+        CommonButton.createExport(mainTable, null, "export all the images");
         CommonButton.createBack(mainTable);
 
     }
@@ -187,12 +189,12 @@ public class MainImages {
     private static void createImagesTable() {
         imagesTable = new Table();
         imagesTable.setSize(
-                Main.preferences.getInteger("size of main images width"),
-                Main.preferences.getInteger("size of main images height"));
+                Main.graphic.getInteger("size of main images width"),
+                Main.graphic.getInteger("size of main images height"));
         imagesTable.setPosition(
-                Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - imagesTable.getHeight()
-                        - Main.preferences.getInteger("size of infoLabel width"));
+                Main.graphic.getInteger("border"),
+                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") - imagesTable.getHeight()
+                        - Main.graphic.getInteger("size of infoLabel width"));
 
         Main.mainStage.addActor(imagesTable);
 
@@ -201,10 +203,10 @@ public class MainImages {
     public static void createImagesButton(Integer firstI, Boolean isFirstLoading) {
         // if (imageWithGoodQuality) {
         // }
-        Integer column = Main.preferences.getInteger("size of main images width")
-                / Main.preferences.getInteger("size of main images button");
-        Integer row = Main.preferences.getInteger("size of main images height")
-                / Main.preferences.getInteger("size of main images button");
+        Integer column = Main.graphic.getInteger("size of main images width")
+                / Main.graphic.getInteger("size of main images button");
+        Integer row = Main.graphic.getInteger("size of main images height")
+                / Main.graphic.getInteger("size of main images button");
 
         imageI = firstI - firstI % column;
         if (Main.imagesData != null && firstI + column * row > Main.imagesData.size()) {
@@ -219,7 +221,6 @@ public class MainImages {
             Main.imagesData = new ArrayList<>();
         } else {
 
-            Integer max;
             if (Main.imagesData.size() < column * row) {
                 max = Main.imagesData.size();
             } else {
@@ -241,98 +242,68 @@ public class MainImages {
                         MixOfImage.toPlaceList.remove(imageData.getName());
 
                         List<String> placeImageList = new ArrayList<String>();
-                        if (imageWithGoodQuality) {
 
-                            placeImageList.add(ImageData.IMAGE_PATH + "/100/" + imageName);
-                            if (selectModeIsOn) {
-                                placeImageList.add("images/redOutline.png");
+                        placeImageList.add(ImageData.IMAGE_PATH + "/" + imageName);
 
-                            } else {
-                                placeImageList.add("images/outline.png");
-                            }
-                            if (selectedList.contains(imageData) && selectModeIsOn) {
-                                placeImageList.add("images/selected.png");
-                            }
-                            if (imageData.getLoved()) {
-                                placeImageList.add("images/loved preview.png");
-                            }
-                            if (ImageEdition.toDelete.contains(imageData, true)) {
-                                placeImageList.add("images/deleted preview.png");
-                            }
-                            if (selectModeIsOn) {
-                                Main.placeImage(placeImageList,
-                                        "main images button",
-                                        new Vector2(0, 0),
-                                        Main.mainStage,
+                        if (selectModeIsOn) {
+                            placeImageList.add("images/redOutline.png");
 
-                                        (o) -> {
+                        } else {
+                            placeImageList.add("images/outline.png");
+                        }
+                        if (selectedList.contains(imageData) && selectModeIsOn) {
+                            placeImageList.add("images/selected.png");
+                        }
+                        if (imageData.getLoved()) {
+                            placeImageList.add("images/loved preview.png");
+                        }
+                        if (ImageEdition.toDelete.contains(imageData, true)) {
+                            placeImageList.add("images/deleted preview.png");
+                        }
+                        if (selectModeIsOn) {
+                            Main.placeImage(placeImageList,
+                                    "main images button",
+                                    new Vector2(0, 0),
+                                    Main.mainStage,
 
-                                            if (selectModeIsOn) {
+                                    (o) -> {
 
+                                        if (selectModeIsOn) {
+
+                                            if (selectedList.contains(imageData)) {
+                                                selectedList.remove(imageData);
+                                            } else {
+                                                selectedList.add(imageData);
+                                            }
+                                            reload();
+
+                                        }
+
+                                    }, (o) -> {
+                                        if (imageData != Main.lastImageData) {
+
+                                            Main.lastImageData = imageData;
+                                            if (selectModeIsOn && Main.isOnClick) {
                                                 if (selectedList.contains(imageData)) {
                                                     selectedList.remove(imageData);
                                                 } else {
                                                     selectedList.add(imageData);
                                                 }
                                                 reload();
-
                                             }
-
-                                        }, (o) -> {
-                                            if (imageData != Main.lastImageData) {
-
-                                                Main.lastImageData = imageData;
-                                                if (selectModeIsOn && Main.isOnClick) {
-                                                    if (selectedList.contains(imageData)) {
-                                                        selectedList.remove(imageData);
-                                                    } else {
-                                                        selectedList.add(imageData);
-                                                    }
-                                                    reload();
-                                                }
-                                            }
-                                        }, null, true, true, false, imagesTable, true, true, "");
-                            } else {
-
-                                Main.placeImage(placeImageList,
-                                        "main images button",
-                                        new Vector2(0, 0),
-                                        Main.mainStage,
-                                        (o) -> {
-                                            clear();
-                                            Main.unLoadAll();
-                                            ImageEdition.open(imageName, true);
-                                        }, null, null, true, true, false, imagesTable, true, true, "");
-                            }
+                                        }
+                                    }, null, true, true, false, imagesTable, false, true, "");
                         } else {
-                            if (MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/100/" + imageName)) {
-                                placeImageList.add(ImageData.IMAGE_PATH + "/100/" + imageName);
-
-                            } else {
-                                placeImageList.add(ImageData.IMAGE_PATH + "/10/" + imageName);
-                            }
-
-                            if (selectModeIsOn) {
-                                placeImageList.add("images/redOutline.png");
-
-                            } else {
-                                placeImageList.add("images/outline.png");
-                            }
-                            if (selectedList.contains(imageData) && selectModeIsOn) {
-                                placeImageList.add("images/selected.png");
-                            }
-                            if (imageData.getLoved()) {
-                                placeImageList.add("images/loved preview.png");
-                            }
-                            if (ImageEdition.toDelete.contains(imageData, true)) {
-                                placeImageList.add("images/deleted preview.png");
-                            }
 
                             Main.placeImage(placeImageList,
                                     "main images button",
                                     new Vector2(0, 0),
                                     Main.mainStage,
-                                    null, null, null, true, true, false, imagesTable, true, true, "");
+                                    (o) -> {
+                                        clear();
+                                        Main.unLoadAll();
+                                        ImageEdition.open(imageName, true);
+                                    }, null, null, true, true, false, imagesTable, false, true, "");
                         }
                         if (index >= column) {
                             imagesTable.row();
@@ -351,12 +322,12 @@ public class MainImages {
     public static void createMainTable() {
         mainTable = new Table();
         mainTable.setSize(
-                Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main images width")
-                        - Main.preferences.getInteger("border") * 3,
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+                Gdx.graphics.getWidth() - Main.graphic.getInteger("size of main images width")
+                        - Main.graphic.getInteger("border") * 3,
+                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
         mainTable.setPosition(
-                Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
-                Main.preferences.getInteger("border"));
+                Main.graphic.getInteger("size of main images width") + Main.graphic.getInteger("border") * 2,
+                Main.graphic.getInteger("border"));
 
         Main.mainStage.addActor(mainTable);
     }
@@ -364,8 +335,8 @@ public class MainImages {
     public static void previousImages() {
         imageWithGoodQuality = false;
 
-        Integer column = Main.preferences.getInteger("size of main images width")
-                / Main.preferences.getInteger("size of main images button");
+        Integer column = Main.graphic.getInteger("size of main images width")
+                / Main.graphic.getInteger("size of main images button");
 
         imageI -= column;
         if (imageI < 0) {
@@ -381,8 +352,8 @@ public class MainImages {
 
     public static void nextImages() {
         imageWithGoodQuality = false;
-        Integer column = Main.preferences.getInteger("size of main images width")
-                / Main.preferences.getInteger("size of main images button");
+        Integer column = Main.graphic.getInteger("size of main images width")
+                / Main.graphic.getInteger("size of main images button");
 
         imageI += column;
         if (imageI >= Main.imagesData.size()) {
@@ -397,17 +368,38 @@ public class MainImages {
     }
 
     public static void render() {
-        if (TimeUtils.millis() - lastImageChange > 200) {
-            if (!imageWithGoodQuality) {
-                if (lastImageI == imageI) {
-                    imageWithGoodQuality = true;
-                    reload();
+        if (TimeUtils.millis() - lastImageChange > 600) {
+            lastImageChange = TimeUtils.millis();
+            if (imageI.equals(lastImageI)) {
+                if (change) {
 
-                } else {
-                    lastImageI = imageI;
+                    change = false;
+
+                    for (Integer i = 0; i < max; i++) {
+                        Integer imageInteger = imageI + i;
+                        ImageData imageData = Main.imagesData.get(imageInteger);
+                        String imageName = imageData.getName();
+                        change = false;
+
+                        if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/"
+                                + MixOfImage.squareSize.get(0) + "/" + imageName)
+                                && !MixOfImage.isOnLoading.contains(ImageData.IMAGE_PATH + "/"
+                                        + MixOfImage.squareSize.get(0) + "/" + imageName)) {
+                            MixOfImage.loadImage(ImageData.IMAGE_PATH + "/"
+                                    + MixOfImage.squareSize.get(0) + "/" + imageName, false,
+                                    false);
+                            change = true;
+
+                        }
+
+                    }
+                    reload();
                 }
-                lastImageChange = TimeUtils.millis();
+
+            } else {
+                change = true;
             }
+            lastImageI = imageI;
 
         }
     }

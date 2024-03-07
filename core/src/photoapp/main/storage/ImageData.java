@@ -153,6 +153,7 @@ public class ImageData {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getFiles() {
         try {
             if (data != null) {
@@ -169,6 +170,7 @@ public class ImageData {
 
     }
 
+    @SuppressWarnings("unchecked")
     public Boolean isInFiles(String fileLookingFor) {
         try {
             if (data != null) {
@@ -209,6 +211,7 @@ public class ImageData {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getPlaces() {
         try {
             if (data != null) {
@@ -225,6 +228,7 @@ public class ImageData {
 
     }
 
+    @SuppressWarnings("unchecked")
     public Boolean isInPlaces(String placeLookingFor) {
         try {
             if (data != null) {
@@ -265,6 +269,7 @@ public class ImageData {
 
     }
 
+    @SuppressWarnings("unchecked")
     public List<String> getPeoples() {
         try {
             if (data != null) {
@@ -282,6 +287,7 @@ public class ImageData {
 
     }
 
+    @SuppressWarnings("unchecked")
     public Boolean isInPeoples(String peopleLookingFor) {
         try {
             if (data != null) {
@@ -412,6 +418,7 @@ public class ImageData {
                 return;
             } else {
                 InputStream infos = handle.read();
+                @SuppressWarnings("resource")
                 String infosString = new BufferedReader(new InputStreamReader(infos))
                         .lines().collect(Collectors.joining("\n"));
                 if (infosString.equals("") || infosString.equals("\n")) {
@@ -572,8 +579,8 @@ public class ImageData {
                         return 0;
 
                     } catch (Exception e) {
-
-                        System.err.println("bug when loading date : " + e);
+                        Main.error("bug when loading date : ", e);
+                        // System.err.println("bug when loading date : " + e);
                     } finally {
                     }
                     return 0;
@@ -600,6 +607,7 @@ public class ImageData {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public String toFileLine() {
         try {
             String s = "";

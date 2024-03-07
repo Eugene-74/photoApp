@@ -2,6 +2,7 @@ package photoapp.main;
 
 import photoapp.main.windows.BigPreview;
 import photoapp.main.windows.DateEdition;
+import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.MainImages;
@@ -40,6 +41,9 @@ public class CommonFunction {
             FileChooser.open();
         } else if (Main.windowOpen.equals("DateEdition")) {
             DateEdition.clear();
+            ImageEdition.open(ImageEdition.theCurrentImageName, true);
+        } else if (Main.windowOpen.equals("EnterValue")) {
+            EnterValue.clear();
             ImageEdition.open(ImageEdition.theCurrentImageName, true);
         }
     }

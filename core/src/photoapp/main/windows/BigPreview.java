@@ -18,11 +18,11 @@ public class BigPreview {
     public static void create() {
         BigPreviewTable = new Table();
         BigPreviewTable.setSize(
-                Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2,
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+                Gdx.graphics.getWidth() - Main.graphic.getInteger("border") * 2,
+                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
         BigPreviewTable.setPosition(
-                Main.preferences.getInteger("border"),
-                Main.preferences.getInteger("border"));
+                Main.graphic.getInteger("border"),
+                Main.graphic.getInteger("border"));
 
     }
 

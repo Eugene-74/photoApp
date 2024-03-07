@@ -141,8 +141,8 @@ public class LoadImage {
             progress = MixOfImage.manager.getProgress();
             if (progress != lastProgress) {
                 lastProgress = progress;
-                Integer max = Main.preferences.getInteger("image load at the same time");
-                if (toLoad.size() < Main.preferences.getInteger("image load at the same time")) {
+                Integer max = Main.graphic.getInteger("image load at the same time");
+                if (toLoad.size() < Main.graphic.getInteger("image load at the same time")) {
                     max = toLoad.size();
                 }
                 for (int i = 0; i < max; i++) {
@@ -309,17 +309,11 @@ public class LoadImage {
             toJson.writeBytes(dataJson, false);
         }
         openImageExif(dir.getName(), dir.getParentFile().toString());
-        System.out.println(dir.getPath() + "path ..." + dir.getName());
-        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/150", dir.getName(), 150, false, false);
-        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), 100, false, false);
-        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/10", dir.getName(), 10, false, false);
-
-        // setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 150,
-        // false);
-        // setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 100,
-        // false);
-        // setSize(ImageData.IMAGE_PATH + "/" + dir.getName(), dir.getName(), 10,
-        // false);
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/150", dir.getName(), dir.getName(), 150, false,
+                false);
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), dir.getName(), 100, false,
+                false);
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/10", dir.getName(), dir.getName(), 10, false, false);
 
         MixOfImage.manager.finishLoading();
         clear();
@@ -415,15 +409,21 @@ public class LoadImage {
                 JsonValue geoData = root.get("geoData");
                 Float geoData_latitude = geoData.getFloat("latitude");
                 Float geoData_longitude = geoData.getFloat("longitude");
+                @SuppressWarnings("unused")
                 Float geoData_altitude = geoData.getFloat("altitude");
+                @SuppressWarnings("unused")
                 Float geoData_latitudeSpan = geoData.getFloat("latitudeSpan");
+                @SuppressWarnings("unused")
                 Float geoData_longitudeSpan = geoData.getFloat("longitudeSpan");
 
                 JsonValue geoDataExif = root.get("geoDataExif");
                 Float geoDataExif_latitude = geoDataExif.getFloat("latitude");
                 Float geoDataExif_longitude = geoDataExif.getFloat("longitude");
+                @SuppressWarnings("unused")
                 Float geoDataExif_altitude = geoDataExif.getFloat("altitude");
+                @SuppressWarnings("unused")
                 Float geoDataExif_latitudeSpan = geoDataExif.getFloat("latitudeSpan");
+                @SuppressWarnings("unused")
                 Float geoDataExif_longitudeSpan = geoDataExif.getFloat("longitudeSpan");
 
                 if (geoData_latitude != 0.0 && geoData_longitude != 0.0) {
@@ -461,7 +461,6 @@ public class LoadImage {
             }
             Metadata metadata = null;
             if (file.read() != null) {
-
                 metadata = ImageMetadataReader.readMetadata(file.read());
             }
             if (metadata != null) {

@@ -48,7 +48,7 @@ public class Parameter {
         List<String> infoIsOnList = new ArrayList<String>();
         infoIsOnList.add("images/infoIsOn.png");
         infoIsOnList.add("images/outline.png");
-        if (Main.preferences.getBoolean("infoIsOn", true)) {
+        if (Main.graphic.getBoolean("infoIsOn", true)) {
             infoIsOnList.add("images/yes.png");
         } else {
             infoIsOnList.add("images/no.png");
@@ -59,22 +59,22 @@ public class Parameter {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    if (Main.preferences.getBoolean("infoIsOn", true)) {
-                        Main.preferences.putBoolean("infoIsOn", false);
+                    if (Main.graphic.getBoolean("infoIsOn", true)) {
+                        Main.graphic.putBoolean("infoIsOn", false);
                         reload();
                     } else {
-                        Main.preferences.putBoolean("infoIsOn", true);
+                        Main.graphic.putBoolean("infoIsOn", true);
                         reload();
 
                     }
-                    Main.preferences.flush();
+                    Main.graphic.flush();
                 }, null, null,
                 true, true, false, parameterTable, true, true, "info");
 
         List<String> darkmodeList = new ArrayList<String>();
         darkmodeList.add("images/mode.png");
         darkmodeList.add("images/outline.png");
-        if (Main.preferences.getBoolean("option darkmode", false)) {
+        if (Main.graphic.getBoolean("option darkmode", false)) {
             darkmodeList.add("images/yes.png");
         } else {
             darkmodeList.add("images/no.png");
@@ -85,26 +85,26 @@ public class Parameter {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    if (Main.preferences.getBoolean("option darkmode", true)) {
-                        Main.preferences.putBoolean("option darkmode", false);
+                    if (Main.graphic.getBoolean("option darkmode", true)) {
+                        Main.graphic.putBoolean("option darkmode", false);
                         Main.darkMode = false;
                         reload();
                     } else {
-                        Main.preferences.putBoolean("option darkmode", true);
-                        Main.preferences.putBoolean("option brightmode", false);
+                        Main.graphic.putBoolean("option darkmode", true);
+                        Main.graphic.putBoolean("option brightmode", false);
                         Main.darkMode = true;
                         Main.brightMode = false;
                         reload();
 
                     }
-                    Main.preferences.flush();
+                    Main.graphic.flush();
                 }, null, null,
                 true, true, false, parameterTable, true, true, "dark mode");
 
         List<String> brightmodeList = new ArrayList<String>();
         brightmodeList.add("images/mode.png");
         brightmodeList.add("images/outline.png");
-        if (Main.preferences.getBoolean("option brightmode", false)) {
+        if (Main.graphic.getBoolean("option brightmode", false)) {
             brightmodeList.add("images/yes.png");
         } else {
             brightmodeList.add("images/no.png");
@@ -115,19 +115,19 @@ public class Parameter {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    if (Main.preferences.getBoolean("option brightmode", true)) {
-                        Main.preferences.putBoolean("option brightmode", false);
+                    if (Main.graphic.getBoolean("option brightmode", true)) {
+                        Main.graphic.putBoolean("option brightmode", false);
                         Main.brightMode = false;
                         reload();
                     } else {
-                        Main.preferences.putBoolean("option brightmode", true);
-                        Main.preferences.putBoolean("option darkmode", false);
+                        Main.graphic.putBoolean("option brightmode", true);
+                        Main.graphic.putBoolean("option darkmode", false);
                         Main.brightMode = true;
                         Main.darkMode = false;
                         reload();
 
                     }
-                    Main.preferences.flush();
+                    Main.graphic.flush();
                 }, null, null,
                 true, true, false, parameterTable, true, true, "bright mode");
 
@@ -136,12 +136,12 @@ public class Parameter {
     public static void createMainTable() {
         mainTableParameter = new Table();
         mainTableParameter.setSize(
-                Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main images width")
-                        - Main.preferences.getInteger("border") * 3,
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+                Gdx.graphics.getWidth() - Main.graphic.getInteger("size of main images width")
+                        - Main.graphic.getInteger("border") * 3,
+                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
         mainTableParameter.setPosition(
-                Main.preferences.getInteger("size of main images width") + Main.preferences.getInteger("border") * 2,
-                Main.preferences.getInteger("border"));
+                Main.graphic.getInteger("size of main images width") + Main.graphic.getInteger("border") * 2,
+                Main.graphic.getInteger("border"));
 
         Main.mainStage.addActor(mainTableParameter);
     }
@@ -149,11 +149,11 @@ public class Parameter {
     private static void createParameterTable() {
         parameterTable = new Table();
         parameterTable.setSize(
-                Main.preferences.getInteger("size of main images width"),
-                Main.preferences.getInteger("size of main images height"));
+                Main.graphic.getInteger("size of main images width"),
+                Main.graphic.getInteger("size of main images height"));
         parameterTable.setPosition(
-                Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") - parameterTable.getHeight());
+                Main.graphic.getInteger("border"),
+                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") - parameterTable.getHeight());
 
         Main.mainStage.addActor(parameterTable);
 

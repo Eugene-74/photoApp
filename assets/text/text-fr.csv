@@ -1,0 +1,41 @@
+plus size button:Agrandir les boutons
+minus size button:Ratrécir les boutons
+close:Fermer PhotoApp
+open discord:Ouvrir le discord de PhotoApp
+love:Aimer l'image
+previous image:Aller a l'image précédente (left arrow/Q)
+next image:Aller a l'image suivante (right arrow/D)
+previous images:Aller aux l'images suivante (up arrow/Z)
+next images:Aller aux l'images suivantes (down arrow/s)
+delete image:Suprimer l'image (crtl + D)
+rotate right:Tourner l'image vers la droite (90°)
+rotate left:Tourner l'image vers la gauche (90°)
+open map:Ouvrir une carte avec la localisation de l'image
+add people:Ajouter une personne
+add place:Ajouter un lieu
+more people:Voire plus de personnes
+more place:Voire plus de lieux
+delete selected images:Suprimer les images séléctionées
+love selected images:Aimer les images séléctionées
+select images:Ouvrir le menu de séléction
+add images:Ajouter des images
+refresh:Rafraichir la page
+save:Sauvegarder toutes les modification
+back:Revenir en arrière
+export all files:Exporter toute les images
+export fil image:Exporter les images du fichier actuel
+allFile:Ouvrir toutes les images
+add a file:Crée un fichier
+info:Activer/désactivé les information
+dark mode:Activer le mode sombre
+bright mode:Activer le mode clair
+open parameter:Ouvrir les paramètre
+date label:Changer la date de l'image
+day:jour
+month:mois
+year:année
+hour:heure
+min:minute
+s:second
+error date:Erreur dans le format de l'image
+no date:pas de date pour cette image ...

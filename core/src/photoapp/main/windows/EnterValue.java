@@ -57,7 +57,7 @@ public class EnterValue {
                 true, true, false, validationTable, true, true, "validate");
     }
 
-    private static void clear() {
+    public static void clear() {
         validationTable.clear();
         textTable.clear();
 
@@ -66,16 +66,16 @@ public class EnterValue {
     public static void createValueTable() {
 
         validationTable = new Table();
-        validationTable.setSize(Main.preferences.getInteger("size of basic button", 150),
-                Main.preferences.getInteger("size of basic button", 150));
+        validationTable.setSize(Main.graphic.getInteger("size of basic button", 150),
+                Main.graphic.getInteger("size of basic button", 150));
         validationTable.setPosition(
-                Gdx.graphics.getWidth() - Main.preferences.getInteger("border", 25)
-                        - Main.preferences.getInteger("size of basic button", 150),
-                Main.preferences.getInteger("border", 25));
+                Gdx.graphics.getWidth() - Main.graphic.getInteger("border", 25)
+                        - Main.graphic.getInteger("size of basic button", 150),
+                Main.graphic.getInteger("border", 25));
 
         textTable = new Table();
-        textTable.setSize(Main.preferences.getInteger("size of main image width", 1200) / 4,
-                Main.preferences.getInteger("size of main image height", 800) / 4);
+        textTable.setSize(Main.graphic.getInteger("size of main image width", 1200) / 4,
+                Main.graphic.getInteger("size of main image height", 800) / 4);
         textTable.setPosition(
                 Gdx.graphics.getWidth() / 2,
                 Gdx.graphics.getHeight() / 2);

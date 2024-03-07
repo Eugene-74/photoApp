@@ -28,12 +28,12 @@ public class DateEdition {
                 Main.mainStage.addActor(mainTable);
 
                 validationTable = new Table();
-                validationTable.setSize(Main.preferences.getInteger("size of basic button", 150),
-                                Main.preferences.getInteger("size of basic button", 150));
+                validationTable.setSize(Main.graphic.getInteger("size of basic button", 150),
+                                Main.graphic.getInteger("size of basic button", 150));
                 validationTable.setPosition(
-                                Gdx.graphics.getWidth() - Main.preferences.getInteger("border", 25)
-                                                - Main.preferences.getInteger("size of basic button", 150),
-                                Main.preferences.getInteger("border", 25));
+                                Gdx.graphics.getWidth() - Main.graphic.getInteger("border", 25)
+                                                - Main.graphic.getInteger("size of basic button", 150),
+                                Main.graphic.getInteger("border", 25));
 
                 textTable = new Table();
                 textTable.setSize(200,
@@ -64,27 +64,27 @@ public class DateEdition {
                 String[] hourSplit = dateSplit[1].split(":");
 
                 day.setText(daySplit[2]);
-                day.setSize(Main.preferences.getInteger("size of main images button"), 50);
+                day.setSize(Main.graphic.getInteger("size of main images button"), 50);
                 Main.setTip("day", day);
 
                 month.setText(daySplit[1]);
-                month.setSize(Main.preferences.getInteger("size of main images button"), 50);
+                month.setSize(Main.graphic.getInteger("size of main images button"), 50);
                 Main.setTip("month", month);
 
                 year.setText(daySplit[0]);
-                year.setSize(Main.preferences.getInteger("size of main images button"), 50);
+                year.setSize(Main.graphic.getInteger("size of main images button"), 50);
                 Main.setTip("year", year);
 
                 hour.setText(hourSplit[0]);
-                hour.setSize(Main.preferences.getInteger("size of main images button"), 50);
+                hour.setSize(Main.graphic.getInteger("size of main images button"), 50);
                 Main.setTip("hour", hour);
 
                 min.setText(hourSplit[1]);
-                min.setSize(Main.preferences.getInteger("size of main images button"), 50);
+                min.setSize(Main.graphic.getInteger("size of main images button"), 50);
                 Main.setTip("min", min);
 
                 s.setText(hourSplit[2]);
-                s.setSize(Main.preferences.getInteger("size of main images button"), 50);
+                s.setSize(Main.graphic.getInteger("size of main images button"), 50);
                 Main.setTip("s", s);
 
                 textTable.addActor(day);
@@ -99,26 +99,26 @@ public class DateEdition {
                 label.setPosition(0, 0);
 
                 day.setAlignment(Align.center);
-                day.setPosition(-Main.preferences.getInteger("size of main images button") / 2
-                                - Main.preferences.getInteger("size of main images button") * 2, -50);
+                day.setPosition(-Main.graphic.getInteger("size of main images button") / 2
+                                - Main.graphic.getInteger("size of main images button") * 2, -50);
 
                 month.setAlignment(Align.center);
-                month.setPosition(-Main.preferences.getInteger("size of main images button") / 2
-                                - Main.preferences.getInteger("size of main images button"), -50);
+                month.setPosition(-Main.graphic.getInteger("size of main images button") / 2
+                                - Main.graphic.getInteger("size of main images button"), -50);
 
                 year.setAlignment(Align.center);
-                year.setPosition(-Main.preferences.getInteger("size of main images button") / 2, -50);
+                year.setPosition(-Main.graphic.getInteger("size of main images button") / 2, -50);
 
                 hour.setAlignment(Align.center);
-                hour.setPosition(Main.preferences.getInteger("size of main images button") / 2, -50);
+                hour.setPosition(Main.graphic.getInteger("size of main images button") / 2, -50);
 
                 min.setAlignment(Align.center);
-                min.setPosition(Main.preferences.getInteger("size of main images button") / 2
-                                + Main.preferences.getInteger("size of main images button"), -50);
+                min.setPosition(Main.graphic.getInteger("size of main images button") / 2
+                                + Main.graphic.getInteger("size of main images button"), -50);
 
                 s.setAlignment(Align.center);
-                s.setPosition(Main.preferences.getInteger("size of main images button") / 2
-                                + Main.preferences.getInteger("size of main images button") * 2, -50);
+                s.setPosition(Main.graphic.getInteger("size of main images button") / 2
+                                + Main.graphic.getInteger("size of main images button") * 2, -50);
 
                 Main.mainStage.addActor(textTable);
                 Main.mainStage.addActor(validationTable);
@@ -223,7 +223,7 @@ public class DateEdition {
                                                 ImageEdition.open(ImageEdition.theCurrentImageName, true);
 
                                         } else {
-                                                Main.infoTextSet(Main.preferences.getString("text error date"), true);
+                                                Main.infoTextSet(Main.graphic.getString("text error date"), true);
 
                                         }
 

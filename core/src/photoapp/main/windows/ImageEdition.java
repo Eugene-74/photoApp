@@ -25,6 +25,7 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.TimeUtils;
 
 import photoapp.main.CommonButton;
+import photoapp.main.CommonFunction;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
@@ -62,6 +63,7 @@ public class ImageEdition {
 
 	static public Boolean plusTableOpen = false;
 	static public String lastImage = "";
+	static public String lastImageBis = "";
 	static Integer indexLoaded = 0;
 
 	public static Boolean plusPeople = false;
@@ -71,7 +73,7 @@ public class ImageEdition {
 	public static void create() {
 		Gdx.app.log(fileName, "create");
 
-		Main.preferences.flush();
+		Main.graphic.flush();
 
 		createMainImageTable();
 		createPreviewTable();
@@ -93,8 +95,8 @@ public class ImageEdition {
 		dateLabel = new Label(" ", datelabelStyle);
 		dateTable.setSize(200, 50);
 		dateLabel.setSize(200, 50);
-		dateTable.setPosition(Main.preferences.getInteger("border"),
-				Gdx.graphics.getHeight() - dateLabel.getHeight() - Main.preferences.getInteger("border"));
+		dateTable.setPosition(Main.graphic.getInteger("border"),
+				Gdx.graphics.getHeight() - dateLabel.getHeight() - Main.graphic.getInteger("border"));
 
 		dateLabel.addListener(new ClickListener() {
 
@@ -118,7 +120,6 @@ public class ImageEdition {
 		dateTable.addActor(dateLabel);
 
 		theCurrentImageName = currentImageName;
-		imageWithGoodQuality = false;
 
 		table.clear();
 		previewTable.clear();
@@ -136,7 +137,7 @@ public class ImageEdition {
 
 				if (daySplit[0].equals("0000") && daySplit[1].equals("00") && daySplit[2].equals("00")
 						&& hourSplit[0].equals("00") && hourSplit[1].equals("00") && hourSplit[2].equals("00")) {
-					date = Main.preferences.getString("text no date");
+					date = Main.graphic.getString("text no date");
 				} else {
 					date += daySplit[2] + "  " + nomMois[Integer.parseInt(daySplit[1]) - 1] + "  " + daySplit[0];
 					date += "\n";
@@ -160,16 +161,11 @@ public class ImageEdition {
 			MainImages.mainTable.clear();
 		}
 		if (OpenMain) {
-			// System.out.println(currentImagePath + "image path..//");
-			openMainImage(currentImageName, false);
+			openMainImage(currentImageName);
 
 		}
 
-		// if(previewWithGoodQuality){
 		placePreviewImage(theCurrentImageName, false);
-		// }else{
-		// placePreviewImage(theCurrentImageName,10);
-		// }
 		// TODO rotation of the images fo place and people
 		placeImageOfPeoples(currentImageName);
 		placePlusPeople();
@@ -202,7 +198,7 @@ public class ImageEdition {
 					}
 					reload(false);
 				}, null, null,
-				true, true, false, table, true, true, "love");
+				true, true, false, table, false, true, "love");
 		table.row();
 		Main.placeImage(List.of("images/previous.png", "images/outline.png"), "basic button",
 				new Vector2(0, 0),
@@ -392,13 +388,10 @@ public class ImageEdition {
 		}
 
 		Main.windowOpen = "ImageEdition";
-		// if(previewWithGoodQuality){
-		placePreviewImage(theCurrentImageName, false);
-		// }else{
-		// placePreviewImage(theCurrentImageName,10);
-		// }
 
-		openMainImage(theCurrentImageName, false);
+		placePreviewImage(theCurrentImageName, false);
+
+		openMainImage(theCurrentImageName);
 
 	}
 
@@ -416,32 +409,19 @@ public class ImageEdition {
 
 	}
 
-	public static void openMainImage(String imageName, Boolean force) {
-		Main.mainStage.getActors().get(0);
+	public static void openMainImage(String imageName) {
 		String imagePath = ImageData.IMAGE_PATH + "/" + imageName;
-		System.out.println(imageName + "path..........");
+		// TODO ouvre infiniment
+		// System.err.println("open : " + ImageData.IMAGE_PATH + "/" + imageName);
 
-		if (!MixOfImage.manager.isLoaded(imagePath) && !force) {
-			imagePath = ImageData.IMAGE_PATH + "/150/" + imageName;
+		Main.placeImage(List.of(imagePath), "main image", new Vector2(
+				0, 0),
+				Main.mainStage,
+				(o) -> {
+					clear();
+					BigPreview.open(imageName);
+				}, null, null, false, false, true, table, false, false, "");
 
-			Main.placeImage(List.of(imagePath), "main image", new Vector2(
-					0, 0),
-					Main.mainStage,
-					(o) -> {
-						clear();
-						BigPreview.open(imageName);
-					}, null, null, false, false, true, table, true, false, "");
-		} else {
-			Main.placeImage(List.of(imagePath), "main image", new Vector2(
-					0, 0),
-					Main.mainStage,
-					(o) -> {
-						clear();
-						BigPreview.open(imageName);
-					}, null, null, false, false, true, table, true, false, "");
-			imageWithGoodQuality = true;
-
-		}
 	}
 
 	public static void placeAddPeople() {
@@ -454,8 +434,15 @@ public class ImageEdition {
 						String value = EnterValue.txtValue.getText();
 						String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
 						value = value.replaceAll(characterFilter, "");
+						if (!Main.placeData.containsKey(value) && Main.peopleData.containsKey(value)) {
 
-						addAPeople(value);
+							addAPeople(value);
+						} else {
+							Main.infoText = "this name is already use !";
+							Main.error("add people button : the file isn't an image or is not suported", null);
+							CommonFunction.back();
+
+						}
 						// Main.windowOpen = "ImageEdition";
 
 					}, "enter the people name : ");
@@ -472,9 +459,18 @@ public class ImageEdition {
 				(o) -> {
 					ImageEdition.clear();
 					EnterValue.enterAValue((p) -> {
-						addAPlace(EnterValue.txtValue.getText());
-						Main.windowOpen = "ImageEdition";
+						String value = EnterValue.txtValue.getText();
+						String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
+						value = value.replaceAll(characterFilter, "");
 
+						if (!Main.placeData.containsKey(value) && Main.peopleData.containsKey(value)) {
+
+							addAPlace(value);
+						} else {
+							Main.infoText = "this name is already use !";
+							Main.error("add people button : the file isn't an image or is not suported", null);
+							CommonFunction.back();
+						}
 					}, "enter the place name : ");
 				}, null, null,
 				true, true, false, table, true, true, "add place");
@@ -483,13 +479,13 @@ public class ImageEdition {
 	public static void createMainImageTable() {
 		mainImageTable = new Table();
 
-		mainImageTable.setSize(Main.preferences.getInteger("size of main image width"),
-				Main.preferences.getInteger("size of main image height"));
+		mainImageTable.setSize(Main.graphic.getInteger("size of main image width"),
+				Main.graphic.getInteger("size of main image height"));
 
 		mainImageTable.setPosition(
-				Main.preferences.getInteger("border"),
-				Gdx.graphics.getHeight() - mainImageTable.getHeight() - Main.preferences.getInteger("border") * 2
-						- Main.preferences.getInteger("size of date"));
+				Main.graphic.getInteger("border"),
+				Gdx.graphics.getHeight() - mainImageTable.getHeight() - Main.graphic.getInteger("border") * 2
+						- Main.graphic.getInteger("size of date"));
 
 		Main.mainStage.addActor(mainImageTable);
 	}
@@ -497,15 +493,15 @@ public class ImageEdition {
 	public static void createPreviewTable() {
 		previewTable = new Table();
 		previewTable.setSize(
-				Main.preferences.getInteger("size of preview image")
-						* Main.preferences.getInteger("number of preview image"),
-				Main.preferences.getInteger("size of preview image"));
+				Main.graphic.getInteger("size of preview image")
+						* Main.graphic.getInteger("number of preview image"),
+				Main.graphic.getInteger("size of preview image"));
 		previewTable.setPosition(
-				Main.preferences.getInteger("border") + Main.preferences.getInteger("size of main image width") / 2
+				Main.graphic.getInteger("border") + Main.graphic.getInteger("size of main image width") / 2
 						- previewTable.getWidth() / 2,
-				Gdx.graphics.getHeight() - Main.preferences.getInteger("size of main image height")
-						- Main.preferences.getInteger("size of preview image") * (3 / 2)
-						- Main.preferences.getInteger("border") * 3 - Main.preferences.getInteger("size of date"));
+				Gdx.graphics.getHeight() - Main.graphic.getInteger("size of main image height")
+						- Main.graphic.getInteger("size of preview image") * (3 / 2)
+						- Main.graphic.getInteger("border") * 3 - Main.graphic.getInteger("size of date"));
 
 		Main.mainStage.addActor(previewTable);
 	}
@@ -514,19 +510,18 @@ public class ImageEdition {
 		table = new Table();
 
 		table.setSize(
-				Gdx.graphics.getWidth() - Main.preferences.getInteger("size of main image width")
-						- Main.preferences.getInteger("border") * 3,
-				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+				Gdx.graphics.getWidth() - Main.graphic.getInteger("size of main image width")
+						- Main.graphic.getInteger("border") * 3,
+				Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
 		table.setPosition(
-				Main.preferences.getInteger("size of main image width") + Main.preferences.getInteger("border") * 2,
-				Main.preferences.getInteger("border"));
+				Main.graphic.getInteger("size of main image width") + Main.graphic.getInteger("border") * 2,
+				Main.graphic.getInteger("border"));
 
 		Main.mainStage.addActor(table);
 	}
 
 	public static void placePreviewImage(String currentImagePath, boolean force) {
-		Integer size = 100;
-		if (Main.imagesData.size() >= Main.preferences.getInteger("number of preview image")) {
+		if (Main.imagesData.size() >= Main.graphic.getInteger("number of preview image")) {
 
 			Integer index = 0;
 			Integer imageIndex = 0;
@@ -539,14 +534,14 @@ public class ImageEdition {
 				index += 1;
 			}
 
-			Integer max = Main.preferences.getInteger("number of preview image");
+			Integer max = Main.graphic.getInteger("number of preview image");
 			index = 0;
 			List<String> previewNames = new ArrayList<String>();
 			Integer maxImageIndex = Main.imagesData.size() - 1;
 
 			// Code de Yann
 			Integer increment = 0;
-			Integer number = (Main.preferences.getInteger("number of preview image")) / 2 + 1;
+			Integer number = (Main.graphic.getInteger("number of preview image")) / 2 + 1;
 			for (int i = -number; i <= number; i++) {
 				if (i + imageIndex > maxImageIndex) {
 					increment = -maxImageIndex - 1;
@@ -573,15 +568,15 @@ public class ImageEdition {
 			Integer nbr = 0;
 			for (String preview : previewNames) {
 
-				ImageData imageData = Main.getCurrentImageData(currentImagePath);
+				ImageData imageData = Main.getCurrentImageData(Main.departurePathAndImageNameAndFolder(preview).get(1));
 				List<String> previewList = new ArrayList<>();
 
 				previewList.add(preview);
 
 				if (nbr == number - 1) {
-					previewList.add("images/outlineSelectedPreview.png");
+					previewList.add("images/selectedPreviewOutline.png");
 				} else {
-					previewList.add("images/outlinePreview.png");
+					previewList.add("images/previewOutline.png");
 				}
 				if (imageData.getLoved()) {
 					previewList.add("images/loved preview.png");
@@ -603,7 +598,7 @@ public class ImageEdition {
 						}, (o) -> {
 							closeBigPreview(currentImagePath);
 						},
-						true, true, false, previewTable, true, true, "");
+						true, true, false, previewTable, false, true, "");
 
 				index += 1;
 				if (index >= max) {
@@ -618,10 +613,8 @@ public class ImageEdition {
 
 	public static void showBigPreview(String preview) {
 
-		imageWithGoodQuality = false;
 		imageOpen = preview;
-		System.out.println("preview" + preview);
-		openMainImage(preview, false);
+		openMainImage(preview);
 
 		reloadOnce = true;
 
@@ -631,7 +624,7 @@ public class ImageEdition {
 
 		imageOpen = "";
 
-		openMainImage(initialImage, false);
+		openMainImage(initialImage);
 		reloadOnce = true;
 
 	}
@@ -642,11 +635,10 @@ public class ImageEdition {
 		Integer index = 0;
 		List<String> peopleNames = new ArrayList<String>();
 
-		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
+		FileHandle handle = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0));
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
-		// Main.entriesSortedByValues(, true)
 		for (Entry<String, Integer> entry : Main.peopleData.entrySet()) {
 			peopleNames.add(entry.getKey());
 		}
@@ -657,9 +649,12 @@ public class ImageEdition {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				FileHandle handlebis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/100/" + people + ".png");
+				FileHandle handlebis = Gdx.files
+						.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + people
+								+ ".png");
 				if (handlebis.exists()) {
-					peopleList.add(ImageData.IMAGE_PATH + "/100/" + people + ".png");
+					peopleList.add(
+							ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + people + ".png");
 				} else {
 					peopleList.add("images/error.png");
 				}
@@ -697,40 +692,44 @@ public class ImageEdition {
 		Integer index = 0;
 		List<String> placeNames = new ArrayList<String>();
 
-		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
-
+		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0));
+		if (!handle.exists()) {
+			handle.mkdirs();
+		}
 		for (Entry<String, Integer> entry : Main.placeData.entrySet()) {
-
 			placeNames.add(entry.getKey());
 		}
 
-		if (!handle.exists()) {
-			handle.mkdirs();
-		}
 		Integer maxPlace = 6;
 		Integer i = 0;
-
-		if (!handle.exists()) {
-			handle.mkdirs();
-		}
 		for (String place : placeNames) {
-			if (i < maxPlace - 1) {
+			if (i < maxPlace) {
 				i += 1;
 				List<String> placeList = new ArrayList<>();
-				placeList.add(ImageData.PLACE_IMAGE_PATH + "/100/" + place + ".png");
+				FileHandle handlebis = Gdx.files
+						.absolute(ImageData.PLACE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + place
+								+ ".png");
+				if (handlebis.exists()) {
+					placeList.add(
+							ImageData.PLACE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + place + ".png");
+				} else {
+					placeList.add("images/error.png");
+				}
 				placeList.add("images/place outline.png");
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
 				} else {
 					placeList.add("images/no.png");
 				}
-				// ln("place place" + place);
+
 				Main.placeImage(placeList,
 						"basic button",
 						new Vector2(0, 0),
 						Main.mainStage,
 						(o) -> {
+
 							addPlace(place, currentImagePath, true);
+
 						}, null, null,
 						true, true, false, table, true, true, place);
 
@@ -745,10 +744,7 @@ public class ImageEdition {
 	}
 
 	public static void nextImage(String currentImagePath) {
-		System.out.println("next");
 		lastImageChange = TimeUtils.millis();
-		imageWithGoodQuality = false;
-		previewWithGoodQuality = false;
 		indexLoaded = 0;
 
 		boolean next = false;
@@ -780,8 +776,6 @@ public class ImageEdition {
 
 	public static void previousImage(String currentImagePath) {
 		lastImageChange = TimeUtils.millis();
-		imageWithGoodQuality = false;
-		previewWithGoodQuality = false;
 
 		indexLoaded = 0;
 
@@ -908,58 +902,50 @@ public class ImageEdition {
 
 		Main.openFile(JFileChooser.FILES_ONLY,
 				(fileRessource) -> {
-					if (Main.isAnImage(fileRessource.toString())) {
-						movePlace((File) fileRessource, name);
+					if (!Main.placeData.containsKey(name) && Main.peopleData.containsKey(name)) {
 
-						Main.placeData.put(name, 0);
+						if (Main.isAnImage(fileRessource.toString())) {
+							movePlace((File) fileRessource, name, true);
 
-						ImageEdition.savePlaceDataToFile();
+							Main.placeData.put(name, 0);
+
+							ImageEdition.savePlaceDataToFile();
+
+						} else {
+							Main.infoText = "the file isn't an image or is not suported";
+							Main.error("addAPlace : the file isn't an image or is not suported", null);
+						}
 					} else {
-						Main.infoText = "the file isn't an image or is not suported";
+						Main.infoText = "name already use";
+						Main.error("addAPlace : name already use", null);
+
 					}
+					Main.windowOpen = "ImageEdition";
 				}, null);
 	}
 
 	public static void addAPeople(String name) {
-		// new Thread(new Runnable() {
-		// @Override
-		// public void run() {
-		// JFileChooser chooser = new JFileChooser();
-		// chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		// JFrame f = new JFrame();
-		// f.setVisible(true);
-		// f.toFront();
-		// f.setVisible(false);
-		// int res = chooser.showSaveDialog(f);
-		// f.dispose();
-		// File fileRessource = null;
-		// if (res == JFileChooser.APPROVE_OPTION) {
-		// if (chooser.getSelectedFile() != null) {
-
-		// fileRessource = chooser.getSelectedFile();
-
-		// }
-		// f.dispose();
-
-		// }
-		// Main.openWindow = true;
-		// }
-
-		// }).start();
 		Main.openFile(JFileChooser.FILES_ONLY,
 				(fileRessource) -> {
-					if (Main.isAnImage(fileRessource.toString())) {
-						movePeople((File) fileRessource, name, true);
+					if (!Main.placeData.containsKey(name) && Main.peopleData.containsKey(name)) {
 
-						if (!Main.peopleData.containsKey(name)) {
+						if (Main.isAnImage(fileRessource.toString())) {
+							movePeople((File) fileRessource, name, true);
+
 							Main.peopleData.put(name, 0);
-						}
-						ImageEdition.savePeopleDataToFile();
-						Main.windowOpen = "ImageEdition";
+							ImageEdition.savePeopleDataToFile();
 
+						} else {
+							Main.infoText = "the file isn't an image or is not suported";
+							Main.error("addAPeople : the file isn't an image or is not suported", null);
+						}
 					} else {
-						Main.infoText = "the file isn't an image or is not suported";
+						Main.infoText = "name already use";
+						Main.error("addAPeople : name already use", null);
+
 					}
+					Main.windowOpen = "ImageEdition";
+
 				}, null);
 	}
 
@@ -976,33 +962,43 @@ public class ImageEdition {
 		String nameWithExtension = name + ".png";
 
 		FileHandle to = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + nameWithExtension);
-		FileHandle tobis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + nameWithExtension);
 
 		to.writeBytes(data, false);
-		tobis.writeBytes(data, false);
-		// LoadImage.setSize(to.path(), nameWithExtension, 100, false);
-		MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), 100, false, false);
 
-		// ImageEdition.load();
+		List<String> paths = new ArrayList<String>();
+		paths.add(ImageData.PEOPLE_IMAGE_PATH);
+		paths.add(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0));
+		paths.add(nameWithExtension);
+		paths.add(nameWithExtension);
+
+		MixOfImage.toCreateImage100.add(paths);
+
 	}
 
-	public static void movePlace(File dir, String name) {
+	public static void movePlace(File dir, String name, boolean absolut) {
 
-		FileHandle from = Gdx.files.absolute(dir.toString());
+		FileHandle from;
+		if (absolut) {
+			from = Gdx.files.absolute(dir.toString());
+		} else {
+			from = Gdx.files.internal(dir.toString());
+
+		}
 		byte[] data = from.readBytes();
 
-		// String[] nameSplit = dir.getPath().replace(".", ",").split(",");
-		String nameWithExtension = name + "."
-				+ ".png";
+		String nameWithExtension = name + ".png";
+
 		FileHandle to = Gdx.files.absolute(ImageData.PLACE_IMAGE_PATH + "/" + nameWithExtension);
-		FileHandle tobis = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + nameWithExtension);
 
 		to.writeBytes(data, false);
-		tobis.writeBytes(data, false);
 
-		// LoadImage.setSize(to.path(), nameWithExtension, 100, false);
-		MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), 100, false, false);
+		List<String> paths = new ArrayList<String>();
+		paths.add(ImageData.PLACE_IMAGE_PATH);
+		paths.add(ImageData.PLACE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0));
+		paths.add(nameWithExtension);
+		paths.add(nameWithExtension);
 
+		MixOfImage.toCreateImage100.add(paths);
 	}
 
 	public static void placePlusPeople() {
@@ -1087,11 +1083,11 @@ public class ImageEdition {
 		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImageName);
-		float max = plusTable.getWidth() / Main.preferences.getInteger("size of basic button");
+		float max = plusTable.getWidth() / Main.graphic.getInteger("size of basic button") - 1;
 		Integer index = 0;
 		List<String> peopleNames = new ArrayList<String>();
 
-		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/peoples");
+		FileHandle handle = Gdx.files.absolute(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0));
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
@@ -1100,13 +1096,14 @@ public class ImageEdition {
 			peopleNames.add(entry.getKey());
 		}
 
-		float maxPeople = max * plusTable.getHeight() / Main.preferences.getInteger("size of basic button") - 1;
+		float maxPeople = max * plusTable.getHeight() / Main.graphic.getInteger("size of basic button");
 		Integer i = 0;
 		for (String people : peopleNames) {
 			if (i < maxPeople) {
 				i += 1;
 				List<String> peopleList = new ArrayList<>();
-				peopleList.add(ImageData.IMAGE_PATH + "/100/" + people + ".png");
+				peopleList.add(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + people
+						+ ".png");
 				peopleList.add("images/people outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
@@ -1142,28 +1139,27 @@ public class ImageEdition {
 		plusTable.clear();
 		createPlusTable();
 		ImageData imageData = Main.getCurrentImageData(theCurrentImageName);
-		float max = plusTable.getWidth() / Main.preferences.getInteger("size of basic button");
+		float max = plusTable.getWidth() / Main.graphic.getInteger("size of basic button") - 1;
 		Integer index = 0;
 		List<String> placeNames = new ArrayList<String>();
 
-		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/places");
+		FileHandle handle = Gdx.files.absolute(ImageData.PLACE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0));
 		for (Entry<String, Integer> entry : Main.placeData.entrySet()) {
-			// for (Entry<String, Integer> entry :
-			// Main.entriesSortedByValues(Main.placeData, true)) {
 			placeNames.add(entry.getKey());
 		}
 
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
-		float maxPlace = max * plusTable.getHeight() / Main.preferences.getInteger("size of basic button") - 1;
+		float maxPlace = max * plusTable.getHeight() / Main.graphic.getInteger("size of basic button") - 1;
 		Integer i = 0;
 		for (String place : placeNames) {
 			if (i < maxPlace) {
 				i += 1;
 				List<String> placeList = new ArrayList<>();
 
-				placeList.add(ImageData.IMAGE_PATH + "/100/" + place + ".png");
+				placeList.add(ImageData.PLACE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + place
+						+ ".png");
 
 				// WORK ONLY WITH JPG
 				placeList.add("images/place outline.png");
@@ -1200,63 +1196,100 @@ public class ImageEdition {
 	}
 
 	public static void render() {
-		if (TimeUtils.millis() - lastImageChange > 300) {
-			if (!imageWithGoodQuality) {
+		// System.out.println("render");
+		if (TimeUtils.millis() - lastImageChange > 500) {
+			lastImageChange = TimeUtils.millis();
 
-				if (!imageOpen.equals("")) {
-					if (lastImage.equals(imageOpen)) {
-						openMainImage(imageOpen, true);
-						imageWithGoodQuality = true;
+			if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" + theCurrentImageName)
+					&& !MixOfImage.isOnLoading.contains(ImageData.IMAGE_PATH + "/" + theCurrentImageName)) {
+				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/" + theCurrentImageName, true, true);
 
+				Integer number = (Main.graphic.getInteger("number of preview image")) / 2 + 1;
+				// System.out.println("number" + number);
+				Integer increment = 0;
+				Integer imageIndex = Main.getImageDataIndex(theCurrentImageName);
+				Integer maxImageIndex = Main.imagesData.size() - 1;
+
+				System.out.println("start for");
+				for (int i = -number; i <= number; i++) {
+					System.out.println("test");
+
+					if (i + imageIndex > maxImageIndex) {
+						increment = -maxImageIndex - 1;
+					} else if (i + imageIndex < 0) {
+						increment = maxImageIndex + 1;
 					} else {
-						lastImage = imageOpen;
+						increment = 0;
 					}
-				} else {
-					if (lastImage.equals(theCurrentImageName)) {
-						openMainImage(theCurrentImageName, true);
-						imageWithGoodQuality = true;
-
-					} else {
-						lastImage = theCurrentImageName;
+					System.out.println(i + imageIndex + increment);
+					if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/"
+							+ Main.imagesData.get(i + imageIndex + increment)
+									.getName())) {
+						MixOfImage.loadImage(ImageData.IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/"
+								+ Main.imagesData.get(i + imageIndex + increment).getName(), false,
+								false);
 					}
-
 				}
 
+				// for (int i = -number; i <= number; i++) {
+				// System.out.println("f");
+				// // if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" +
+				// // MixOfImage.squareSize.get(0) + "/"
+				// // + Main.imagesData.get(i +
+				// // Main.getImageDataIndex(theCurrentImageName)).getName())) {
+
+				// MixOfImage.loadImage(ImageData.IMAGE_PATH + "/" +
+				// MixOfImage.squareSize.get(0) + "/"
+				// + Main.imagesData.get(i +
+				// Main.getImageDataIndex(theCurrentImageName)).getName(),
+				// false,
+				// false);
+				// // } else {
+				// // System.out.println("not");
+				// // }
+				// System.out.println("ff");
+
+				// }
+
+				// reload(false);
+			}
+
+			if (indexLoaded < Main.graphic.getInteger("number of preview image")) {
 				lastImageChange = TimeUtils.millis();
 
-			}
-			// if (!previewWithGoodQuality) {
-			// placePreviewImage(theCurrentImageName, true);
-			// previewWithGoodQuality = true;
-			// }
+				if (lastImageBis.equals(theCurrentImageName)) {
 
-			if (indexLoaded < Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5)) {
-				indexLoaded += 1;
-				Integer index = Main.getImageDataIndex(theCurrentImageName);
-				Integer index1 = index + indexLoaded;
-				Integer index2 = index - indexLoaded;
-				if (index1 >= Main.imagesData.size()) {
-					index1 = Main.imagesData.size() - index1;
-				} else if (index1 < 0) {
-					index1 = Main.imagesData.size() + index1;
-				}
-				if (index2 >= Main.imagesData.size()) {
-					index2 = Main.imagesData.size() - index2;
-				} else if (index2 < 0) {
-					index2 = Main.imagesData.size() + index2;
-				}
-				if (index1 > 0 && index1 < Main.imagesData.size() && index2 > 0 && index2 < Main.imagesData.size()) {
-
-					if (!MixOfImage.manager
-							.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName())) {
-						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName());
+					indexLoaded += 1;
+					Integer index = Main.getImageDataIndex(theCurrentImageName);
+					Integer index1 = index + indexLoaded;
+					Integer index2 = index - indexLoaded;
+					if (index1 >= Main.imagesData.size()) {
+						index1 = Main.imagesData.size() - index1;
+					} else if (index1 < 0) {
+						index1 = Main.imagesData.size() + index1;
 					}
-					if (!MixOfImage.manager
-							.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index2).getName())) {
-						MixOfImage.startToLoadImage(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index2).getName());
+					if (index2 >= Main.imagesData.size()) {
+						index2 = Main.imagesData.size() - index2;
+					} else if (index2 < 0) {
+						index2 = Main.imagesData.size() + index2;
 					}
-					lastImageChange = TimeUtils.millis();
+					if (index1 > 0 && index1 < Main.imagesData.size() && index2 > 0
+							&& index2 < Main.imagesData.size()) {
 
+						if (!MixOfImage.manager
+								.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName())) {
+							MixOfImage.startToLoadImage(
+									ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index1).getName());
+						}
+						if (!MixOfImage.manager
+								.isLoaded(ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index2).getName())) {
+							MixOfImage.startToLoadImage(
+									ImageData.IMAGE_PATH + "/" + Main.imagesData.get(index2).getName());
+						}
+
+					}
+				} else {
+					lastImageBis = theCurrentImageName;
 				}
 			}
 		}

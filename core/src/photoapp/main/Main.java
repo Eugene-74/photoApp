@@ -33,7 +33,6 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -68,7 +67,7 @@ import photoapp.main.windows.Parameter;
 
 public class Main extends ApplicationAdapter {
 	public static Stage mainStage;
-	public static Preferences preferences;
+	public static Preferences graphic;
 	public static Table infoTable;
 	public static Table linkTable, sizeTable;
 
@@ -114,121 +113,121 @@ public class Main extends ApplicationAdapter {
 
 	}
 
-	public static void iniPreferences() {
+	public static void inigraphic() {
 		x = Gdx.graphics.getWidth();
 		y = Gdx.graphics.getHeight();
 		x4 = x / 4;
 
-		iconSize = (x4 - preferences.getInteger("border") * 2) / 4;
+		iconSize = (x4 - graphic.getInteger("border") * 2) / 4;
 
-		preferences.putInteger("size of infoLabel width", 100);
-		preferences.putInteger("size of infoLabel height", 10);
+		graphic.putInteger("size of infoLabel width", 100);
+		graphic.putInteger("size of infoLabel height", 10);
 
-		preferences.putInteger("size of basic button", iconSize);
+		graphic.putInteger("size of basic button", iconSize);
 
-		preferences.putInteger("image load at the same time", 50);
+		graphic.putInteger("image load at the same time", 50);
 
-		preferences.putInteger("size of close button", littleIcon);
-		preferences.putInteger("border", 25);
-		preferences.putInteger("little border", 5);
+		graphic.putInteger("size of close button", littleIcon);
+		graphic.putInteger("border", 25);
+		graphic.putInteger("little border", 5);
 
-		Main.preferences.putInteger("size of date", 50);
+		Main.graphic.putInteger("size of date", 50);
 
-		// Main.preferences.putInteger("size of full width", 1200);
-		// Main.preferences.putInteger("size of full height",
-		// Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+		// Main.graphic.putInteger("size of full width", 1200);
+		// Main.graphic.putInteger("size of full height",
+		// Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
 
-		Main.preferences.putInteger("size of full width", 3 * x4 - preferences.getInteger("border", 25) * 2);
-		Main.preferences.putInteger("size of full height",
-				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+		Main.graphic.putInteger("size of full width", 3 * x4 - graphic.getInteger("border", 25) * 2);
+		Main.graphic.putInteger("size of full height",
+				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
 
-		preferences.putInteger("size of main image width", 3 * x4 - preferences.getInteger("border", 25) * 2);
+		graphic.putInteger("size of main image width", 3 * x4 - graphic.getInteger("border", 25) * 2);
 
-		preferences.putInteger("size of preview image", y / 10);
+		graphic.putInteger("size of preview image", y / 10);
 
-		preferences.putInteger("number of preview image",
-				preferences.getInteger("size of main image width") / preferences.getInteger("size of preview image"));
+		graphic.putInteger("number of preview image",
+				graphic.getInteger("size of main image width") / graphic.getInteger("size of preview image"));
 
-		preferences.putInteger("size of main image height",
-				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 4
-						- preferences.getInteger("size of preview image")
-						- Main.preferences.getInteger("size of date"));
+		graphic.putInteger("size of main image height",
+				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 4
+						- graphic.getInteger("size of preview image")
+						- Main.graphic.getInteger("size of date"));
 
-		preferences.putInteger("size of total main images width", 3 * x4 - preferences.getInteger("border", 25) * 2);
-		preferences.putInteger("size of total main images height",
-				Gdx.graphics.getHeight() - preferences.getInteger("border", 25) * 2);
+		graphic.putInteger("size of total main images width", 3 * x4 - graphic.getInteger("border", 25) * 2);
+		graphic.putInteger("size of total main images height",
+				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
 
-		preferences.putInteger("size of main images button", imageSize);
-		preferences.putInteger("size of full button", imageSize);
+		graphic.putInteger("size of main images button", imageSize);
+		graphic.putInteger("size of full button", imageSize);
 
-		preferences.putInteger("number of main images width",
-				preferences.getInteger("size of total main images width")
-						/ preferences.getInteger("size of main images button", imageSize));
+		graphic.putInteger("number of main images width",
+				graphic.getInteger("size of total main images width")
+						/ graphic.getInteger("size of main images button", imageSize));
 
-		preferences.putInteger("size of main images width",
-				preferences.getInteger("number of main images width", 6)
-						* preferences.getInteger("size of main images button", imageSize) - 1);
+		graphic.putInteger("size of main images width",
+				graphic.getInteger("number of main images width", 6)
+						* graphic.getInteger("size of main images button", imageSize) - 1);
 
-		preferences.putInteger("number of main images height",
-				preferences.getInteger("size of total main images height", 3 * x4)
-						/ preferences.getInteger("size of main images button", imageSize));
+		graphic.putInteger("number of main images height",
+				graphic.getInteger("size of total main images height", 3 * x4)
+						/ graphic.getInteger("size of main images button", imageSize));
 
-		preferences.putInteger("size of main images height",
-				Main.preferences.getInteger("number of main images height", 9)
-						* preferences.getInteger("size of main images button", imageSize) - 1);
+		graphic.putInteger("size of main images height",
+				Main.graphic.getInteger("number of main images height", 9)
+						* graphic.getInteger("size of main images button", imageSize) - 1);
 
-		preferences.putInteger("number of full width",
-				preferences.getInteger("size of full width", 3 * x4)
-						/ preferences.getInteger("size of full button", imageSize));
+		graphic.putInteger("number of full width",
+				graphic.getInteger("size of full width", 3 * x4)
+						/ graphic.getInteger("size of full button", imageSize));
 
-		preferences.putInteger("size of full width",
-				preferences.getInteger("number of full width", 6)
-						* preferences.getInteger("size of full button", imageSize));
+		graphic.putInteger("size of full width",
+				graphic.getInteger("number of full width", 6)
+						* graphic.getInteger("size of full button", imageSize));
 
-		preferences.putInteger("number of full height",
-				preferences.getInteger("size of full height", 3 * x4)
-						/ preferences.getInteger("size of full button", imageSize));
+		graphic.putInteger("number of full height",
+				graphic.getInteger("size of full height", 3 * x4)
+						/ graphic.getInteger("size of full button", imageSize));
 
-		preferences.putInteger("size of full height",
-				Main.preferences.getInteger("number of full height", 9)
-						* preferences.getInteger("size of full button", imageSize));
+		graphic.putInteger("size of full height",
+				Main.graphic.getInteger("number of full height", 9)
+						* graphic.getInteger("size of full button", imageSize));
 
-		Main.preferences.putInteger("image loaded when waiting in ImageEdition", 10);
+		Main.graphic.putInteger("image loaded when waiting in ImageEdition", 10);
 
-		preferences.putString("text.done", " ");
+		graphic.putString("text.done", " ");
 
-		preferences.putInteger("size of links button width", littleIcon);
-		preferences.putInteger("size of links button height", littleIcon);
-		preferences.putInteger("size of link button", littleIcon);
+		graphic.putInteger("size of links button width", littleIcon);
+		graphic.putInteger("size of links button height", littleIcon);
+		graphic.putInteger("size of link button", littleIcon);
 
-		preferences.putInteger("size of size button width", littleIcon);
-		preferences.putInteger("size of size button height", littleIcon);
-		preferences.putInteger("size of size button", littleIcon);
+		graphic.putInteger("size of size button width", littleIcon);
+		graphic.putInteger("size of size button height", littleIcon);
+		graphic.putInteger("size of size button", littleIcon);
 
-		preferences.putInteger("size of big preview width",
-				Gdx.graphics.getWidth() - Main.preferences.getInteger("border") * 2);
-		preferences.putInteger("size of big preview height",
-				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
-		brightMode = preferences.getBoolean("option brightmode", false);
-		// darkMode = preferences.getBoolean("option darkmode", false);
+		graphic.putInteger("size of big preview width",
+				Gdx.graphics.getWidth() - Main.graphic.getInteger("border") * 2);
+		graphic.putInteger("size of big preview height",
+				Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
+		brightMode = graphic.getBoolean("option brightmode", false);
+		// darkMode = graphic.getBoolean("option darkmode", false);
 
-		preferences.putInteger("darkmode r", 17);
-		preferences.putInteger("darkmode g", 17);
-		preferences.putInteger("darkmode b", 17);
+		graphic.putInteger("darkmode r", 17);
+		graphic.putInteger("darkmode g", 17);
+		graphic.putInteger("darkmode b", 17);
 
-		preferences.putInteger("brightmode r", 35);
-		preferences.putInteger("brightmode g", 180);
-		preferences.putInteger("brightmode b", 255);
+		graphic.putInteger("brightmode r", 35);
+		graphic.putInteger("brightmode g", 180);
+		graphic.putInteger("brightmode b", 255);
 
-		preferences.putInteger("enter darkmode r", 30);
-		preferences.putInteger("enter darkmode g", 30);
-		preferences.putInteger("enter darkmode b", 30);
+		graphic.putInteger("enter darkmode r", 30);
+		graphic.putInteger("enter darkmode g", 30);
+		graphic.putInteger("enter darkmode b", 30);
 
-		preferences.putInteger("enter brightmode r", 45);
-		preferences.putInteger("enter brightmode g", 190);
-		preferences.putInteger("enter brightmode b", 255);
+		graphic.putInteger("enter brightmode r", 45);
+		graphic.putInteger("enter brightmode g", 190);
+		graphic.putInteger("enter brightmode b", 255);
 
-		preferences.putString("image error", "images/error.png");
+		graphic.putString("image error", "images/error.png");
 
 	}
 
@@ -242,23 +241,21 @@ public class Main extends ApplicationAdapter {
 			littleIcon = littleIcon - 1;
 			zoom -= 1;
 		}
-		iniPreferences();
+		inigraphic();
 		reload(false);
 	}
 
 	@Override
 	public void create() {
+		graphic = Gdx.app.getPreferences("graphic params");
+		MixOfImage.ini();
 
-		// MixOfImage.createAnImage("C:/Users/eugen/AppData/Roaming/.photoapp/userImages",
-		// "C:/Users/eugen/AppData/Roaming/.photoapp/userImages/test", "test.jpg", 100,
-		// false, true);
+		inigraphic();
+		Text.openText("fr");
 
-		preferences = Gdx.app.getPreferences("graphic params");
-		iniPreferences();
-		Text.openText("en");
-
-		MixOfImage.manager.load("images/loading button.png", Texture.class);
-		MixOfImage.manager.load("images/error.png", Texture.class);
+		// MixOfImage.manager.load(Main.graphic.getString("image error"),
+		// Texture.class);
+		// MixOfImage.manager.load("images/error.png", Texture.class);
 
 		MixOfImage.manager.finishLoading();
 		mainStage = new Stage(
@@ -291,6 +288,7 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
+
 		ImageEdition.create();
 		FileChooser.create();
 		MainImages.create();
@@ -374,13 +372,13 @@ public class Main extends ApplicationAdapter {
 
 			if (brightMode) {
 
-				ScreenUtils.clear(Main.preferences.getInteger("brightmode r", 0) / 255f,
-						Main.preferences.getInteger("brightmode g", 0) / 255f,
-						Main.preferences.getInteger("brightmode b", 0) / 255f, 255 / 255f);
+				ScreenUtils.clear(Main.graphic.getInteger("brightmode r", 0) / 255f,
+						Main.graphic.getInteger("brightmode g", 0) / 255f,
+						Main.graphic.getInteger("brightmode b", 0) / 255f, 255 / 255f);
 			} else {
-				ScreenUtils.clear(Main.preferences.getInteger("darkmode r", 0) / 255f,
-						Main.preferences.getInteger("darkmode g", 0) / 255f,
-						Main.preferences.getInteger("darkmode b", 0) / 255f, 255 / 255f);
+				ScreenUtils.clear(Main.graphic.getInteger("darkmode r", 0) / 255f,
+						Main.graphic.getInteger("darkmode g", 0) / 255f,
+						Main.graphic.getInteger("darkmode b", 0) / 255f, 255 / 255f);
 
 			}
 			if (!infoText.equals(" ")) {
@@ -391,7 +389,7 @@ public class Main extends ApplicationAdapter {
 
 			if (!windowOpen.equals("LoadImage") && infoText.startsWith("loading")) {
 				if (MixOfImage.manager.isFinished()) {
-					infoTextSet(preferences.getString("text.done"), false);
+					infoTextSet(graphic.getString("text.done"), false);
 				}
 			}
 			if (!MixOfImage.manager.isFinished()) {
@@ -399,8 +397,8 @@ public class Main extends ApplicationAdapter {
 			}
 
 			if (!MixOfImage.willBeLoad.isEmpty()
-					&& MixOfImage.isOnLoading.size() < preferences.getInteger("image load at the same time")) {
-				Integer placeInLoad = preferences.getInteger("image load at the same time")
+					&& MixOfImage.isOnLoading.size() < graphic.getInteger("image load at the same time")) {
+				Integer placeInLoad = graphic.getInteger("image load at the same time")
 						- MixOfImage.isOnLoading.size();
 				if (placeInLoad > 0) {
 					if (placeInLoad > MixOfImage.willBeLoad.size()) {
@@ -436,14 +434,30 @@ public class Main extends ApplicationAdapter {
 					}
 				}
 			}
+			Keybord.render();
+			createCheck();
+
 		} catch (Exception e) {
 			error("render", e);
 		}
 
 	}
 
+	private void createCheck() {
+		ArrayList<List<String>> toRemove = new ArrayList<List<String>>();
+		for (List<String> files : MixOfImage.toCreateImage100) {
+			MixOfImage.createAnImage(files.get(0), files.get(1), files.get(2), files.get(3), 100, true, true);
+			toRemove.add(files);
+		}
+		for (List<String> files : toRemove) {
+			MixOfImage.toCreateImage100.remove(files);
+		}
+		// toRemove.clear();
+
+	}
+
 	public static void infoTextSet(String info, Boolean force) {
-		if (Main.preferences.getBoolean("infoIsOn", true) || force) {
+		if (Main.graphic.getBoolean("infoIsOn", true) || force) {
 			infoText = info;
 			labelInfoText.setText(info);
 
@@ -454,8 +468,8 @@ public class Main extends ApplicationAdapter {
 	public void createInfoTable() {
 		infoTable = new Table();
 
-		infoTable.setPosition(Main.preferences.getInteger("border") + ImageEdition.dateLabel.getWidth(),
-				Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+		infoTable.setPosition(Main.graphic.getInteger("border") + ImageEdition.dateLabel.getWidth(),
+				Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
 
 		Float size = (float) 1;
 		BitmapFont myFont = new BitmapFont(Gdx.files.internal("bitmapfont/dominican.fnt"));
@@ -464,10 +478,10 @@ public class Main extends ApplicationAdapter {
 		label1Style.font = myFont;
 		label1Style.fontColor = Color.RED;
 		labelInfoText = new Label(" ", label1Style);
-		infoTable.setSize(preferences.getInteger("size of infoLabel width"),
-				preferences.getInteger("size of infoLabel height"));
-		labelInfoText.setSize(preferences.getInteger("size of infoLabel width"),
-				preferences.getInteger("size of infoLabel height"));
+		infoTable.setSize(graphic.getInteger("size of infoLabel width"),
+				graphic.getInteger("size of infoLabel height"));
+		labelInfoText.setSize(graphic.getInteger("size of infoLabel width"),
+				graphic.getInteger("size of infoLabel height"));
 		infoTable.addActor(labelInfoText);
 
 		mainStage.addActor(infoTable);
@@ -493,6 +507,7 @@ public class Main extends ApplicationAdapter {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void placeImage(List<String> imageNames, String prefSizeName,
 			Vector2 position, Stage mainStage,
 			final Consumer<Object> onClicked, final Consumer<Object> onEnter, final Consumer<Object> onExit,
@@ -503,20 +518,31 @@ public class Main extends ApplicationAdapter {
 		MixOfImage mixOfImages;
 		Integer width;
 		Integer height;
+		Integer rotation = 0;
+		String[] ListImageName = imageNames.get(0).split("/");
+		if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
 
-		String departurePath = null;
-		Integer size = null;
+			rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
+			// System.out.println("rotation : " + rotation);
+		}
 
 		if (setSize) {
 			if (isSquare) {
-				width = preferences.getInteger("size of " + prefSizeName, 100);
-				height = preferences.getInteger("size of " + prefSizeName, 100);
+				width = graphic.getInteger("size of " + prefSizeName, 100);
+				height = graphic.getInteger("size of " + prefSizeName, 100);
 				mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName, force,
 						isSquare);
 
 			} else {
-				width = preferences.getInteger("size of " + prefSizeName + " height");
-				height = preferences.getInteger("size of " + prefSizeName + " width");
+				// if (rotation == 90 || rotation == 270) {
+				// // System.out.println("rotation !!!");
+				// height = graphic.getInteger("size of " + prefSizeName + " height");
+				// width = graphic.getInteger("size of " + prefSizeName + " width");
+				// } else {
+				width = graphic.getInteger("size of " + prefSizeName + " height");
+				height = graphic.getInteger("size of " + prefSizeName + " width");
+				// }
+
 				mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName,
 						force,
 						isSquare);
@@ -535,32 +561,38 @@ public class Main extends ApplicationAdapter {
 			float heightBis = mixOfImages.getHeight();
 
 			float w = Math
-					.abs(widthBis / preferences.getInteger("size of " + prefSizeName + " width"));
+					.abs(widthBis / graphic.getInteger("size of " + prefSizeName + " width"));
 			float h = Math
-					.abs(heightBis / preferences.getInteger("size of " + prefSizeName + " height"));
+					.abs(heightBis / graphic.getInteger("size of " + prefSizeName + " height"));
 			if (w < h) {
 
-				height = preferences.getInteger("size of " + prefSizeName + " height");
-				width = (int) (preferences.getInteger("size of " + prefSizeName + " height")
+				height = graphic.getInteger("size of " + prefSizeName + " height");
+				width = (int) (graphic.getInteger("size of " + prefSizeName + " height")
 						/ heightBis
 						* widthBis);
 
 			} else {
 
-				height = (int) (preferences.getInteger("size of " + prefSizeName + " width")
+				height = (int) (graphic.getInteger("size of " + prefSizeName + " width")
 						/ widthBis
 						* heightBis);
-				width = preferences.getInteger("size of " + prefSizeName + " width");
+				width = graphic.getInteger("size of " + prefSizeName + " width");
 
 			}
-			// mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName, false);
+
 			mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName,
 					false,
 					isSquare);
 			mixOfImages.setPosition(0, 0);
 		}
+		if (rotation == 90 || rotation == 270) {
+			mixOfImages.setSize(height, height * height / width);
+			// TODO mal placer
 
-		mixOfImages.setSize(width, height);
+		} else {
+			mixOfImages.setSize(width, height);
+
+		}
 
 		mixOfImages.addListener(new ClickListener() {
 
@@ -595,7 +627,8 @@ public class Main extends ApplicationAdapter {
 		});
 
 		if (inTable && placeImageTable != null) {
-			for (Cell cell : placeImageTable.getCells()) {
+			for (@SuppressWarnings("rawtypes")
+			Cell cell : placeImageTable.getCells()) {
 				String[] imageNameList = imageNames.get(0).split("/");
 
 				if (cell.getActor().getName().equals(imageNameList[imageNameList.length - 1])) {
@@ -634,7 +667,7 @@ public class Main extends ApplicationAdapter {
 			if (!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)
 					&& !Main.fileData.containsKey(tip)) {
 
-				tip = preferences.getString("text " + tip, "no text");
+				tip = graphic.getString("text " + tip, "no text");
 
 			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
@@ -645,7 +678,8 @@ public class Main extends ApplicationAdapter {
 
 	public static Boolean isInTable(Table table, String ImageName) {
 
-		for (Cell cell : table.getCells()) {
+		for (@SuppressWarnings("rawtypes")
+		Cell cell : table.getCells()) {
 			if (cell.getActor().getName().equals(ImageName)) {
 
 				return true;
@@ -656,8 +690,8 @@ public class Main extends ApplicationAdapter {
 
 	public void createCloseButton() {
 		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
-				new Vector2(Gdx.graphics.getWidth() - preferences.getInteger("size of " + "close button", 50),
-						Gdx.graphics.getHeight() - preferences.getInteger("size of " + "close button", 50)),
+				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
+						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button", 50)),
 				mainStage,
 				(o) -> {
 					System.out.println("closing");
@@ -799,17 +833,17 @@ public class Main extends ApplicationAdapter {
 			Integer range = 0;
 			Integer addRange = 0;
 			if (Main.windowOpen.equals("MainImages")) {
-				Integer column = Main.preferences.getInteger("size of main images width")
-						/ Main.preferences.getInteger("size of main images button");
-				Integer row = Main.preferences.getInteger("size of main images height")
-						/ Main.preferences.getInteger("size of main images button");
+				Integer column = Main.graphic.getInteger("size of main images width")
+						/ Main.graphic.getInteger("size of main images button");
+				Integer row = Main.graphic.getInteger("size of main images height")
+						/ Main.graphic.getInteger("size of main images button");
 				range = row * column
-						+ Main.preferences.getInteger("image loaded when waiting in MainImages", column * row) * 2;
+						+ Main.graphic.getInteger("image loaded when waiting in MainImages", column * row) * 2;
 				addRange = column * row / 2;
 
 			} else if (Main.windowOpen.equals("ImageEdition")) {
-				range = preferences.getInteger("number of preview image")
-						+ Main.preferences.getInteger("image loaded when waiting in ImageEdition", 5);
+				range = graphic.getInteger("number of preview image")
+						+ Main.graphic.getInteger("image loaded when waiting in ImageEdition", 5);
 			}
 
 			ArrayList<String> toUnput = new ArrayList<String>();
@@ -865,6 +899,7 @@ public class Main extends ApplicationAdapter {
 			return;
 		} else {
 			InputStream infos = handle.read();
+			@SuppressWarnings("resource")
 			String infosString = new BufferedReader(new InputStreamReader(infos))
 					.lines().collect(Collectors.joining("\n"));
 			if (infosString.equals("") || infosString.equals("\n")) {
@@ -887,6 +922,7 @@ public class Main extends ApplicationAdapter {
 			return;
 		} else {
 			InputStream infos = handle.read();
+			@SuppressWarnings("resource")
 			String infosString = new BufferedReader(new InputStreamReader(infos))
 					.lines().collect(Collectors.joining("\n"));
 			if (infosString.equals("") || infosString.equals("\n")) {
@@ -899,7 +935,8 @@ public class Main extends ApplicationAdapter {
 				placeData.put(inf[0], Integer.parseInt(inf[1]));
 			}
 		}
-		for (java.util.Map.Entry<String, Integer> entry : entriesSortedByValues(placeData, true)) {
+		for (@SuppressWarnings("unused")
+		java.util.Map.Entry<String, Integer> entry : entriesSortedByValues(placeData, true)) {
 
 		}
 
@@ -912,6 +949,7 @@ public class Main extends ApplicationAdapter {
 			return;
 		} else {
 			InputStream infos = handle.read();
+			@SuppressWarnings("resource")
 			String infosString = new BufferedReader(new InputStreamReader(infos))
 					.lines().collect(Collectors.joining("\n"));
 			if (infosString.equals("") || infosString.equals("\n")) {
@@ -929,10 +967,10 @@ public class Main extends ApplicationAdapter {
 	public static void createLinkTable() {
 		linkTable = new Table();
 
-		linkTable.setSize(preferences.getInteger("size of links button width"),
-				preferences.getInteger("size of links button height"));
-		linkTable.setPosition(Gdx.graphics.getWidth() - linkTable.getWidth() - preferences.getInteger("little border"),
-				preferences.getInteger("little border"));
+		linkTable.setSize(graphic.getInteger("size of links button width"),
+				graphic.getInteger("size of links button height"));
+		linkTable.setPosition(Gdx.graphics.getWidth() - linkTable.getWidth() - graphic.getInteger("little border"),
+				graphic.getInteger("little border"));
 		mainStage.addActor(linkTable);
 	}
 
@@ -940,12 +978,12 @@ public class Main extends ApplicationAdapter {
 		sizeTable = new Table();
 
 		sizeTable.setSize(
-				preferences.getInteger("size of size button width") * 2,
-				preferences.getInteger("size of size button height"));
+				graphic.getInteger("size of size button width") * 2,
+				graphic.getInteger("size of size button height"));
 		sizeTable.setPosition(
 				Gdx.graphics.getWidth() - sizeTable.getWidth()
-						- linkTable.getWidth() - preferences.getInteger("little border"),
-				preferences.getInteger("little border"));
+						- linkTable.getWidth() - graphic.getInteger("little border"),
+				graphic.getInteger("little border"));
 		mainStage.addActor(sizeTable);
 	}
 
@@ -1094,11 +1132,15 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static String error(String fileName, Exception e) {
-		String list = e.getMessage();
-		for (StackTraceElement trace : e.getStackTrace()) {
-			list += trace.toString() + "\n";
+		if (e != null) {
+
+			String list = e.getMessage();
+			for (StackTraceElement trace : e.getStackTrace()) {
+				list += trace.toString() + "\n";
+			}
+			return list;
 		}
-		return list;
+		return null;
 	}
 
 	public static void openFile(int type, final Consumer<Object> after, final Consumer<Object> doElse) {
@@ -1164,7 +1206,7 @@ public class Main extends ApplicationAdapter {
 			if (!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)
 					&& !Main.fileData.containsKey(tip)) {
 
-				tip = preferences.getString("text " + tip, "no text");
+				tip = graphic.getString("text " + tip, "no text");
 
 			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
@@ -1178,7 +1220,7 @@ public class Main extends ApplicationAdapter {
 			if (!Main.peopleData.containsKey(tip) && !Main.placeData.containsKey(tip)
 					&& !Main.fileData.containsKey(tip)) {
 
-				tip = preferences.getString("text " + tip, "no text");
+				tip = graphic.getString("text " + tip, "no text");
 
 			}
 			TextTooltip textToolTip = new TextTooltip(tip, skin);
@@ -1219,4 +1261,5 @@ public class Main extends ApplicationAdapter {
 		String imageName = ListImageName[ListImageName.length - 1];
 		return List.of(departurePath, imageName, folder);
 	}
+
 }

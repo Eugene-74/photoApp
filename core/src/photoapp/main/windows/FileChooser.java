@@ -48,24 +48,24 @@ public class FileChooser {
     public static void createFileTable() {
         fileTable = new Table();
 
-        fileTable.setSize(Main.preferences.getInteger("size of full width"),
-                Main.preferences.getInteger("size of full height"));
+        fileTable.setSize(Main.graphic.getInteger("size of full width"),
+                Main.graphic.getInteger("size of full height"));
 
         fileTable.setPosition(
-                Main.preferences.getInteger("border"),
-                Gdx.graphics.getHeight() - fileTable.getHeight() - Main.preferences.getInteger("border"));
+                Main.graphic.getInteger("border"),
+                Gdx.graphics.getHeight() - fileTable.getHeight() - Main.graphic.getInteger("border"));
     }
 
     public static void createButtonTable() {
         buttonTable = new Table();
 
         buttonTable.setSize(
-                Gdx.graphics.getWidth() - Main.preferences.getInteger("size of full width")
-                        - Main.preferences.getInteger("border") * 3,
-                Gdx.graphics.getHeight() - Main.preferences.getInteger("border") * 2);
+                Gdx.graphics.getWidth() - Main.graphic.getInteger("size of full width")
+                        - Main.graphic.getInteger("border") * 3,
+                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
         buttonTable.setPosition(
-                Main.preferences.getInteger("size of full width") + Main.preferences.getInteger("border") * 2,
-                Main.preferences.getInteger("border"));
+                Main.graphic.getInteger("size of full width") + Main.graphic.getInteger("border") * 2,
+                Main.graphic.getInteger("border"));
     }
 
     public static void openFile(String name) {
@@ -122,10 +122,10 @@ public class FileChooser {
 
             placeButton();
 
-            Integer column = Main.preferences.getInteger("size of full width")
-                    / Main.preferences.getInteger("size of full button");
-            Integer row = Main.preferences.getInteger("size of full height")
-                    / Main.preferences.getInteger("size of full button");
+            Integer column = Main.graphic.getInteger("size of full width")
+                    / Main.graphic.getInteger("size of full button");
+            Integer row = Main.graphic.getInteger("size of full height")
+                    / Main.graphic.getInteger("size of full button");
             // Integer maxByLine;
 
             Integer maxByLine = row;
