@@ -246,7 +246,7 @@ public class MainImages {
                         placeImageList.add(ImageData.IMAGE_PATH + "/" + imageName);
 
                         if (selectModeIsOn) {
-                            placeImageList.add("images/redOutline.png");
+                            placeImageList.add("images/red outline.png");
 
                         } else {
                             placeImageList.add("images/outline.png");

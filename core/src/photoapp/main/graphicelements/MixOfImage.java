@@ -239,13 +239,23 @@ public class MixOfImage extends Group {
             }
 
             image.rotateBy(rotation);
-            if (width == Main.graphic.getInteger("size of main images button")
-                    && height == Main.graphic.getInteger("size of main images button")) {
-                image.setOrigin((max - espace) / 2, (max - espace) / 2);
+            if (isSquare) {
+                if (!imagePath.endsWith("utline.png")) { // && !prefSizeName.equals("preview image")
 
+                    image.setOrigin((max - espace) / 2, (max - espace) / 2);
+                    // resized image
+                    // } else {
+                    // // preview image
+                    // image.setOrigin(width / 2, height / 2);
+
+                }
             } else {
+                // main image
                 if (rotation == 90 || rotation == 270) {
-                    image.setOrigin(getWidth() / 2, getHeight() / 2);
+
+                    image.setOrigin(
+                            getWidth() / 2,
+                            getHeight() / 2);
 
                 } else {
                     image.setOrigin(width / 2, height / 2);
@@ -254,7 +264,7 @@ public class MixOfImage extends Group {
 
             }
 
-            if (imagePath.endsWith("outline.png") || imagePath.endsWith("redOutline.png")) {
+            if (imagePath.endsWith("utline.png")) {
                 image.setName("outline");
             } else {
                 image.setName("image");
@@ -263,7 +273,9 @@ public class MixOfImage extends Group {
             addActor(image);
 
         }
-        if (fileName != null) {
+        if (fileName != null)
+
+        {
             setName(fileName.name());
 
         } else {
@@ -276,46 +288,52 @@ public class MixOfImage extends Group {
     public static void createAnImage(String departurePath, String arrivalPath, String departureImageName,
             String arrivalImageName, Integer size,
             boolean isSquare, boolean force) {
-        if (departurePath == null || departurePath.equals("")) {
-            departurePath = "";
-        } else {
-            departurePath = departurePath + "/";
-        }
+        try {
 
-        FileHandle departureImageHandle = Gdx.files.absolute(departurePath + departureImageName);
-        FileHandle arrivalImageHandle = Gdx.files.absolute(arrivalPath + "/" + arrivalImageName);
-        FileHandle departureHandle = Gdx.files.absolute(departurePath);
-        FileHandle arrivalHandle = Gdx.files.absolute(arrivalPath);
-
-        if (!departureHandle.exists()) {
-            return;
-        } else {
-            if (!arrivalHandle.exists()) {
-                arrivalHandle.mkdirs();
+            if (departurePath == null || departurePath.equals("")) {
+                departurePath = "";
+            } else {
+                departurePath = departurePath + "/";
             }
-            loadImage(departureImageHandle.path(), true, force);
-            Texture texture = manager.get(departureImageHandle.path(), Texture.class);
-            Pixmap pixmap = null;
-            if (size != null) {
-                if (isSquare) {
-                    pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture), size, size, true);
-                } else {
-                    if (texture.getHeight() > texture.getWidth()) {
-                        pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture), size,
-                                (int) (size * texture.getHeight() / texture.getWidth()),
-                                false);
-                    } else {
-                        pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture),
-                                (int) (size * texture.getWidth() / texture.getHeight()), size,
-                                false);
 
+            FileHandle departureImageHandle = Gdx.files.absolute(departurePath + departureImageName);
+            FileHandle arrivalImageHandle = Gdx.files.absolute(arrivalPath + "/" + arrivalImageName);
+            FileHandle departureHandle = Gdx.files.absolute(departurePath);
+            FileHandle arrivalHandle = Gdx.files.absolute(arrivalPath);
+
+            if (!departureHandle.exists()) {
+                return;
+            } else {
+                if (!arrivalHandle.exists()) {
+                    arrivalHandle.mkdirs();
+                }
+                loadImage(departureImageHandle.path(), true, force);
+                Texture texture = manager.get(departureImageHandle.path(), Texture.class);
+                Pixmap pixmap = null;
+                if (size != null) {
+                    if (isSquare) {
+                        pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture), size, size, true);
+                    } else {
+                        if (texture.getHeight() > texture.getWidth()) {
+                            pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture), size,
+                                    (int) (size * texture.getHeight() / texture.getWidth()),
+                                    false);
+                        } else {
+                            pixmap = LoadImage.resize(LoadImage.textureToPixmap(texture),
+                                    (int) (size * texture.getWidth() / texture.getHeight()), size,
+                                    false);
+
+                        }
                     }
                 }
-            }
 
-            PixmapIO.writePNG(arrivalImageHandle, pixmap);
-            pixmap.dispose();
+                PixmapIO.writePNG(arrivalImageHandle, pixmap);
+                pixmap.dispose();
+            }
+        } catch (Exception e) {
+            Main.error("createAnImage", e);
         }
+
     }
 
     @Override
@@ -327,10 +345,16 @@ public class MixOfImage extends Group {
 
                 actor.setSize(Main.graphic.getInteger("size of main images button") - espace,
                         Main.graphic.getInteger("size of main images button") - espace);
-                // actor.setPosition(0, 0);
 
                 actor.setPosition(espace / 2, espace / 2);
-            } else if (!actor.getName().endsWith("outline")
+            } else if (actor.getName().equals("image") && width == Main.graphic.getInteger("size of preview image")
+                    && height == Main.graphic.getInteger("size of preview image")) {
+
+                actor.setSize(Main.graphic.getInteger("size of preview image") - espace,
+                        Main.graphic.getInteger("size of preview image") - espace);
+
+                actor.setPosition(espace / 2, espace / 2);
+            } else if (!actor.getName().endsWith("utline")
                     && width == Main.graphic.getInteger("size of basic button")
                     && height == Main.graphic.getInteger("size of basic button")) {
 

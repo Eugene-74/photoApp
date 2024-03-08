@@ -30,7 +30,7 @@ public class EnterValue {
         label.setText(name);
 
         txtValue.setText("name");
-        txtValue.setSize(100, 50);
+        txtValue.setSize(500, 50);
 
         textTable.addActor(txtValue);
         textTable.addActor(label);

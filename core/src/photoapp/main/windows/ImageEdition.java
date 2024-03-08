@@ -425,7 +425,7 @@ public class ImageEdition {
 	}
 
 	public static void placeAddPeople() {
-		Main.placeImage(List.of("images/add people.png", "images/people outline.png"), "basic button",
+		Main.placeImage(List.of("images/add people.png", "images/blue outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -453,7 +453,7 @@ public class ImageEdition {
 
 	public static void placeAddPlace() {
 
-		Main.placeImage(List.of("images/add place.png", "images/place outline.png"), "basic button",
+		Main.placeImage(List.of("images/add place.png", "images/green outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -574,9 +574,9 @@ public class ImageEdition {
 				previewList.add(preview);
 
 				if (nbr == number - 1) {
-					previewList.add("images/selectedPreviewOutline.png");
+					previewList.add("images/blue outline.png");
 				} else {
-					previewList.add("images/previewOutline.png");
+					previewList.add("images/outline.png");
 				}
 				if (imageData.getLoved()) {
 					previewList.add("images/loved preview.png");
@@ -658,7 +658,7 @@ public class ImageEdition {
 				} else {
 					peopleList.add("images/error.png");
 				}
-				peopleList.add("images/people outline.png");
+				peopleList.add("images/blue outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
 				} else {
@@ -715,7 +715,7 @@ public class ImageEdition {
 				} else {
 					placeList.add("images/error.png");
 				}
-				placeList.add("images/place outline.png");
+				placeList.add("images/green outline.png");
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
 				} else {
@@ -1002,7 +1002,7 @@ public class ImageEdition {
 	}
 
 	public static void placePlusPeople() {
-		Main.placeImage(List.of("images/pluspeople.png", "images/people outline.png"), "basic button",
+		Main.placeImage(List.of("images/pluspeople.png", "images/blue outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -1012,7 +1012,7 @@ public class ImageEdition {
 	}
 
 	public static void placePlusPlace() {
-		Main.placeImage(List.of("images/plusplace.png", "images/place outline.png"), "basic button",
+		Main.placeImage(List.of("images/plusplace.png", "images/green outline.png"), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -1104,7 +1104,7 @@ public class ImageEdition {
 				List<String> peopleList = new ArrayList<>();
 				peopleList.add(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + people
 						+ ".png");
-				peopleList.add("images/people outline.png");
+				peopleList.add("images/blue outline.png");
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
 				} else {
@@ -1162,7 +1162,7 @@ public class ImageEdition {
 						+ ".png");
 
 				// WORK ONLY WITH JPG
-				placeList.add("images/place outline.png");
+				placeList.add("images/green outline.png");
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
 				} else {

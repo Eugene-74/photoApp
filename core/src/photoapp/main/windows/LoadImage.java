@@ -9,7 +9,6 @@ import javax.swing.JFileChooser;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.PixmapIO;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
@@ -148,9 +147,32 @@ public class LoadImage {
                 for (int i = 0; i < max; i++) {
 
                     if (isLoading.contains(toLoad.get(i)) && MixOfImage.manager.isLoaded(toLoad.get(i))) {
-                        setSizeAfterLoad(toLoad.get(i), 150, false);
-                        setSizeAfterLoad(toLoad.get(i), 100, true);
-                        setSizeAfterLoad(toLoad.get(i), 10, true);
+                        String imageName = Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(1);
+                        String characterFilter = "[^\\p{L}\\p{M}\\p{N}\\p{P}\\p{Z}\\p{Cf}\\p{Cs}\\s]";
+                        imageName = imageName.replaceAll(characterFilter, "");
+                        // Main.departurePathAndImageNameAndFolder(toLoad.get(i));
+                        MixOfImage.createAnImage(Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(0) + "/"
+                                + Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(2),
+                                ImageData.IMAGE_PATH + "/" + 150,
+                                Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(1),
+                                imageName,
+                                150, false, false);
+                        MixOfImage.createAnImage(Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(0) + "/"
+                                + Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(2),
+                                ImageData.IMAGE_PATH + "/" + 100,
+                                Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(1),
+                                imageName,
+                                100, false, false);
+                        MixOfImage.createAnImage(Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(0) + "/"
+                                + Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(2),
+                                ImageData.IMAGE_PATH + "/" + 10,
+                                Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(1),
+                                imageName,
+                                10, false, false);
+
+                        // setSizeAfterLoad(toLoad.get(i), 150, false);
+                        // setSizeAfterLoad(toLoad.get(i), 100, true);
+                        // setSizeAfterLoad(toLoad.get(i), 10, true);
 
                         toRemove.add(toLoad.get(i));
                         numberOfImagesLoaded += 1;
@@ -282,7 +304,7 @@ public class LoadImage {
                             + "/" + numberOfImagesToLoad;
 
                     if (Main.isAnImage(item.getName())) {
-
+                        System.err.println("add  : " + (dir + "/" + item.getName()).replace("\\", "/"));
                         toLoad.add((dir + "/" + item.getName()).replace("\\", "/"));
                         numberOfLoadedImages += 1;
                     }
@@ -341,45 +363,49 @@ public class LoadImage {
                 }, null);
     }
 
-    public static void setSizeAfterLoad(String imagePath, Integer size, boolean isSquare) {
-        String[] nameList = imagePath.split("/");
-        String imageName = nameList[nameList.length - 1];
+    // public static void setSizeAfterLoad(String imagePath, Integer size, boolean
+    // isSquare) {
+    // String[] nameList = imagePath.split("/");
+    // String imageName = nameList[nameList.length - 1];
 
-        String[] ListImageName = imageName.split("/");
-        String fileName = ImageData.IMAGE_PATH + "/" + size + "/" + ListImageName[ListImageName.length - 1];
-        FileHandle fh = new FileHandle(fileName);
+    // String[] ListImageName = imageName.split("/");
+    // String fileName = ImageData.IMAGE_PATH + "/" + size + "/" +
+    // ListImageName[ListImageName.length - 1];
+    // FileHandle fh = new FileHandle(fileName);
 
-        Texture texture = MixOfImage.manager.get(imagePath, Texture.class);
+    // Texture texture = MixOfImage.manager.get(imagePath, Texture.class);
 
-        Pixmap pixmap;
-        if (isSquare) {
-            // if (texture.getHeight() > texture.getWidth()) {
-            pixmap = resize(textureToPixmap(texture), size, size, true);
-            // } else {
-            // pixmap = resize(textureToPixmap(texture), size, size, true);
+    // Pixmap pixmap;
+    // if (isSquare) {
+    // // if (texture.getHeight() > texture.getWidth()) {
+    // pixmap = resize(textureToPixmap(texture), size, size, true);
+    // // } else {
+    // // pixmap = resize(textureToPixmap(texture), size, size, true);
 
-            // }
-        } else {
-            if (texture.getHeight() > texture.getWidth()) {
-                pixmap = resize(textureToPixmap(texture), size, (int) (size * texture.getHeight() / texture.getWidth()),
-                        false);
-            } else {
-                pixmap = resize(textureToPixmap(texture), (int) (size * texture.getWidth() / texture.getHeight()), size,
-                        false);
+    // // }
+    // } else {
+    // if (texture.getHeight() > texture.getWidth()) {
+    // pixmap = resize(textureToPixmap(texture), size, (int) (size *
+    // texture.getHeight() / texture.getWidth()),
+    // false);
+    // } else {
+    // pixmap = resize(textureToPixmap(texture), (int) (size * texture.getWidth() /
+    // texture.getHeight()), size,
+    // false);
 
-            }
-        }
+    // }
+    // }
 
-        FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size);
+    // FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size);
 
-        if (!handle.exists()) {
-            handle.mkdirs();
-        }
+    // if (!handle.exists()) {
+    // handle.mkdirs();
+    // }
 
-        PixmapIO.writePNG(fh, pixmap);
-        pixmap.dispose();
+    // PixmapIO.writePNG(fh, pixmap);
+    // pixmap.dispose();
 
-    }
+    // }
 
     public static void openImageExif(String imageName, String directory) {
         FileHandle file;
