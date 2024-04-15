@@ -166,7 +166,6 @@ public class ImageEdition {
 		}
 
 		placePreviewImage(theCurrentImageName, false);
-		// TODO rotation of the images fo place and people
 		placeImageOfPeoples(currentImageName);
 		placePlusPeople();
 		placeAddPeople();
@@ -290,8 +289,7 @@ public class ImageEdition {
 		table.row();
 
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
-			table.row();
-			Main.placeImage(List.of("images/map.png", "images/outline.png"), "basic button",
+			Main.placeImage(List.of("images/map.png", "images/outline.png", "images/yes.png"), "basic button",
 					new Vector2(0, 0),
 					Main.mainStage,
 					(o) -> {
@@ -299,7 +297,25 @@ public class ImageEdition {
 						Main.openInAMap(coords);
 					}, null, null,
 					true, true, false, table, true, true, "open map");
+		} else {
+			Main.placeImage(List.of("images/map.png", "images/outline.png", "images/no.png"), "basic button",
+					new Vector2(0, 0),
+					Main.mainStage,
+					(o) -> {
+						Main.clear();
+						LocationEdition.open();
+					}, null, null,
+					true, true, false, table, true, true, "no map data");
 		}
+		Main.placeImage(List.of("images/add map.png", "images/outline.png"), "basic button",
+				new Vector2(0, 0),
+				Main.mainStage,
+				(o) -> {
+					Main.clear();
+					LocationEdition.open();
+				}, null, null,
+				true, true, false, table, true, true, "add map");
+
 		table.row();
 
 		// table.row();
@@ -884,16 +900,34 @@ public class ImageEdition {
 
 	public static void deletAnImage(ImageData imageData) {
 		FileHandle from = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageData.getName());
+		FileHandle jsonFrom = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageData.getName() + ".json");
+
 		byte[] data = from.readBytes();
 
 		FileHandle to = Gdx.files.absolute(ImageData.IMAGE_PATH + "/bin/" + imageData.getName());
+		FileHandle jsonTo = Gdx.files.absolute(ImageData.IMAGE_PATH + "/bin/" + imageData.getName() + ".json");
+
 		FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/bin");
 
 		if (!handle.exists()) {
 			handle.mkdirs();
 		}
+		if (jsonFrom.exists()) {
+			byte[] databis = jsonFrom.readBytes();
+
+			jsonTo.writeBytes(databis, false);
+			Gdx.files.absolute(jsonFrom.path()).delete();
+
+		}
 		to.writeBytes(data, false);
-		Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + imageData.getName()).delete();
+		Gdx.files.absolute(from.path()).delete();
+		for (String size : MixOfImage.squareSize) {
+			Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size + "/" + imageData.getName()).delete();
+		}
+		for (String size : MixOfImage.notSquareSize) {
+			Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size + "/" + imageData.getName()).delete();
+		}
+
 		Main.imagesData.remove(imageData);
 		ImageData.saveImagesData();
 	}
@@ -1196,7 +1230,6 @@ public class ImageEdition {
 	}
 
 	public static void render() {
-		// System.out.println("render");
 		if (TimeUtils.millis() - lastImageChange > 500) {
 			lastImageChange = TimeUtils.millis();
 
@@ -1205,7 +1238,6 @@ public class ImageEdition {
 				MixOfImage.loadImage(ImageData.IMAGE_PATH + "/" + theCurrentImageName, true, true);
 
 				Integer number = (Main.graphic.getInteger("number of preview image")) / 2 + 1;
-				// System.out.println("number" + number);
 				Integer increment = 0;
 				Integer imageIndex = Main.getImageDataIndex(theCurrentImageName);
 				Integer maxImageIndex = Main.imagesData.size() - 1;
@@ -1228,28 +1260,6 @@ public class ImageEdition {
 								false);
 					}
 				}
-
-				// for (int i = -number; i <= number; i++) {
-				// System.out.println("f");
-				// // if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" +
-				// // MixOfImage.squareSize.get(0) + "/"
-				// // + Main.imagesData.get(i +
-				// // Main.getImageDataIndex(theCurrentImageName)).getName())) {
-
-				// MixOfImage.loadImage(ImageData.IMAGE_PATH + "/" +
-				// MixOfImage.squareSize.get(0) + "/"
-				// + Main.imagesData.get(i +
-				// Main.getImageDataIndex(theCurrentImageName)).getName(),
-				// false,
-				// false);
-				// // } else {
-				// // System.out.println("not");
-				// // }
-				// System.out.println("ff");
-
-				// }
-
-				// reload(false);
 			}
 
 			if (indexLoaded < Main.graphic.getInteger("number of preview image")) {

@@ -1,6 +1,7 @@
 package photoapp.main.windows;
 
 import java.io.File;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -162,13 +163,13 @@ public class LoadImage {
                                 ImageData.IMAGE_PATH + "/" + 100,
                                 Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(1),
                                 imageName,
-                                100, false, false);
+                                100, true, false);
                         MixOfImage.createAnImage(Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(0) + "/"
                                 + Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(2),
                                 ImageData.IMAGE_PATH + "/" + 10,
                                 Main.departurePathAndImageNameAndFolder(toLoad.get(i)).get(1),
                                 imageName,
-                                10, false, false);
+                                10, true, false);
 
                         // setSizeAfterLoad(toLoad.get(i), 150, false);
                         // setSizeAfterLoad(toLoad.get(i), 100, true);
@@ -293,19 +294,26 @@ public class LoadImage {
         }
     }
 
+    protected static String normalizeUnicode(String str) {
+        Normalizer.Form form = Normalizer.Form.NFD;
+        if (!Normalizer.isNormalized(str, form)) {
+            return Normalizer.normalize(str, form);
+        }
+        return str;
+    }
+
     public static void openImageOfAFile(File dir) {
 
         File[] liste = dir.listFiles();
         if (liste != null) {
             for (File item : liste) {
-
                 if (item.isFile()) {
                     Main.infoText = "import of images : " + numberOfLoadedImages
                             + "/" + numberOfImagesToLoad;
+                    String itemName = Main.departurePathAndImageNameAndFolder(item.getPath().replace("\\", "/")).get(1);
+                    if (Main.isAnImage(itemName)) {
 
-                    if (Main.isAnImage(item.getName())) {
-                        System.err.println("add  : " + (dir + "/" + item.getName()).replace("\\", "/"));
-                        toLoad.add((dir + "/" + item.getName()).replace("\\", "/"));
+                        toLoad.add((dir + "/" + itemName).replace("\\", "/"));
                         numberOfLoadedImages += 1;
                     }
                 } else if (item.isDirectory()) {
@@ -333,9 +341,9 @@ public class LoadImage {
         openImageExif(dir.getName(), dir.getParentFile().toString());
         MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/150", dir.getName(), dir.getName(), 150, false,
                 false);
-        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), dir.getName(), 100, false,
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/100", dir.getName(), dir.getName(), 100, true,
                 false);
-        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/10", dir.getName(), dir.getName(), 10, false, false);
+        MixOfImage.createAnImage(dir.getPath(), dir.getPath() + "/10", dir.getName(), dir.getName(), 10, true, false);
 
         MixOfImage.manager.finishLoading();
         clear();
@@ -358,6 +366,8 @@ public class LoadImage {
 
                         FileHandle to = Gdx.files.absolute(fileRessource + "/" + imageName);
                         to.writeBytes(data, false);
+                        Main.changeDate(ImageData.IMAGE_PATH + "/" + imageName, fileRessource + "/" + imageName);
+                        System.out.println("change date");
                     }
                     Main.infoText = "export done";
                 }, null);
@@ -458,6 +468,7 @@ public class LoadImage {
                 } else if (geoDataExif_latitude != 0.0 && geoDataExif_longitude != 0.0) {
                     float[] listCoord = { geoDataExif_latitude, geoDataExif_longitude };
                     coords = processCoordinates(listCoord);
+
                 }
 
                 if (favorited) {
@@ -486,9 +497,9 @@ public class LoadImage {
 
             }
             Metadata metadata = null;
-            // System.out.println(file);
             if (file.read() != null) {
                 metadata = ImageMetadataReader.readMetadata(file.read());
+
             }
             if (metadata != null) {
 
@@ -547,8 +558,8 @@ public class LoadImage {
             if (imageData.getRotation() == 0) {
                 imageData.setRotation(rotation);
             }
+            if (imageData.getCoords() == null) {
 
-            if (imageData.getCoords() == "") {
                 imageData.setCoords(coords);
             }
 
@@ -577,10 +588,11 @@ public class LoadImage {
             addImageData(imageData);
 
         } catch (Exception e) {
-            for (StackTraceElement trace : e.getStackTrace()) {
-                Gdx.app.error("openImageExif", trace.toString());
-            }
             Main.error("openImageExif", e);
+            // for (StackTraceElement trace : e.getStackTrace()) {
+            // Gdx.app.error("openImageExif", trace.toString());
+            // }
+            // Main.error("openImageExif", e);
 
         }
     }
@@ -620,6 +632,7 @@ public class LoadImage {
     private static String processCoordinates(float[] coordinates) {
         String[] ORIENTATIONS = "N/S/E/W".split("/");
         String converted0 = decimalToDMS(coordinates[1]);
+
         final String dmsLat = coordinates[0] > 0 ? ORIENTATIONS[0] : ORIENTATIONS[1];
         converted0 = converted0.concat("_").concat(dmsLat);
 
@@ -677,7 +690,7 @@ public class LoadImage {
             intPart *= -1;
         String seconds = String.valueOf(intPart);
         String output = Math.abs(Integer.parseInt(degrees)) + "° " + minutes + "' " + seconds + "\" ";
-
+        // .println("fist coords : " + output);
         return output;
     }
 

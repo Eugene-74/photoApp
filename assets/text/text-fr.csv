@@ -11,6 +11,8 @@ delete image:Suprimer l'image (crtl + D)
 rotate right:Tourner l'image vers la droite (90°)
 rotate left:Tourner l'image vers la gauche (90°)
 open map:Ouvrir une carte avec la localisation de l'image
+no map data:Il n'y a pas de donnée de localisation
+add map:Changer/ajouter la localisation
 add people:Ajouter une personne
 add place:Ajouter un lieu
 more people:Voire plus de personnes

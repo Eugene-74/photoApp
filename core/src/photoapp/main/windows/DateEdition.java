@@ -42,12 +42,12 @@ public class DateEdition {
                                 Gdx.graphics.getWidth() / 2,
                                 Gdx.graphics.getHeight() / 2);
 
-                day = new TextField("trying", Main.skinTextField);
-                month = new TextField("trying", Main.skinTextField);
-                year = new TextField("trying", Main.skinTextField);
-                hour = new TextField("trying", Main.skinTextField);
-                min = new TextField("trying", Main.skinTextField);
-                s = new TextField("trying", Main.skinTextField);
+                day = new TextField("00", Main.skinTextField);
+                month = new TextField("00", Main.skinTextField);
+                year = new TextField("0000", Main.skinTextField);
+                hour = new TextField("00", Main.skinTextField);
+                min = new TextField("00", Main.skinTextField);
+                s = new TextField("00", Main.skinTextField);
                 label = new Label(" ", Main.skinTextField);
         }
 

@@ -1,11 +1,13 @@
 package photoapp.main;
 
 import java.awt.Desktop;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Timestamp;
@@ -19,12 +21,22 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.commons.imaging.common.ImageMetadata;
+import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
+import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
+import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
+import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
+import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
@@ -62,6 +74,7 @@ import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
 import photoapp.main.windows.Keybord;
 import photoapp.main.windows.LoadImage;
+import photoapp.main.windows.LocationEdition;
 import photoapp.main.windows.MainImages;
 import photoapp.main.windows.Parameter;
 
@@ -247,6 +260,7 @@ public class Main extends ApplicationAdapter {
 
 	@Override
 	public void create() {
+
 		graphic = Gdx.app.getPreferences("graphic params");
 		MixOfImage.ini();
 
@@ -296,11 +310,109 @@ public class Main extends ApplicationAdapter {
 		BigPreview.create();
 		EnterValue.create();
 		DateEdition.create();
+		LocationEdition.create();
 
 		createInfoTable();
 
 		FileChooser.open();
 
+	}
+
+	public static void changeDate(String departurePath, String arrivalPath) {
+		// try {
+		File jpegImageFile = new File(departurePath);
+		File destinationFile = new File(arrivalPath);
+		try (FileOutputStream fos = new FileOutputStream(destinationFile);
+				OutputStream os = new BufferedOutputStream(fos)) {
+
+			TiffOutputSet outputSet = null;
+
+			// note that metadata might be null if no metadata is found.
+
+			final ImageMetadata metadata = Imaging.getMetadata(jpegImageFile);
+			final JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
+			String imageName = Main.departurePathAndImageNameAndFolder(departurePath).get(1);
+
+			ImageData imageData = ImageData
+					.getImageDataIfExist(imageName);
+
+			if (null != jpegMetadata) {
+				// note that exif might be null if no Exif metadata is found.
+				final TiffImageMetadata exif = jpegMetadata.getExif();
+
+				if (null != exif) {
+					// TiffImageMetadata class is immutable (read-only).
+					// TiffOutputSet class represents the Exif data to write.
+					//
+					// Usually, we want to update existing Exif metadata by
+					// changing
+					// the values of a few fields, or adding a field.
+					// In these cases, it is easiest to use getOutputSet() to
+					// start with a "copy" of the fields read from the image.
+					outputSet = exif.getOutputSet();
+				}
+			}
+
+			// if file does not contain any exif metadata, we create an empty
+			// set of exif metadata. Otherwise, we keep all of the other
+			// existing tags.
+			if (null == outputSet) {
+				outputSet = new TiffOutputSet();
+			}
+
+			{
+
+				TiffOutputDirectory exifDir = outputSet.getOrCreateExifDirectory();
+
+				if (imageData != null) {
+
+					if (imageData.getDate() != null) {
+						exifDir.removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL);
+						exifDir.add(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
+								imageData.getDate());
+					}
+					if (!imageData.getCoords().equals("") && imageData.getCoords() != null) {
+
+						String[] coords = imageData.getCoords().split(":");
+
+						String[] latt = coords[0].split("_");
+
+						String[] latitude = latt[0].replace("-", "").replace("°", "").replace("'", "")
+								.replace("\"", "").replace(",", ".").split(" ");
+						Float lat = Math.abs(Float.parseFloat(latitude[0]))
+								+ Math.abs(Float.parseFloat(latitude[1]) / 60)
+								+ Math.abs(Float.parseFloat(latitude[2]) / 3600);
+						if (coords[0].endsWith("S")) {
+							lat = -lat;
+						}
+
+						String[] lonn = coords[1].split("_");
+						String[] longitude = lonn[0].replace("-", "").replace("°", "").replace("'", "")
+								.replace("\"", "").replace(",", ".").split(" ");
+						Float lon = Math.abs(Float.parseFloat(longitude[0]))
+								+ Math.abs(Float.parseFloat(longitude[1]) / 60)
+								+ Math.abs(Float.parseFloat(longitude[2]) / 3600);
+						if (coords[1].endsWith("W")) {
+							lon = -lon;
+						}
+
+						outputSet.setGPSInDegrees(lon, lat);
+					}
+				}
+
+			}
+
+			new ExifRewriter().updateExifMetadataLossless(jpegImageFile, os, outputSet);
+		} catch (ImageWriteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ImageReadException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public static void createMultiplexer() {
@@ -523,7 +635,6 @@ public class Main extends ApplicationAdapter {
 		if (Main.getCurrentImageData(ListImageName[ListImageName.length - 1]) != null) {
 
 			rotation = Main.getCurrentImageData(ListImageName[ListImageName.length - 1]).getRotation();
-			// System.out.println("rotation : " + rotation);
 		}
 
 		if (setSize) {
@@ -534,14 +645,8 @@ public class Main extends ApplicationAdapter {
 						isSquare);
 
 			} else {
-				// if (rotation == 90 || rotation == 270) {
-				// // System.out.println("rotation !!!");
-				// height = graphic.getInteger("size of " + prefSizeName + " height");
-				// width = graphic.getInteger("size of " + prefSizeName + " width");
-				// } else {
 				width = graphic.getInteger("size of " + prefSizeName + " height");
 				height = graphic.getInteger("size of " + prefSizeName + " width");
-				// }
 
 				mixOfImages = new MixOfImage(imageNames, width, height, prefSizeName,
 						force,
@@ -898,14 +1003,29 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			return;
 		} else {
-			InputStream infos = handle.read();
-			@SuppressWarnings("resource")
-			String infosString = new BufferedReader(new InputStreamReader(infos))
-					.lines().collect(Collectors.joining("\n"));
-			if (infosString.equals("") || infosString.equals("\n")) {
-				return;
+			ArrayList<String> imagesInfo = new ArrayList<String>();
+			File f = new File(ImageData.PEOPLE_SAVE_PATH);
+			FileReader fr;
+			try {
+				fr = new FileReader(f);
+
+				BufferedReader br = new BufferedReader(fr);
+
+				String strng;
+
+				while ((strng = br.readLine()) != null) {
+					imagesInfo.add(strng);
+				}
+
+				br.close();
+
+				if (imagesInfo.isEmpty()) {
+					return;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
 				peopleData.put(inf[0], Integer.parseInt(inf[1]));
@@ -921,14 +1041,29 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			return;
 		} else {
-			InputStream infos = handle.read();
-			@SuppressWarnings("resource")
-			String infosString = new BufferedReader(new InputStreamReader(infos))
-					.lines().collect(Collectors.joining("\n"));
-			if (infosString.equals("") || infosString.equals("\n")) {
-				return;
+			ArrayList<String> imagesInfo = new ArrayList<String>();
+			File f = new File(ImageData.PLACE_SAVE_PATH);
+			FileReader fr;
+			try {
+				fr = new FileReader(f);
+
+				BufferedReader br = new BufferedReader(fr);
+
+				String strng;
+
+				while ((strng = br.readLine()) != null) {
+					imagesInfo.add(strng);
+				}
+
+				br.close();
+
+				if (imagesInfo.isEmpty()) {
+					return;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
 
@@ -948,14 +1083,29 @@ public class Main extends ApplicationAdapter {
 		if (!handle.exists()) {
 			return;
 		} else {
-			InputStream infos = handle.read();
-			@SuppressWarnings("resource")
-			String infosString = new BufferedReader(new InputStreamReader(infos))
-					.lines().collect(Collectors.joining("\n"));
-			if (infosString.equals("") || infosString.equals("\n")) {
-				return;
+			ArrayList<String> imagesInfo = new ArrayList<String>();
+			File f = new File(ImageData.PLACE_SAVE_PATH);
+			FileReader fr;
+			try {
+				fr = new FileReader(f);
+
+				BufferedReader br = new BufferedReader(fr);
+
+				String strng;
+
+				while ((strng = br.readLine()) != null) {
+					imagesInfo.add(strng);
+				}
+
+				br.close();
+
+				if (imagesInfo.isEmpty()) {
+					return;
+				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			String[] imagesInfo = infosString.split("\n");
 			for (String imageInfo : imagesInfo) {
 				String[] inf = imageInfo.split(":");
 
@@ -1039,7 +1189,7 @@ public class Main extends ApplicationAdapter {
 
 			String[] latt = coords[0].split("_");
 			if (coords[0].charAt(0) == '-') {
-				minusLon = true;
+				minusLat = true;
 			}
 			String[] latitude = latt[0].replace("-", "").replace("°", "").replace("'", "")
 					.replace("\"", "").replace(",", ".").split(" ");
@@ -1077,10 +1227,8 @@ public class Main extends ApplicationAdapter {
 							+ "," + zoom + "z?entry=ttu"));
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -1095,18 +1243,6 @@ public class Main extends ApplicationAdapter {
 		nameWithoutFolder += ListImageName[ListImageName.length - 1];
 		return nameWithoutFolder;
 	}
-
-	/**
-	 * Given a decimal longitudinal coordinate such as <i>-79.982195</i> it will
-	 * be necessary to know whether it is a latitudinal or longitudinal
-	 * coordinate in order to fully convert it.
-	 * 
-	 * @param coord
-	 *              coordinate in decimal format
-	 * @return coordinate in D°M′S″ format
-	 * @see <a href='https://goo.gl/pWVp60'>Geographic coordinate conversion
-	 *      (wikipedia)</a>
-	 */
 
 	public static <K, V extends Comparable<? super V>> SortedSet<Map.Entry<K, V>> entriesSortedByValues(Map<K, V> map,
 			Boolean reverse) {

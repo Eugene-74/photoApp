@@ -11,6 +11,8 @@ delete image:Delete the current image (crtl + D)
 rotate right:Turn the image to the right (90°)
 rotate left:Turn the image to the left (90°)
 open map:Open the map with location of the image
+no map data:There is no map data
+add map:Edit/add the location
 add people:Add one person
 add place:Add one place
 more people:See more peoples

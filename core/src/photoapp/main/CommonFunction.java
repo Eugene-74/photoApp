@@ -5,6 +5,7 @@ import photoapp.main.windows.DateEdition;
 import photoapp.main.windows.EnterValue;
 import photoapp.main.windows.FileChooser;
 import photoapp.main.windows.ImageEdition;
+import photoapp.main.windows.LocationEdition;
 import photoapp.main.windows.MainImages;
 import photoapp.main.windows.Parameter;
 
@@ -44,6 +45,9 @@ public class CommonFunction {
             ImageEdition.open(ImageEdition.theCurrentImageName, true);
         } else if (Main.windowOpen.equals("EnterValue")) {
             EnterValue.clear();
+            ImageEdition.open(ImageEdition.theCurrentImageName, true);
+        } else if (Main.windowOpen.equals("LocationEdition")) {
+            LocationEdition.clear();
             ImageEdition.open(ImageEdition.theCurrentImageName, true);
         }
     }

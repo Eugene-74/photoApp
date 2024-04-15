@@ -170,7 +170,7 @@ public class MixOfImage extends Group {
             if (!Gdx.files.internal(imagePath).exists()) {
                 Gdx.app.error(fileName.path(), "Do not exist");
 
-                Main.infoTextSet("need to load image due to an error of loading", true);
+                Main.infoTextSet("image Do not exist", true);
                 if (folder.equals("150")
                         || folder.equals("100")
                         || folder.equals("10")) {
@@ -224,10 +224,16 @@ public class MixOfImage extends Group {
 
                     if (rotation == 90
                             || rotation == 270) {
-                        Float w = image.getWidth();
-                        Float h = image.getHeight();
-                        setWidth(Main.graphic.getInteger("size of main image height"));
-                        setHeight(Main.graphic.getInteger("size of main image height") * h / w);
+                        if (isSquare) {
+                            setWidth(image.getWidth());
+                            setHeight(image.getHeight());
+                        } else {
+
+                            Float w = image.getWidth();
+                            Float h = image.getHeight();
+                            setWidth(Main.graphic.getInteger("size of main image height"));
+                            setHeight(Main.graphic.getInteger("size of main image height") * h / w);
+                        }
 
                     } else {
                         setWidth(image.getWidth());

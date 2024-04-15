@@ -18,17 +18,18 @@ public class Keybord implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
-        // System.out.println(keycode);
         if (crtl) {
         }
         if ((keycode == Keys.LEFT) || keycode == Keys.UP
                 || keycode == Input.Keys.Z) {
             previousDown = true;
+            lastTime = TimeUtils.millis();
             previous();
             index = 0;
         } else if ((keycode == Keys.RIGHT || keycode == Keys.DOWN
                 || keycode == Keys.S)) {
             nextDown = true;
+            lastTime = TimeUtils.millis();
             next();
             index = 0;
 
@@ -153,7 +154,7 @@ public class Keybord implements InputProcessor {
     }
 
     public static void render() {
-        if (TimeUtils.millis() - lastTime > 500 && index <= 2) {
+        if (TimeUtils.millis() - lastTime > 1000 && index <= 1) {
             if (previousDown) {
                 previous();
             } else if (nextDown) {
@@ -161,16 +162,7 @@ public class Keybord implements InputProcessor {
             }
             lastTime = TimeUtils.millis();
             index += 1;
-        } else if (TimeUtils.millis() - lastTime > 300 && index <= 5) {
-            if (previousDown) {
-                previous();
-            } else if (nextDown) {
-                next();
-            }
-            lastTime = TimeUtils.millis();
-            index += 1;
-
-        } else if (TimeUtils.millis() - lastTime > 200 && index <= 10) {
+        } else if (TimeUtils.millis() - lastTime > 500 && index <= 5) {
             if (previousDown) {
                 previous();
             } else if (nextDown) {
@@ -179,7 +171,25 @@ public class Keybord implements InputProcessor {
             lastTime = TimeUtils.millis();
             index += 1;
 
-        } else if (TimeUtils.millis() - lastTime > 100 && index > 10) {
+        } else if (TimeUtils.millis() - lastTime > 300 && index <= 10) {
+            if (previousDown) {
+                previous();
+            } else if (nextDown) {
+                next();
+            }
+            lastTime = TimeUtils.millis();
+            index += 1;
+
+        } else if (TimeUtils.millis() - lastTime > 200 && index <= 20) {
+            if (previousDown) {
+                previous();
+            } else if (nextDown) {
+                next();
+            }
+            lastTime = TimeUtils.millis();
+            index += 1;
+
+        } else if (TimeUtils.millis() - lastTime > 100 && index > 20) {
             if (previousDown) {
                 previous();
             } else if (nextDown) {

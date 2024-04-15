@@ -26,7 +26,6 @@ public class EnterValue {
     }
 
     private static void open(String name, final Consumer<Object> after) {
-        // TODO the 2 text are on each other
         label.setText(name);
 
         txtValue.setText("name");

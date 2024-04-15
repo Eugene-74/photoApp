@@ -2,13 +2,13 @@ package photoapp.main.storage;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -17,6 +17,7 @@ import photoapp.main.Main;
 import photoapp.main.windows.LoadImage;
 
 public class ImageData {
+
     public final static String SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/save.csv";
     public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/people.csv";
     public final static String PLACE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/place.csv";
@@ -107,7 +108,6 @@ public class ImageData {
 
                     data.put("date", date);
                 }
-                // TODAY return Main.timestampToDate(TimeUtils.millis() / 1000);
 
             }
             return this;
@@ -312,6 +312,7 @@ public class ImageData {
             if (data != null) {
 
                 if (coords != "" && coords != null) {
+                    // System.err.println("set coord : " + coords);
                     data.put("coords", coords);
                 } else {
                     data.put("coords", "");
@@ -327,6 +328,7 @@ public class ImageData {
     public String getCoords() {
         try {
             if (data != null) {
+                // System.out.println("coooord" + data.get("coords"));
                 return (String) data.get("coords");
             }
             return "";
@@ -417,16 +419,23 @@ public class ImageData {
             if (!handle.exists()) {
                 return;
             } else {
-                InputStream infos = handle.read();
-                @SuppressWarnings("resource")
-                String infosString = new BufferedReader(new InputStreamReader(infos))
-                        .lines().collect(Collectors.joining("\n"));
-                if (infosString.equals("") || infosString.equals("\n")) {
+                ArrayList<String> imagesInfo = new ArrayList<String>();
+                File f = new File(SAVE_PATH);
+                FileReader fr = new FileReader(f);
+                BufferedReader br = new BufferedReader(fr);
+
+                String strng;
+                while ((strng = br.readLine()) != null) {
+                    imagesInfo.add(strng);
+                }
+
+                br.close();
+
+                if (imagesInfo.isEmpty()) {
                     return;
                 }
-                String[] imagesInfo = infosString.split("\n");
                 for (String imageInfo : imagesInfo) {
-
+                    // System.out.println(imageInfo + "info");
                     String[] category = imageInfo.split(";");
                     Integer i = 0;
                     for (String cat : category) {
