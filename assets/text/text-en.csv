@@ -25,7 +25,7 @@ refresh:Refresh the windows
 save:Save all the modification
 back:Go back
 export all files:Export all the images
-export fil image:Export the current file of images
+export:Export image of this file
 allFile:Open All the images
 add a file:Create a new file
 info:Enable/disable the information

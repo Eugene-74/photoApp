@@ -367,7 +367,6 @@ public class LoadImage {
                         FileHandle to = Gdx.files.absolute(fileRessource + "/" + imageName);
                         to.writeBytes(data, false);
                         Main.changeDate(ImageData.IMAGE_PATH + "/" + imageName, fileRessource + "/" + imageName);
-                        System.out.println("change date");
                     }
                     Main.infoText = "export done";
                 }, null);

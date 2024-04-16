@@ -200,7 +200,7 @@ public class LocationEdition {
                 (o) -> {
                     try {
                         Integer.parseInt(latitude1.getText());
-                        if (latitude1.getText().length() != 2) {
+                        if (latitude1.getText().length() != 2 && latitude1.getText().length() != 1) {
                             latitude1.setText("00");
 
                         } else {
@@ -212,7 +212,7 @@ public class LocationEdition {
                     }
                     try {
                         Integer.parseInt(latitude2.getText());
-                        if (latitude2.getText().length() != 2) {
+                        if (latitude2.getText().length() != 2 && latitude2.getText().length() != 1) {
                             latitude2.setText("00");
 
                         } else {
@@ -228,9 +228,9 @@ public class LocationEdition {
                         Integer.parseInt(latitude3.getText().split(",")[0]);
                         Integer.parseInt(latitude3.getText().split(",")[1]);
 
-                        if (latitude3.getText().length() != 5) {
+                        if (latitude3.getText().length() < 1 || latitude3.getText().length() > 6) {
 
-                            latitude3.setText("00,00");
+                            latitude3.setText("00,000");
 
                         } else {
                             isLatitude3 = true;
@@ -238,7 +238,7 @@ public class LocationEdition {
                     } catch (Exception e) {
                         System.out.println("err 3");
 
-                        latitude3.setText("00,00");
+                        latitude3.setText("00,000");
                     }
                     try {
                         // Integer.parseInt(latitude4.getText());
@@ -255,7 +255,7 @@ public class LocationEdition {
                     }
                     try {
                         Integer.parseInt(longitude1.getText());
-                        if (longitude1.getText().length() != 2) {
+                        if (longitude1.getText().length() != 2 && longitude1.getText().length() != 1) {
                             longitude1.setText("00");
 
                         } else {
@@ -267,7 +267,7 @@ public class LocationEdition {
                     }
                     try {
                         Integer.parseInt(longitude2.getText());
-                        if (longitude2.getText().length() != 2) {
+                        if (longitude2.getText().length() != 1 && longitude2.getText().length() != 2) {
                             longitude2.setText("00");
 
                         } else {
@@ -282,9 +282,9 @@ public class LocationEdition {
                     try {
                         Integer.parseInt(longitude3.getText().split(",")[0]);
                         Integer.parseInt(longitude3.getText().split(",")[1]);
-                        if (longitude3.getText().length() != 5) {
+                        if (longitude3.getText().length() < 1 || longitude3.getText().length() > 6) {
 
-                            longitude3.setText("00,00");
+                            longitude3.setText("00,000");
 
                         } else {
                             isLongitude3 = true;
@@ -307,15 +307,6 @@ public class LocationEdition {
 
                         longitude4.setText("W");
                     }
-                    // System.out.println("test");
-                    // System.out.println(isLatitude1);
-                    // System.out.println(isLatitude2);
-                    // System.out.println(isLatitude3);
-                    // System.out.println(isLatitude4);
-                    // System.out.println(isLongitude1);
-                    // System.out.println(isLongitude2);
-                    // System.out.println(isLongitude3);
-                    // System.out.println(isLongitude4);
 
                     if (isLatitude1 && isLatitude2 && isLatitude3 && isLatitude4 && isLongitude1 && isLongitude2
                             && isLongitude3 && isLongitude4) {
@@ -330,7 +321,6 @@ public class LocationEdition {
                         lon += longitude4.getText();
 
                         String coords = lat + ":" + lon;
-                        // System.out.println("coord : " + coords);
                         ImageData.getImageDataIfExist(ImageEdition.theCurrentImageName)
                                 .setCoords(coords);
                         clear();

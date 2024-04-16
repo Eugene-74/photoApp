@@ -285,7 +285,7 @@ public class Main extends ApplicationAdapter {
 		}
 		createMultiplexer();
 
-		createCloseButton();
+		// createCloseButton();
 		createLinkButton();
 
 		createSizeTable();
@@ -368,8 +368,11 @@ public class Main extends ApplicationAdapter {
 
 					if (imageData.getDate() != null) {
 						exifDir.removeField(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL);
+
 						exifDir.add(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
 								imageData.getDate());
+						System.out.println("date save succefully : " + imageData.getDate());
+						// marche pas bien !!!
 					}
 					if (!imageData.getCoords().equals("") && imageData.getCoords() != null) {
 
@@ -793,17 +796,20 @@ public class Main extends ApplicationAdapter {
 		return false;
 	}
 
-	public void createCloseButton() {
-		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
-				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
-						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button", 50)),
-				mainStage,
-				(o) -> {
-					System.out.println("closing");
-					dispose();
-					System.exit(0);
-				}, null, null, true, false, false, ImageEdition.table, true, true, "close");
-	}
+	// public void createCloseButton() {
+	// placeImage(List.of("images/round outline.png", "images/close.png"), "close
+	// button",
+	// new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close
+	// button", 50),
+	// Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
+	// 50)),
+	// mainStage,
+	// (o) -> {
+	// System.out.println("closing");
+	// dispose();
+	// System.exit(0);
+	// }, null, null, true, false, false, ImageEdition.table, true, true, "close");
+	// }
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
 		if (imagesData != null) {
