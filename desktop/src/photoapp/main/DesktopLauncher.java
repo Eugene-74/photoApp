@@ -18,8 +18,8 @@ public class DesktopLauncher {
 		config.setForegroundFPS(24);
 		config.setMaximized(true);
 
-		config.setDecorated(true);
-		config.setResizable(true);
+		config.setDecorated(false);
+		config.setResizable(false);
 		config.setInitialBackgroundColor(Color.BLACK);
 		config.setWindowIcon("images/icon.png");
 

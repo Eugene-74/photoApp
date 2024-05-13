@@ -22,6 +22,7 @@ public class ImageData {
     public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/people.csv";
     public final static String PLACE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/place.csv";
     public final static String FILE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/file.csv";
+    public final static String ICON_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/icon";
 
     public final static String TEXT_PATH = "text/text-";
 

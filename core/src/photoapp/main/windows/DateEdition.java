@@ -55,8 +55,6 @@ public class DateEdition {
                 Main.clear();
                 Main.windowOpen = "DateEdition";
 
-                // CommonButton.createBack(mainTable);
-
                 label.setText("date : ");
                 ImageData imageData = ImageData.getImageDataIfExist(ImageEdition.theCurrentImageName);
                 String[] dateSplit = imageData.getDate().split(" ");
@@ -122,7 +120,7 @@ public class DateEdition {
 
                 Main.mainStage.addActor(textTable);
                 Main.mainStage.addActor(validationTable);
-                Main.placeImage(java.util.List.of("images/selected.png"), "basic button",
+                Main.placeImage(java.util.List.of("images/isSelected.png"), "basic button",
                                 new Vector2(0, 0),
                                 Main.mainStage,
                                 (o) -> {

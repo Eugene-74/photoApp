@@ -216,47 +216,7 @@ public class LoadImage {
 
     public static void openFile() {
         numberOfImagesToLoad = 0;
-        // thread = new Thread() {
-        // @Override
-        // public void run() {
-        // JFileChooser chooser = new JFileChooser();
-        // chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        // JFrame f = new JFrame();
-        // f.setVisible(true);
-        // f.toFront();
-        // f.setVisible(false);
-        // int res = chooser.showSaveDialog(f);
-        // f.dispose();
-        // File fileRessource = null;
-        // if (res == JFileChooser.APPROVE_OPTION) {
-        // if (chooser.getSelectedFile() != null) {
-        // fileRessource = chooser.getSelectedFile();
-        // if (Main.isAnImage(fileRessource.toString())) {
-        // numberOfImagesToLoad = 1;
-        // time = TimeUtils.millis();
-        // openImageInAFile(fileRessource);
-        // } else {
-        // time = TimeUtils.millis();
-        // countImageToLoad(fileRessource);
-        // openImageOfAFile(fileRessource);
 
-        // }
-
-        // }
-        // f.dispose();
-
-        // } else {
-        // f.dispose();
-        // clear();
-        // // Main.win
-        // Main.windowOpen = "MainImages";
-        // Main.openWindow = true;
-        // // MainImages.open();
-        // return;
-        // }
-        // }
-        // };
-        // thread.start();
         Main.openFile(JFileChooser.FILES_AND_DIRECTORIES,
                 (fileRessource) -> {
                     if (Main.isAnImage(fileRessource.toString())) {

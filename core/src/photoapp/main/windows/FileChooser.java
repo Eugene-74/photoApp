@@ -17,12 +17,12 @@ public class FileChooser {
 
     public static Table fileTable;
     public static Table addFileTable;
-    public static Table buttonTable;
+    // public static Table buttonTable;
 
     public static void create() {
 
         createFileTable();
-        createButtonTable();
+        // createButtonTable();
 
     }
 
@@ -30,7 +30,7 @@ public class FileChooser {
         Main.windowOpen = "FileChooser";
 
         Main.mainStage.addActor(fileTable);
-        Main.mainStage.addActor(buttonTable);
+        // Main.mainStage.addActor(Main.mainTable);
         placeFileChooserButton();
 
     }
@@ -42,7 +42,7 @@ public class FileChooser {
 
     public static void clear() {
         fileTable.clear();
-        buttonTable.clear();
+        Main.mainTable.clear();
     }
 
     public static void createFileTable() {
@@ -56,17 +56,18 @@ public class FileChooser {
                 Gdx.graphics.getHeight() - fileTable.getHeight() - Main.graphic.getInteger("border"));
     }
 
-    public static void createButtonTable() {
-        buttonTable = new Table();
+    // public static void createButtonTable() {
+    // buttonTable = new Table();
 
-        buttonTable.setSize(
-                Gdx.graphics.getWidth() - Main.graphic.getInteger("size of full width")
-                        - Main.graphic.getInteger("border") * 3,
-                Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
-        buttonTable.setPosition(
-                Main.graphic.getInteger("size of full width") + Main.graphic.getInteger("border") * 2,
-                Main.graphic.getInteger("border"));
-    }
+    // buttonTable.setSize(
+    // Gdx.graphics.getWidth() - Main.graphic.getInteger("size of full width")
+    // - Main.graphic.getInteger("border") * 3,
+    // Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
+    // buttonTable.setPosition(
+    // Main.graphic.getInteger("size of full width") +
+    // Main.graphic.getInteger("border") * 2,
+    // Main.graphic.getInteger("border"));
+    // }
 
     public static void openFile(String name) {
         Main.imagesData = new ArrayList<ImageData>();
@@ -76,7 +77,7 @@ public class FileChooser {
     }
 
     public static void placeButton() {
-        Main.placeImage(List.of("images/addFile.png", "images/outline.png"),
+        Main.placeImage(List.of("images/addFile.png"),
                 "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
@@ -89,22 +90,18 @@ public class FileChooser {
 
                     }, "enter the file name : ");
                 }, null, null,
-                true, true, false, buttonTable, true, true, "add a file");
+                true, true, false, Main.mainTable, true, true, "add a file");
 
-        buttonTable.row();
-
-        Main.placeImage(List.of("images/openParameter.png", "images/outline.png"), "basic button",
+        Main.placeImage(List.of("images/openParameter.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
                     Parameter.open();
                     clear();
                 }, null, null,
-                true, true, false, buttonTable, true, true, "open parameter");
+                true, true, false, Main.mainTable, true, true, "open parameter");
 
-        buttonTable.row();
-
-        CommonButton.createExport(buttonTable, null, "export all files");
+        CommonButton.createExport(Main.mainTable, null, "export all files");
     }
 
     public static void addAFile(String name) {
@@ -132,7 +129,7 @@ public class FileChooser {
             Integer index = 0;
             List<String> names = new ArrayList<String>();
 
-            Main.placeImage(List.of("images/allFile.png", "images/outline.png"),
+            Main.placeImage(List.of("images/allFile.png"),
                     "full button",
                     new Vector2(0, 0),
                     Main.mainStage,

@@ -7,7 +7,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-import photoapp.main.CommonButton;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 
@@ -23,7 +22,6 @@ public class Parameter {
     public static void open() {
         Main.windowOpen = "Parameter";
         placeParameterButton();
-        placeMainParameterButton();
     }
 
     public static void reload() {
@@ -38,10 +36,6 @@ public class Parameter {
         mainTableParameter.clear();
         parameterTable.clear();
 
-    }
-
-    public static void placeMainParameterButton() {
-        CommonButton.createBack(mainTableParameter);
     }
 
     public static void placeParameterButton() {
@@ -88,12 +82,16 @@ public class Parameter {
                     if (Main.graphic.getBoolean("option darkmode", true)) {
                         Main.graphic.putBoolean("option darkmode", false);
                         Main.darkMode = false;
+                        Main.iniImage();
+
                         reload();
                     } else {
                         Main.graphic.putBoolean("option darkmode", true);
                         Main.graphic.putBoolean("option brightmode", false);
                         Main.darkMode = true;
                         Main.brightMode = false;
+                        Main.iniImage();
+
                         reload();
 
                     }
@@ -101,35 +99,35 @@ public class Parameter {
                 }, null, null,
                 true, true, false, parameterTable, true, true, "dark mode");
 
-        List<String> brightmodeList = new ArrayList<String>();
-        brightmodeList.add("images/mode.png");
-        brightmodeList.add("images/outline.png");
-        if (Main.graphic.getBoolean("option brightmode", false)) {
-            brightmodeList.add("images/yes.png");
-        } else {
-            brightmodeList.add("images/no.png");
+        // List<String> brightmodeList = new ArrayList<String>();
+        // brightmodeList.add("images/mode.png");
+        // brightmodeList.add("images/outline.png");
+        // if (Main.graphic.getBoolean("option brightmode", false)) {
+        // brightmodeList.add("images/yes.png");
+        // } else {
+        // brightmodeList.add("images/no.png");
 
-        }
+        // }
 
-        Main.placeImage(brightmodeList, "basic button",
-                new Vector2(0, 0),
-                Main.mainStage,
-                (o) -> {
-                    if (Main.graphic.getBoolean("option brightmode", true)) {
-                        Main.graphic.putBoolean("option brightmode", false);
-                        Main.brightMode = false;
-                        reload();
-                    } else {
-                        Main.graphic.putBoolean("option brightmode", true);
-                        Main.graphic.putBoolean("option darkmode", false);
-                        Main.brightMode = true;
-                        Main.darkMode = false;
-                        reload();
+        // Main.placeImage(brightmodeList, "basic button",
+        // new Vector2(0, 0),
+        // Main.mainStage,
+        // (o) -> {
+        // if (Main.graphic.getBoolean("option brightmode", true)) {
+        // Main.graphic.putBoolean("option brightmode", false);
+        // Main.brightMode = false;
+        // reload();
+        // } else {
+        // Main.graphic.putBoolean("option brightmode", true);
+        // Main.graphic.putBoolean("option darkmode", false);
+        // Main.brightMode = true;
+        // Main.darkMode = false;
+        // reload();
 
-                    }
-                    Main.graphic.flush();
-                }, null, null,
-                true, true, false, parameterTable, true, true, "bright mode");
+        // }
+        // Main.graphic.flush();
+        // }, null, null,
+        // true, true, false, parameterTable, true, true, "bright mode");
 
     }
 

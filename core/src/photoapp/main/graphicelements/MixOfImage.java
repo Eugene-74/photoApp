@@ -35,7 +35,7 @@ public class MixOfImage extends Group {
     public static List<List<String>> toCreateImage100 = new ArrayList<List<String>>();
 
     public static OrderedMap<String, Integer> isLoaded = new OrderedMap<>();
-    Integer espace = 8;
+    // Integer espace = 8;
 
     public static void ini() {
         forceSize.add("10");
@@ -248,7 +248,9 @@ public class MixOfImage extends Group {
             if (isSquare) {
                 if (!imagePath.endsWith("utline.png")) { // && !prefSizeName.equals("preview image")
 
-                    image.setOrigin((max - espace) / 2, (max - espace) / 2);
+                    // image.setOrigin((max - espace) / 2, (max - espace) / 2);
+                    image.setOrigin((max) / 2, (max) / 2);
+
                     // resized image
                     // } else {
                     // // preview image
@@ -349,17 +351,21 @@ public class MixOfImage extends Group {
             if (actor.getName().equals("image") && width == Main.graphic.getInteger("size of main images button")
                     && height == Main.graphic.getInteger("size of main images button")) {
 
-                actor.setSize(Main.graphic.getInteger("size of main images button") - espace,
-                        Main.graphic.getInteger("size of main images button") - espace);
+                actor.setSize(Main.graphic.getInteger("size of main images button"),
+                        Main.graphic.getInteger("size of main images button"));
+                // actor.setSize(Main.graphic.getInteger("size of main images button") - espace,
+                // Main.graphic.getInteger("size of main images button") - espace);
 
-                actor.setPosition(espace / 2, espace / 2);
+                // actor.setPosition(espace / 2, espace / 2);
             } else if (actor.getName().equals("image") && width == Main.graphic.getInteger("size of preview image")
                     && height == Main.graphic.getInteger("size of preview image")) {
 
-                actor.setSize(Main.graphic.getInteger("size of preview image") - espace,
-                        Main.graphic.getInteger("size of preview image") - espace);
+                actor.setSize(Main.graphic.getInteger("size of preview image"),
+                        Main.graphic.getInteger("size of preview image"));
+                // actor.setSize(Main.graphic.getInteger("size of preview image") - espace,
+                // Main.graphic.getInteger("size of preview image") - espace);
 
-                actor.setPosition(espace / 2, espace / 2);
+                // actor.setPosition(espace / 2, espace / 2);
             } else if (!actor.getName().endsWith("utline")
                     && width == Main.graphic.getInteger("size of basic button")
                     && height == Main.graphic.getInteger("size of basic button")) {

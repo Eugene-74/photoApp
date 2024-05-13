@@ -41,7 +41,7 @@ public class EnterValue {
 
         Main.mainStage.addActor(textTable);
         Main.mainStage.addActor(validationTable);
-        Main.placeImage(List.of("images/selected.png"), "basic button",
+        Main.placeImage(List.of("images/isSelected.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {

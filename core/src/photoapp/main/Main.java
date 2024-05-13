@@ -45,6 +45,9 @@ import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Cursor.SystemCursor;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.PixmapIO;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -81,12 +84,16 @@ import photoapp.main.windows.Parameter;
 public class Main extends ApplicationAdapter {
 	public static Stage mainStage;
 	public static Preferences graphic;
+	public static Preferences imageParam;
+
 	public static Table infoTable;
 	public static Table linkTable, sizeTable;
 
 	static Integer numberOfLoadedImages = 0;
 	public static Label labelInfoText;
 	public static List<ImageData> imagesData;
+
+	public static Table mainTable;
 
 	public static Map<String, Integer> peopleData = new LinkedHashMap<>();
 	public static Map<String, Integer> placeData = new LinkedHashMap<>();
@@ -122,8 +129,22 @@ public class Main extends ApplicationAdapter {
 	public static Integer littleIcon = 50;
 	public static Integer zoom = 0;
 
+	static ArrayList<String> iconNames = new ArrayList<String>();
+
 	public static void main() {
 
+	}
+
+	public static void iniImage() {
+		if (brightMode) {
+			imageParam.putString("over", "images/brightOver.png");
+			imageParam.putString("outline", "images/brightOutline.png");
+
+		} else {
+			imageParam.putString("over", "images/darkOver.png");
+			imageParam.putString("outline", "images/darkOutline.png");
+
+		}
 	}
 
 	public static void inigraphic() {
@@ -131,7 +152,8 @@ public class Main extends ApplicationAdapter {
 		y = Gdx.graphics.getHeight();
 		x4 = x / 4;
 
-		iconSize = (x4 - graphic.getInteger("border") * 2) / 4;
+		// iconSize = (x4 - graphic.getInteger("border") * 2) / 4;
+		iconSize = 40;
 
 		graphic.putInteger("size of infoLabel width", 100);
 		graphic.putInteger("size of infoLabel height", 10);
@@ -150,11 +172,12 @@ public class Main extends ApplicationAdapter {
 		// Main.graphic.putInteger("size of full height",
 		// Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
 
-		Main.graphic.putInteger("size of full width", 3 * x4 - graphic.getInteger("border", 25) * 2);
+		Main.graphic.putInteger("size of full width", x - graphic.getInteger("border", 25) * 2);
 		Main.graphic.putInteger("size of full height",
-				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
+				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2
+						- graphic.getInteger("size of basic button"));
 
-		graphic.putInteger("size of main image width", 3 * x4 - graphic.getInteger("border", 25) * 2);
+		graphic.putInteger("size of main image width", x - graphic.getInteger("border", 25) * 2);
 
 		graphic.putInteger("size of preview image", y / 10);
 
@@ -164,11 +187,12 @@ public class Main extends ApplicationAdapter {
 		graphic.putInteger("size of main image height",
 				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 4
 						- graphic.getInteger("size of preview image")
-						- Main.graphic.getInteger("size of date"));
+						- graphic.getInteger("size of basic button") * 4);
 
-		graphic.putInteger("size of total main images width", 3 * x4 - graphic.getInteger("border", 25) * 2);
+		graphic.putInteger("size of total main images width", x - graphic.getInteger("border", 25) * 2);
 		graphic.putInteger("size of total main images height",
-				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
+				Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2
+						- graphic.getInteger("size of basic button"));
 
 		graphic.putInteger("size of main images button", imageSize);
 		graphic.putInteger("size of full button", imageSize);
@@ -182,7 +206,7 @@ public class Main extends ApplicationAdapter {
 						* graphic.getInteger("size of main images button", imageSize) - 1);
 
 		graphic.putInteger("number of main images height",
-				graphic.getInteger("size of total main images height", 3 * x4)
+				graphic.getInteger("size of total main images height", x)
 						/ graphic.getInteger("size of main images button", imageSize));
 
 		graphic.putInteger("size of main images height",
@@ -190,7 +214,7 @@ public class Main extends ApplicationAdapter {
 						* graphic.getInteger("size of main images button", imageSize) - 1);
 
 		graphic.putInteger("number of full width",
-				graphic.getInteger("size of full width", 3 * x4)
+				graphic.getInteger("size of full width", x)
 						/ graphic.getInteger("size of full button", imageSize));
 
 		graphic.putInteger("size of full width",
@@ -198,7 +222,7 @@ public class Main extends ApplicationAdapter {
 						* graphic.getInteger("size of full button", imageSize));
 
 		graphic.putInteger("number of full height",
-				graphic.getInteger("size of full height", 3 * x4)
+				graphic.getInteger("size of full height", x)
 						/ graphic.getInteger("size of full button", imageSize));
 
 		graphic.putInteger("size of full height",
@@ -209,7 +233,7 @@ public class Main extends ApplicationAdapter {
 
 		graphic.putString("text.done", " ");
 
-		graphic.putInteger("size of links button width", littleIcon);
+		graphic.putInteger("size of links button width", littleIcon * 2);
 		graphic.putInteger("size of links button height", littleIcon);
 		graphic.putInteger("size of link button", littleIcon);
 
@@ -228,8 +252,8 @@ public class Main extends ApplicationAdapter {
 		graphic.putInteger("darkmode g", 17);
 		graphic.putInteger("darkmode b", 17);
 
-		graphic.putInteger("brightmode r", 35);
-		graphic.putInteger("brightmode g", 180);
+		graphic.putInteger("brightmode r", 255);
+		graphic.putInteger("brightmode g", 255);
 		graphic.putInteger("brightmode b", 255);
 
 		graphic.putInteger("enter darkmode r", 30);
@@ -242,6 +266,83 @@ public class Main extends ApplicationAdapter {
 
 		graphic.putString("image error", "images/error.png");
 
+	}
+
+	public static void addIconImage() {
+		iconNames.add("add images");
+		iconNames.add("add map");
+		iconNames.add("add people");
+		iconNames.add("add place");
+		iconNames.add("addFile");
+		iconNames.add("allFile");
+		iconNames.add("close");
+		iconNames.add("delete");
+		iconNames.add("back");
+		iconNames.add("deleted preview");
+		iconNames.add("discordLink");
+		iconNames.add("error");
+		iconNames.add("export");
+		iconNames.add("file");
+		// iconNames.add("icon");
+		iconNames.add("infoIsOn");
+		iconNames.add("isSelected");
+		iconNames.add("left");
+		// iconNames.add("loading button");
+		iconNames.add("love");
+		iconNames.add("loved preview");
+		iconNames.add("map");
+		iconNames.add("mode");
+		iconNames.add("moins");
+		iconNames.add("next down");
+		iconNames.add("next");
+		iconNames.add("no image people");
+		iconNames.add("no");
+		iconNames.add("openParameter");
+		iconNames.add("outline");
+		iconNames.add("plus");
+		iconNames.add("pluspeople");
+		iconNames.add("plusplace");
+		iconNames.add("previewOutline");
+		iconNames.add("previous up");
+		iconNames.add("previous");
+		iconNames.add("refresh");
+		iconNames.add("right");
+		iconNames.add("save");
+		iconNames.add("selected");
+		iconNames.add("selectedPreviewOutline");
+		iconNames.add("yes");
+
+	}
+
+	public static void createIcon(Integer r, Integer g, Integer b, Integer a) {
+		for (String imageName : iconNames) {
+			FileHandle from = Gdx.files.internal("images/" + imageName + ".png");
+			FileHandle to = Gdx.files
+					.absolute(ImageData.ICON_SAVE_PATH + "/" + r + "-" + g + "-" + b + "-" + a + "/" + imageName
+							+ ".png");
+			FileHandle dir = Gdx.files.absolute(ImageData.ICON_SAVE_PATH + "/" + r + "-" + g + "-" + b + "-" + a);
+
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			MixOfImage.manager.load(from.path(), Texture.class);
+			MixOfImage.manager.finishLoading();
+			Texture texture = MixOfImage.manager.get(from.path(), Texture.class);
+			Pixmap pixmap = LoadImage.textureToPixmap(texture);
+			pixmap.setColor(r / 255f, g / 255f, b / 255f, a / 255f);
+
+			for (int x = 0; x < pixmap.getWidth(); x++) {
+				for (int y = 0; y < pixmap.getHeight(); y++) {
+					int pixelColor = pixmap.getPixel(x, y);
+					if (pixelColor == Color.rgba8888(Color.BLACK)) {
+						pixmap.drawPixel(x, y);
+					}
+				}
+			}
+			PixmapIO.writePNG(to, pixmap);
+			pixmap.dispose();
+			System.out.println("created");
+		}
 	}
 
 	public static void iconSize(boolean plus) {
@@ -258,13 +359,36 @@ public class Main extends ApplicationAdapter {
 		reload(false);
 	}
 
+	public static void createMainTable() {
+		mainTable = new Table();
+		mainTable.setSize(
+				Gdx.graphics.getWidth()
+						- Main.graphic.getInteger("border") * 2,
+				Main.graphic.getInteger("size of basic button") * 3);
+		mainTable.setPosition(Main.graphic.getInteger("border"),
+				Gdx.graphics.getHeight() - Main.graphic.getInteger("border")
+						- Main.graphic.getInteger("size of basic button") * 3);
+		System.out.println(Main.graphic.getInteger("border"));
+		System.out.println(Gdx.graphics.getHeight()
+				- Main.graphic.getInteger("border")
+				- Main.graphic.getInteger("size of basic button"));
+		Main.mainStage.addActor(mainTable);
+	}
+
 	@Override
 	public void create() {
+		addIconImage();
+		createIcon(255, 255, 255, 255);
+		createIcon(0, 0, 0, 255);
 
 		graphic = Gdx.app.getPreferences("graphic params");
+		imageParam = Gdx.app.getPreferences("image params");
+
 		MixOfImage.ini();
 
 		inigraphic();
+		iniImage();
+
 		Text.openText("fr");
 
 		// MixOfImage.manager.load(Main.graphic.getString("image error"),
@@ -285,7 +409,9 @@ public class Main extends ApplicationAdapter {
 		}
 		createMultiplexer();
 
-		// createCloseButton();
+		createMainTable();
+
+		createCloseButton();
 		createLinkButton();
 
 		createSizeTable();
@@ -443,9 +569,27 @@ public class Main extends ApplicationAdapter {
 		}
 	}
 
+	public static void iniBackground() {
+		if (brightMode) {
+			ScreenUtils.clear(Main.graphic.getInteger("brightmode r", 0) / 255f,
+					Main.graphic.getInteger("brightmode g", 0) / 255f,
+					Main.graphic.getInteger("brightmode b", 0) / 255f, 255 / 255f);
+		} else {
+			ScreenUtils.clear(Main.graphic.getInteger("darkmode r", 0) / 255f,
+					Main.graphic.getInteger("darkmode g", 0) / 255f,
+					Main.graphic.getInteger("darkmode b", 0) / 255f, 255 / 255f);
+
+		}
+	}
+
 	@Override
 	public void render() {
 		try {
+
+			iniBackground();
+
+			mainStage.act();
+			mainStage.draw();
 
 			// if (windowOpen.equals("")) {
 			// FileChooser.open();
@@ -485,22 +629,9 @@ public class Main extends ApplicationAdapter {
 				}
 			}
 
-			if (brightMode) {
-
-				ScreenUtils.clear(Main.graphic.getInteger("brightmode r", 0) / 255f,
-						Main.graphic.getInteger("brightmode g", 0) / 255f,
-						Main.graphic.getInteger("brightmode b", 0) / 255f, 255 / 255f);
-			} else {
-				ScreenUtils.clear(Main.graphic.getInteger("darkmode r", 0) / 255f,
-						Main.graphic.getInteger("darkmode g", 0) / 255f,
-						Main.graphic.getInteger("darkmode b", 0) / 255f, 255 / 255f);
-
-			}
 			if (!infoText.equals(" ")) {
 				labelInfoText.setText(infoText);
 			}
-			mainStage.act();
-			mainStage.draw();
 
 			if (!windowOpen.equals("LoadImage") && infoText.startsWith("loading")) {
 				if (MixOfImage.manager.isFinished()) {
@@ -714,20 +845,20 @@ public class Main extends ApplicationAdapter {
 			}
 
 			@Override
-			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
+			public void exit(InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
 
-				if (onEnter != null) {
-
-					onEnter.accept(null);
+				if (onExit != null && pointer == -1) {
+					onExit.accept(null);
 				}
 
 			}
 
 			@Override
-			public void exit(InputEvent event, float x, float y, int pointer, @Null Actor toActor) {
+			public void enter(InputEvent event, float x, float y, int pointer, @Null Actor fromActor) {
 
-				if (onExit != null) {
-					onExit.accept(null);
+				if (onEnter != null) {
+
+					onEnter.accept(null);
 				}
 
 			}
@@ -796,20 +927,19 @@ public class Main extends ApplicationAdapter {
 		return false;
 	}
 
-	// public void createCloseButton() {
-	// placeImage(List.of("images/round outline.png", "images/close.png"), "close
-	// button",
-	// new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close
-	// button", 50),
-	// Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
-	// 50)),
-	// mainStage,
-	// (o) -> {
-	// System.out.println("closing");
-	// dispose();
-	// System.exit(0);
-	// }, null, null, true, false, false, ImageEdition.table, true, true, "close");
-	// }
+	public void createCloseButton() {
+		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
+				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
+						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
+								50)),
+				mainStage,
+				(o) -> {
+					System.out.println("closing");
+					dispose();
+					System.exit(0);
+
+				}, null, null, true, false, false, mainTable, true, true, "close");
+	}
 
 	public static ImageData getCurrentImageData(String currentImagePath) {
 		if (imagesData != null) {
@@ -885,7 +1015,7 @@ public class Main extends ApplicationAdapter {
 
 	public void iniTable() {
 
-		ImageEdition.table.add();
+		mainTable.add();
 	}
 
 	public static Boolean isAnImage(String imagePath) {
@@ -1155,6 +1285,7 @@ public class Main extends ApplicationAdapter {
 
 				}, null, null,
 				true, true, false, linkTable, true, true, "open discord");
+		CommonButton.createBack(linkTable);
 
 	}
 

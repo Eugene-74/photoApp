@@ -59,8 +59,6 @@ public class LocationEdition {
         Main.clear();
         Main.windowOpen = "LocationEdition";
 
-        // CommonButton.createBack(mainTable);
-
         label.setText("location : ");
         ImageData imageData = ImageData.getImageDataIfExist(ImageEdition.theCurrentImageName);
         // 48° 50' 54,97"_N:2° 24' 19,24"_E
@@ -194,7 +192,7 @@ public class LocationEdition {
 
         Main.mainStage.addActor(textTable);
         Main.mainStage.addActor(validationTable);
-        Main.placeImage(java.util.List.of("images/selected.png"), "basic button",
+        Main.placeImage(java.util.List.of("images/isSelected.png"), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
