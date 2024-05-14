@@ -387,6 +387,8 @@ public class Main extends ApplicationAdapter {
 		addIconImage();
 		createIcon(255, 255, 255, 255);
 		createIcon(0, 0, 0, 255);
+		iniImage();
+
 
 		graphic = Gdx.app.getPreferences("graphic params");
 		imageParam = Gdx.app.getPreferences("image params");
@@ -394,7 +396,6 @@ public class Main extends ApplicationAdapter {
 		MixOfImage.ini();
 
 		inigraphic();
-		iniImage();
 
 		Text.openText("fr");
 
