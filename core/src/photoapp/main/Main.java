@@ -935,7 +935,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public void createCloseButton() {
-		placeImage(List.of(imageParam.get("round outline"), imageParam.get("close")), "close button",
+		placeImage(List.of(imageParam.getString("round outline"), imageParam.getString("close")), "close button",
 				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
 						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
 								50)),
@@ -1284,7 +1284,7 @@ public class Main extends ApplicationAdapter {
 
 		createLinkTable();
 
-		placeImage(List.of(imageParam.get("discordLink")), "link button",
+		placeImage(List.of(imageParam.getString("discordLink")), "link button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
@@ -1298,14 +1298,14 @@ public class Main extends ApplicationAdapter {
 
 	public static void createSizeButton() {
 
-		placeImage(List.of(imageParam.get("plus")), "size button",
+		placeImage(List.of(imageParam.getString("plus")), "size button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
 					iconSize(true);
 				}, null, null,
 				true, true, false, sizeTable, true, true, "plus size button");
-		placeImage(List.of(imageParam.get("moins")), "size button",
+		placeImage(List.of(imageParam.getString("moins")), "size button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
