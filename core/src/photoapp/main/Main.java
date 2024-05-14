@@ -86,6 +86,8 @@ public class Main extends ApplicationAdapter {
 	public static Preferences graphic;
 	public static Preferences imageParam;
 
+	public static boolean brightMode=false;
+
 	public static Table infoTable;
 	public static Table linkTable, sizeTable;
 
