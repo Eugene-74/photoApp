@@ -117,8 +117,8 @@ public class Main extends ApplicationAdapter {
 
 	public static ImageData lastImageData = null;
 
-	public static Boolean brightMode = false;
-	public static Boolean darkMode = false;
+	// public static Boolean brightMode = false;
+	// public static Boolean darkMode = false;
 	static Skin skin;
 	public static Skin skinTextField;
 	public static boolean openWindow;
@@ -136,7 +136,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static void iniImage() {
-		if (brightMode) {
+		if (Main.graphic.getBoolean("option brightmode", true)) {
 			imageParam.putString("over", "images/brightOver.png");
 			imageParam.putString("outline", "images/brightOutline.png");
 			for (String image : iconNames){

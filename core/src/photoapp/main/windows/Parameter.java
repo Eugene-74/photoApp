@@ -68,7 +68,7 @@ public class Parameter {
         List<String> darkmodeList = new ArrayList<String>();
         darkmodeList.add("images/mode.png");
         darkmodeList.add("images/outline.png");
-        if (Main.graphic.getBoolean("option darkmode", false)) {
+        if (Main.graphic.getBoolean("option brightmode", false)) {
             darkmodeList.add("images/yes.png");
         } else {
             darkmodeList.add("images/no.png");
@@ -81,13 +81,13 @@ public class Parameter {
                 (o) -> {
                     if (Main.graphic.getBoolean("option brightmode", true)) {
                         Main.graphic.putBoolean("option brightmode", false);
-                        Main.brightMode = true;
+                        // Main.brightMode = true;
                         Main.iniImage();
 
                         reload();
                     } else {
                         Main.graphic.putBoolean("option brightmode", false);
-                        Main.brightMode = false;
+                        // Main.brightMode = false;
                         Main.iniImage();
 
                         reload();
