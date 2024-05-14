@@ -82,6 +82,8 @@ public class Parameter {
                     if (Main.graphic.getBoolean("option darkmode", true)) {
                         Main.graphic.putBoolean("option darkmode", false);
                         Main.darkMode = false;
+                        Main.brightMode = true;
+
                         Main.iniImage();
 
                         reload();
@@ -99,36 +101,7 @@ public class Parameter {
                 }, null, null,
                 true, true, false, parameterTable, true, true, "dark mode");
 
-        // List<String> brightmodeList = new ArrayList<String>();
-        // brightmodeList.add("images/mode.png");
-        // brightmodeList.add("images/outline.png");
-        // if (Main.graphic.getBoolean("option brightmode", false)) {
-        // brightmodeList.add("images/yes.png");
-        // } else {
-        // brightmodeList.add("images/no.png");
-
-        // }
-
-        // Main.placeImage(brightmodeList, "basic button",
-        // new Vector2(0, 0),
-        // Main.mainStage,
-        // (o) -> {
-        // if (Main.graphic.getBoolean("option brightmode", true)) {
-        // Main.graphic.putBoolean("option brightmode", false);
-        // Main.brightMode = false;
-        // reload();
-        // } else {
-        // Main.graphic.putBoolean("option brightmode", true);
-        // Main.graphic.putBoolean("option darkmode", false);
-        // Main.brightMode = true;
-        // Main.darkMode = false;
-        // reload();
-
-        // }
-        // Main.graphic.flush();
-        // }, null, null,
-        // true, true, false, parameterTable, true, true, "bright mode");
-
+       
     }
 
     public static void createMainTable() {
