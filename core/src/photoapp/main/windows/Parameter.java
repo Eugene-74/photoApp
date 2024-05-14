@@ -79,18 +79,14 @@ public class Parameter {
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
-                    if (Main.graphic.getBoolean("option darkmode", true)) {
-                        Main.graphic.putBoolean("option darkmode", false);
-                        Main.darkMode = false;
+                    if (Main.graphic.getBoolean("option brightmode", true)) {
+                        Main.graphic.putBoolean("option brightmode", false);
                         Main.brightMode = true;
-
                         Main.iniImage();
 
                         reload();
                     } else {
-                        Main.graphic.putBoolean("option darkmode", true);
                         Main.graphic.putBoolean("option brightmode", false);
-                        Main.darkMode = true;
                         Main.brightMode = false;
                         Main.iniImage();
 
@@ -99,7 +95,7 @@ public class Parameter {
                     }
                     Main.graphic.flush();
                 }, null, null,
-                true, true, false, parameterTable, true, true, "dark mode");
+                true, true, false, parameterTable, true, true, "bright mode");
 
        
     }

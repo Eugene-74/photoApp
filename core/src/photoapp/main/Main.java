@@ -139,10 +139,17 @@ public class Main extends ApplicationAdapter {
 		if (brightMode) {
 			imageParam.putString("over", "images/brightOver.png");
 			imageParam.putString("outline", "images/brightOutline.png");
+			for (String image : iconNames){
+				imageParam.putString(image, "icon/255-255-255-255/"+image+".png");
+			}
+
 
 		} else {
 			imageParam.putString("over", "images/darkOver.png");
 			imageParam.putString("outline", "images/darkOutline.png");
+			for (String image : iconNames){
+				imageParam.putString(image, "icon/0-0-0-255/"+image+".png");
+			}
 
 		}
 	}
@@ -928,7 +935,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public void createCloseButton() {
-		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
+		placeImage(List.of(imageParam.get("round outline"), imageParam.get("close")), "close button",
 				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
 						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
 								50)),
@@ -1277,7 +1284,7 @@ public class Main extends ApplicationAdapter {
 
 		createLinkTable();
 
-		placeImage(List.of("images/discordLink.png"), "link button",
+		placeImage(List.of(imageParam.get("discordLink")), "link button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
@@ -1291,14 +1298,14 @@ public class Main extends ApplicationAdapter {
 
 	public static void createSizeButton() {
 
-		placeImage(List.of("images/plus.png"), "size button",
+		placeImage(List.of(imageParam.get("plus")), "size button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
 					iconSize(true);
 				}, null, null,
 				true, true, false, sizeTable, true, true, "plus size button");
-		placeImage(List.of("images/moins.png"), "size button",
+		placeImage(List.of(imageParam.get("moins")), "size button",
 				new Vector2(0, 0),
 				mainStage,
 				(o) -> {
