@@ -81,15 +81,13 @@ public class Parameter {
                 (o) -> {
                     if (Main.graphic.getBoolean("option brightmode", true)) {
                         Main.graphic.putBoolean("option brightmode", false);
-                        // Main.brightMode = true;
+                        Main.brightMode = false;
                         Main.iniImage();
-
                         reload();
                     } else {
-                        Main.graphic.putBoolean("option brightmode", false);
-                        // Main.brightMode = false;
+                        Main.graphic.putBoolean("option brightmode", true);
+                        Main.brightMode = true;
                         Main.iniImage();
-
                         reload();
 
                     }

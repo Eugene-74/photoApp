@@ -18,6 +18,8 @@ import photoapp.main.windows.LoadImage;
 
 public class ImageData {
 
+    // public final static String SAVE = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp";
+
     public final static String SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/save.csv";
     public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/people.csv";
     public final static String PLACE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/place.csv";

@@ -11,7 +11,7 @@ import photoapp.main.windows.LoadImage;
 
 public class CommonButton {
     public static void createAddImagesButton(Table table) {
-        Main.placeImage(List.of("images/add images.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("add images")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -23,7 +23,7 @@ public class CommonButton {
     }
 
     public static void createRefreshButton(Table table) {
-        Main.placeImage(List.of("images/refresh.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("refresh")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -34,7 +34,7 @@ public class CommonButton {
     }
 
     public static void createSaveButton(Table table) {
-        Main.placeImage(List.of("images/save.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("save")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -44,7 +44,7 @@ public class CommonButton {
     }
 
     public static void createBack(Table table) {
-        Main.placeImage(List.of("images/back.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("back")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -55,7 +55,7 @@ public class CommonButton {
 
     public static void createExport(Table table, @Nullable String fileName, String desciption) {
 
-        Main.placeImage(List.of("images/export.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("export")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {

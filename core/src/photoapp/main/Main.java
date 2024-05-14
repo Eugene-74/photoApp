@@ -142,7 +142,9 @@ public class Main extends ApplicationAdapter {
 			imageParam.putString("over", "images/brightOver.png");
 			imageParam.putString("outline", "images/brightOutline.png");
 			for (String image : iconNames){
-				imageParam.putString(image, "icon/255-255-255-255/"+image+".png");
+				imageParam.putString(image, ImageData.ICON_SAVE_PATH+"/255-255-255-255/"+image+".png");
+				System.out.println(ImageData.ICON_SAVE_PATH+"/255-255-255-255/"+image+".png");
+			
 			}
 
 
@@ -150,7 +152,9 @@ public class Main extends ApplicationAdapter {
 			imageParam.putString("over", "images/darkOver.png");
 			imageParam.putString("outline", "images/darkOutline.png");
 			for (String image : iconNames){
-				imageParam.putString(image, "icon/0-0-0-255/"+image+".png");
+				imageParam.putString(image, ImageData.ICON_SAVE_PATH+"/0-0-0-255/"+image+".png");
+				System.out.println(ImageData.ICON_SAVE_PATH+"/0-0-0-255/"+image+".png");
+
 			}
 
 		}
@@ -389,11 +393,11 @@ public class Main extends ApplicationAdapter {
 		addIconImage();
 		createIcon(255, 255, 255, 255);
 		createIcon(0, 0, 0, 255);
-		iniImage();
 
 
 		graphic = Gdx.app.getPreferences("graphic params");
 		imageParam = Gdx.app.getPreferences("image params");
+		iniImage();
 
 		MixOfImage.ini();
 
@@ -938,7 +942,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public void createCloseButton() {
-		placeImage(List.of(imageParam.getString("round outline"), imageParam.getString("close")), "close button",
+		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
 				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
 						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
 								50)),
