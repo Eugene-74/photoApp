@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.LoadImage;
 
 import java.io.File;
 import java.text.Normalizer;
@@ -23,6 +23,8 @@ import com.drew.metadata.Tag;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.ImageEdition.ImageEdition;
+import photoapp.main.windows.MainImages.MainImages;
 
 public class LoadImage {
     public static Thread thread = null;
@@ -313,6 +315,28 @@ public class LoadImage {
 
     }
 
+    public static void createAllSize(String imageName) {
+        MixOfImage.createAnImage(ImageData.IMAGE_PATH, ImageData.IMAGE_PATH + "/150", imageName, imageName, 150, false,
+                false);
+        System.out.println(3);
+
+        MixOfImage.createAnImage(ImageData.IMAGE_PATH, ImageData.IMAGE_PATH + "/100", imageName, imageName, 100, true,
+                false);
+        MixOfImage.createAnImage(ImageData.IMAGE_PATH, ImageData.IMAGE_PATH + "/10", imageName, imageName, 10, true,
+                false);
+    }
+
+    public static boolean needToBeCreated(String imageName) {
+        FileHandle f10 = new FileHandle(ImageData.IMAGE_PATH + "/10/" + imageName);
+        FileHandle f100 = new FileHandle(ImageData.IMAGE_PATH + "/100/" + imageName);
+        FileHandle f150 = new FileHandle(ImageData.IMAGE_PATH + "/150/" + imageName);
+        if (f10.exists() && f100.exists() && f150.exists()) {
+            return true;
+        }
+        return false;
+
+    }
+
     public static void exportImages(@Nullable String fileName) {
         ImageData.openDataOfImages(fileName);
 
@@ -331,50 +355,6 @@ public class LoadImage {
                     Main.infoText = "export done";
                 }, null);
     }
-
-    // public static void setSizeAfterLoad(String imagePath, Integer size, boolean
-    // isSquare) {
-    // String[] nameList = imagePath.split("/");
-    // String imageName = nameList[nameList.length - 1];
-
-    // String[] ListImageName = imageName.split("/");
-    // String fileName = ImageData.IMAGE_PATH + "/" + size + "/" +
-    // ListImageName[ListImageName.length - 1];
-    // FileHandle fh = new FileHandle(fileName);
-
-    // Texture texture = MixOfImage.manager.get(imagePath, Texture.class);
-
-    // Pixmap pixmap;
-    // if (isSquare) {
-    // // if (texture.getHeight() > texture.getWidth()) {
-    // pixmap = resize(textureToPixmap(texture), size, size, true);
-    // // } else {
-    // // pixmap = resize(textureToPixmap(texture), size, size, true);
-
-    // // }
-    // } else {
-    // if (texture.getHeight() > texture.getWidth()) {
-    // pixmap = resize(textureToPixmap(texture), size, (int) (size *
-    // texture.getHeight() / texture.getWidth()),
-    // false);
-    // } else {
-    // pixmap = resize(textureToPixmap(texture), (int) (size * texture.getWidth() /
-    // texture.getHeight()), size,
-    // false);
-
-    // }
-    // }
-
-    // FileHandle handle = Gdx.files.absolute(ImageData.IMAGE_PATH + "/" + size);
-
-    // if (!handle.exists()) {
-    // handle.mkdirs();
-    // }
-
-    // PixmapIO.writePNG(fh, pixmap);
-    // pixmap.dispose();
-
-    // }
 
     public static void openImageExif(String imageName, String directory) {
         FileHandle file;
@@ -651,6 +631,161 @@ public class LoadImage {
         String output = Math.abs(Integer.parseInt(degrees)) + "° " + minutes + "' " + seconds + "\" ";
         // .println("fist coords : " + output);
         return output;
+    }
+
+    /**
+     * Vérifie l'existence d'un fichier à l'emplacement spécifié.
+     *
+     * <p>
+     * Cette méthode vérifie d'abord si le fichier existe dans les fichiers internes
+     * de l'application.
+     * Si ce n'est pas le cas, elle vérifie si le fichier existe dans le système de
+     * fichiers en utilisant
+     * un {@link FileHandle}.
+     * </p>
+     *
+     * @param filePath le chemin d'accès complet au fichier, utilisant des barres
+     *                 obliques (/) ou des barres obliques inverses (\) comme
+     *                 séparateurs de dossier
+     * @return {@code true} si le fichier existe, {@code false} sinon
+     */
+    public static boolean fileExist(String filePath) {
+        if (!Gdx.files.internal(filePath).exists()) {
+            return new FileHandle(filePath).exists();
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Charge une texture à partir d'une image si elle existe à l'emplacement
+     * spécifié.
+     *
+     * <p>
+     * Cette méthode vérifie d'abord si le fichier image existe dans le système de
+     * fichiers en utilisant
+     * un {@link FileHandle}, puis dans les fichiers internes de l'application avec
+     * {@link Gdx#files}.
+     * Si le fichier image existe, il est chargé en tant que texture à l'aide du
+     * gestionnaire d'images.
+     * </p>
+     *
+     * @param imagePath le chemin d'accès complet à l'image, utilisant des barres
+     *                  obliques (/) ou des barres obliques inverses (\) comme
+     *                  séparateurs de dossier
+     * @return {@code true} si l'image a été chargée avec succès, {@code false}
+     *         sinon
+     */
+    public static boolean loadIfExist(String imagePath) {
+        if (new FileHandle(imagePath).exists() || Gdx.files.internal(imagePath).exists()) {
+            MixOfImage.manager.load(imagePath, Texture.class);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Extrait le nom du dossier parent à partir d'un chemin d'accès d'image donné.
+     *
+     * <p>
+     * Cette méthode remplace les séparateurs de dossier spécifiques au système
+     * d'exploitation
+     * (barres obliques inverses) par des barres obliques, puis divise le chemin en
+     * une liste de segments.
+     * Le nom du dossier parent est supposé être l'avant-dernier segment de la
+     * liste.
+     * </p>
+     *
+     * @param imagePath le chemin d'accès complet à l'image, utilisant des barres
+     *                  obliques (/) ou des barres obliques inverses (\) comme
+     *                  séparateurs de dossier
+     * @return le nom du dossier parent de l'image, ou {@code null} si le chemin ne
+     *         contient pas suffisamment de segments pour identifier un dossier
+     *         parent
+     */
+    public static String getFileName(String pathToTheFile) {
+        String[] pathList = pathToTheFile.replace("\\", "/").split("/");
+        if (pathList.length >= 2) {
+            return pathList[pathList.length - 2];
+        }
+        Gdx.app.log("getFileName", "can't get the file name ");
+
+        return null;
+    }
+
+    /**
+     * Extrait un segment spécifique d'un chemin d'accès de fichier.
+     *
+     * <p>
+     * Cette méthode remplace les séparateurs de dossier spécifiques au système
+     * d'exploitation
+     * (barres obliques inverses) par des barres obliques, puis divise le chemin en
+     * une liste de segments.
+     * Elle retourne un segment spécifique en partant de la fin, basé sur le numéro
+     * de fichier fourni.
+     * </p>
+     *
+     * @param imagePath  le chemin d'accès complet au fichier, utilisant des barres
+     *                   obliques (/) ou des barres obliques inverses (\) comme
+     *                   séparateurs de dossier
+     * @param fileNumber le numéro du segment à récupérer en partant de la fin (0
+     *                   pour le dernier segment, 1 pour l'avant-dernier, etc.)
+     * @return le segment spécifié du chemin d'accès, ou {@code null} si le chemin
+     *         ne contient pas suffisamment de segments
+     */
+    public static String getFile(String imagePath, Integer fileNumber) {
+        String[] imageList = imagePath.replace("\\", "/").split("/");
+        if (imageList.length >= 2 + fileNumber) {
+            return imageList[imageList.length - 2 - fileNumber];
+        } else {
+            Gdx.app.log("getImageFile",
+                    "can't get file number " + fileNumber + " because the path doesn't contains that much files");
+
+        }
+        Gdx.app.log("getFile", "can't get the file number " + fileNumber);
+
+        return null;
+    }
+
+    /**
+     * Extrait le chemin avant un segment spécifique d'un chemin d'accès de fichier.
+     *
+     * <p>
+     * Cette méthode remplace les séparateurs de dossier spécifiques au système
+     * d'exploitation
+     * (barres obliques inverses) par des barres obliques, puis divise le chemin en
+     * une liste de segments.
+     * Elle retourne la partie du chemin située avant un segment spécifique, basé
+     * sur le numéro de fichier fourni.
+     * </p>
+     *
+     * @param imagePath  le chemin d'accès complet au fichier, utilisant des barres
+     *                   obliques (/) ou des barres obliques inverses (\) comme
+     *                   séparateurs de dossier
+     * @param fileNumber le numéro du segment avant lequel le chemin doit être
+     *                   extrait (0 pour le dernier segment, 1 pour l'avant-dernier,
+     *                   etc.)
+     * @return la partie du chemin d'accès avant le segment spécifié, ou
+     *         {@code null} si le chemin ne contient pas suffisamment de segments
+     */
+    public static String getPathBefore(String imagePath, Integer fileNumber) {
+        String[] imageList = imagePath.replace("\\", "/").split("/");
+        if (imageList.length >= 2 + fileNumber) {
+            String path = "";
+
+            for (int i = 0; i < imageList.length - 2 - fileNumber; i++) {
+                path += imageList[i];
+            }
+            return path;
+        } else {
+            Gdx.app.log("getImageFile",
+                    "can't get path before file number " + fileNumber
+                            + " because the path doesn't contains that much files");
+
+        }
+        Gdx.app.log("getPathBefore", "can't get path before file number " + fileNumber);
+
+        return null;
     }
 
 }

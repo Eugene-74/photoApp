@@ -6,8 +6,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.drew.lang.annotations.Nullable;
 
-import photoapp.main.windows.ImageEdition;
-import photoapp.main.windows.LoadImage;
+import photoapp.main.windows.ImageEdition.ImageEdition;
+import photoapp.main.windows.LoadImage.LoadImage;
 
 public class CommonButton {
     public static void createAddImagesButton(Table table) {

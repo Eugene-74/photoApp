@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.ImageEdition;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -29,6 +29,11 @@ import photoapp.main.CommonFunction;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.BigPreview.BigPreview;
+import photoapp.main.windows.DateEdition.DateEdition;
+import photoapp.main.windows.EnterValue.EnterValue;
+import photoapp.main.windows.LocationEdition.LocationEdition;
+import photoapp.main.windows.MainImages.MainImages;
 
 public class ImageEdition {
 	final static String fileName = "ImageEdition";
@@ -43,7 +48,7 @@ public class ImageEdition {
 	static String nameOfFolderOfLoadedImages = "";
 	static String nameOfFolderOfLoadedFolder = "";
 	static Integer totalNumberOfLoadedImages = 0;
-	static Array<ImageData> toDelete = new Array<ImageData>();
+	public static Array<ImageData> toDelete = new Array<ImageData>();
 	public static String theCurrentImageName;
 	Label.LabelStyle label1Style = new Label.LabelStyle();
 	static String lastPreview = "";
@@ -175,13 +180,13 @@ public class ImageEdition {
 		placeAddPlace();
 
 		ArrayList<String> loveList = new ArrayList<String>();
-		loveList.add("images/love.png");
-		loveList.add("images/outline.png");
+		loveList.add(Main.imageParam.getString("love"));
+		loveList.add(Main.imageParam.getString("outline"));
 
 		if (imageData.getLoved()) {
-			loveList.add("images/yes.png");
+			loveList.add(Main.imageParam.getString("yes"));
 		} else {
-			loveList.add("images/no.png");
+			loveList.add(Main.imageParam.getString("no"));
 		}
 		Main.placeImage(loveList, "basic button",
 				new Vector2(0, 0),
@@ -196,7 +201,7 @@ public class ImageEdition {
 					reload(false);
 				}, null, null,
 				true, true, false, Main.mainTable, false, true, "love");
-		Main.placeImage(List.of("images/previous.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("previous")), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -205,11 +210,11 @@ public class ImageEdition {
 				true, true, false, Main.mainTable, true, true, "previous image");
 
 		List<String> deletImages = new ArrayList<>();
-		deletImages.add("images/delete.png");
-		deletImages.add("images/outline.png");
+		deletImages.add(Main.imageParam.getString("delete"));
+		deletImages.add(Main.imageParam.getString("outline"));
 
 		if (toDelete.contains(imageData, false)) {
-			deletImages.add("images/yes.png");
+			deletImages.add(Main.imageParam.getString("yes"));
 		}
 		Main.placeImage(deletImages, "basic button",
 				new Vector2(0, 0),
@@ -245,13 +250,13 @@ public class ImageEdition {
 				}, null, null,
 				true, true, false, Main.mainTable, true, true, "delete image");
 
-		Main.placeImage(List.of("images/next.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("next")), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
 					nextImage(currentImageName);
 				}, null, null, true, true, false, Main.mainTable, true, true, "next image");
-		Main.placeImage(List.of("images/right.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("right")), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -266,7 +271,7 @@ public class ImageEdition {
 					load();
 				}, null, null,
 				true, true, false, Main.mainTable, true, true, "rotate right");
-		Main.placeImage(List.of("images/left.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("left")), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -284,7 +289,7 @@ public class ImageEdition {
 				true, true, false, Main.mainTable, true, true, "rotate left");
 
 		if (imageData.getCoords() != null && !imageData.getCoords().equals(" ") && !imageData.getCoords().equals("")) {
-			Main.placeImage(List.of("images/map.png", "images/yes.png"), "basic button",
+			Main.placeImage(List.of(Main.imageParam.getString("map"), Main.imageParam.getString("yes")), "basic button",
 					new Vector2(0, 0),
 					Main.mainStage,
 					(o) -> {
@@ -293,7 +298,7 @@ public class ImageEdition {
 					}, null, null,
 					true, true, false, Main.mainTable, true, true, "open map");
 		} else {
-			Main.placeImage(List.of("images/map.png", "images/no.png"), "basic button",
+			Main.placeImage(List.of(Main.imageParam.getString("map"), Main.imageParam.getString("no")), "basic button",
 					new Vector2(0, 0),
 					Main.mainStage,
 					(o) -> {
@@ -302,7 +307,7 @@ public class ImageEdition {
 					}, null, null,
 					true, true, false, Main.mainTable, true, true, "no map data");
 		}
-		Main.placeImage(List.of("images/add map.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("add map")), "basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -433,7 +438,8 @@ public class ImageEdition {
 	}
 
 	public static void placeAddPeople() {
-		Main.placeImage(List.of("images/add people.png", "images/blue outline.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("add people"), Main.imageParam.getString("outline")),
+				"basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -461,7 +467,8 @@ public class ImageEdition {
 
 	public static void placeAddPlace() {
 
-		Main.placeImage(List.of("images/add place.png", "images/green outline.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("add place"), Main.imageParam.getString("outline")),
+				"basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -513,21 +520,6 @@ public class ImageEdition {
 
 		Main.mainStage.addActor(previewTable);
 	}
-
-	// public static void createTable() {
-	// table = new Table();
-
-	// table.setSize(
-	// Gdx.graphics.getWidth() - Main.graphic.getInteger("size of main image width")
-	// - Main.graphic.getInteger("border") * 3,
-	// Gdx.graphics.getHeight() - Main.graphic.getInteger("border") * 2);
-	// table.setPosition(
-	// Main.graphic.getInteger("size of main image width") +
-	// Main.graphic.getInteger("border") * 2,
-	// Main.graphic.getInteger("border"));
-
-	// Main.mainStage.addActor(table);
-	// }
 
 	public static void placePreviewImage(String currentImagePath, boolean force) {
 		if (Main.imagesData.size() >= Main.graphic.getInteger("number of preview image")) {
@@ -583,7 +575,7 @@ public class ImageEdition {
 				previewList.add(preview);
 
 				if (nbr == number - 1) {
-					previewList.add("images/selected.png");
+					previewList.add(Main.imageParam.getString("selected"));
 				} else {
 					previewList.add(Main.imageParam.getString("outline"));
 				}
@@ -669,7 +661,7 @@ public class ImageEdition {
 				} else {
 					peopleList.add("images/error.png");
 				}
-				peopleList.add("images/blue outline.png");
+				peopleList.add(Main.imageParam.getString("outline"));
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
 				} else {
@@ -725,7 +717,7 @@ public class ImageEdition {
 				} else {
 					placeList.add("images/error.png");
 				}
-				placeList.add("images/green outline.png");
+				placeList.add(Main.imageParam.getString("outline"));
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
 				} else {
@@ -1030,7 +1022,8 @@ public class ImageEdition {
 	}
 
 	public static void placePlusPeople() {
-		Main.placeImage(List.of("images/pluspeople.png", "images/blue outline.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("pluspeople"), Main.imageParam.getString("outline")),
+				"basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -1040,7 +1033,8 @@ public class ImageEdition {
 	}
 
 	public static void placePlusPlace() {
-		Main.placeImage(List.of("images/plusplace.png", "images/green outline.png"), "basic button",
+		Main.placeImage(List.of(Main.imageParam.getString("plusplace"), Main.imageParam.getString("outline")),
+				"basic button",
 				new Vector2(0, 0),
 				Main.mainStage,
 				(o) -> {
@@ -1132,7 +1126,7 @@ public class ImageEdition {
 				List<String> peopleList = new ArrayList<>();
 				peopleList.add(ImageData.PEOPLE_IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/" + people
 						+ ".png");
-				peopleList.add("images/blue outline.png");
+				peopleList.add(Main.imageParam.getString("outline"));
 				if (imageData.isInPeoples(people)) {
 					peopleList.add("images/yes.png");
 				} else {
@@ -1190,7 +1184,7 @@ public class ImageEdition {
 						+ ".png");
 
 				// WORK ONLY WITH JPG
-				placeList.add("images/green outline.png");
+				placeList.add(Main.imageParam.getString("outline"));
 				if (imageData.isInPlaces(place)) {
 					placeList.add("images/yes.png");
 				} else {
@@ -1222,6 +1216,7 @@ public class ImageEdition {
 	}
 
 	public static void render() {
+
 		if (TimeUtils.millis() - lastImageChange > 500) {
 			lastImageChange = TimeUtils.millis();
 
@@ -1243,7 +1238,6 @@ public class ImageEdition {
 					} else {
 						increment = 0;
 					}
-					System.out.println(i + imageIndex + increment);
 					if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/" + MixOfImage.squareSize.get(0) + "/"
 							+ Main.imagesData.get(i + imageIndex + increment)
 									.getName())) {

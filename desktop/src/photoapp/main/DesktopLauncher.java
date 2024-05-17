@@ -14,7 +14,6 @@ public class DesktopLauncher {
 
 		// Monitor primary = Lwjgl3ApplicationConfiguration.getPrimaryMonitor();
 
-		// System.out.println(primary);
 		config.setForegroundFPS(24);
 		config.setMaximized(true);
 

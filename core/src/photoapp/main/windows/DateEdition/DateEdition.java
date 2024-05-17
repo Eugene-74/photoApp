@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.DateEdition;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align;
 
 import photoapp.main.Main;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.ImageEdition.ImageEdition;
 
 public class DateEdition {
         static Table mainTable, validationTable, textTable;
@@ -120,7 +121,7 @@ public class DateEdition {
 
                 Main.mainStage.addActor(textTable);
                 Main.mainStage.addActor(validationTable);
-                Main.placeImage(java.util.List.of("images/isSelected.png"), "basic button",
+                Main.placeImage(java.util.List.of(Main.imageParam.getString("selected")), "basic button",
                                 new Vector2(0, 0),
                                 Main.mainStage,
                                 (o) -> {

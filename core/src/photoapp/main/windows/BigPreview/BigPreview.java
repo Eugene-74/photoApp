@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.BigPreview;
 
 import java.util.List;
 
@@ -10,6 +10,8 @@ import photoapp.main.CommonFunction;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.ImageEdition.ImageEdition;
+import photoapp.main.windows.MainImages.MainImages;
 
 public class BigPreview {
     static Table BigPreviewTable;

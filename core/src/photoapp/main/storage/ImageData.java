@@ -14,11 +14,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 
 import photoapp.main.Main;
-import photoapp.main.windows.LoadImage;
+import photoapp.main.windows.LoadImage.LoadImage;
 
 public class ImageData {
 
-    // public final static String SAVE = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp";
+    // public final static String SAVE = System.getenv("APPDATA").replace("\\", "/")
+    // + "/.photoApp";
 
     public final static String SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/save.csv";
     public final static String PEOPLE_SAVE_PATH = System.getenv("APPDATA").replace("\\", "/") + "/.photoApp/people.csv";
@@ -331,7 +332,6 @@ public class ImageData {
     public String getCoords() {
         try {
             if (data != null) {
-                // System.out.println("coooord" + data.get("coords"));
                 return (String) data.get("coords");
             }
             return "";
@@ -438,7 +438,6 @@ public class ImageData {
                     return;
                 }
                 for (String imageInfo : imagesInfo) {
-                    // System.out.println(imageInfo + "info");
                     String[] category = imageInfo.split(";");
                     Integer i = 0;
                     for (String cat : category) {

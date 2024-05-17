@@ -70,23 +70,22 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
 import photoapp.main.storage.Text;
-import photoapp.main.windows.BigPreview;
-import photoapp.main.windows.DateEdition;
-import photoapp.main.windows.EnterValue;
-import photoapp.main.windows.FileChooser;
-import photoapp.main.windows.ImageEdition;
-import photoapp.main.windows.Keybord;
-import photoapp.main.windows.LoadImage;
-import photoapp.main.windows.LocationEdition;
-import photoapp.main.windows.MainImages;
-import photoapp.main.windows.Parameter;
+import photoapp.main.windows.BigPreview.BigPreview;
+import photoapp.main.windows.DateEdition.DateEdition;
+import photoapp.main.windows.EnterValue.EnterValue;
+import photoapp.main.windows.FileChooser.FileChooser;
+import photoapp.main.windows.ImageEdition.ImageEdition;
+import photoapp.main.windows.LoadImage.LoadImage;
+import photoapp.main.windows.LocationEdition.LocationEdition;
+import photoapp.main.windows.MainImages.MainImages;
+import photoapp.main.windows.Parameter.Parameter;
 
 public class Main extends ApplicationAdapter {
 	public static Stage mainStage;
 	public static Preferences graphic;
 	public static Preferences imageParam;
 
-	public static boolean brightMode=false;
+	public static boolean brightMode = false;
 
 	public static Table infoTable;
 	public static Table linkTable, sizeTable;
@@ -131,29 +130,30 @@ public class Main extends ApplicationAdapter {
 	public static Integer littleIcon = 50;
 	public static Integer zoom = 0;
 
-	static ArrayList<String> iconNames = new ArrayList<String>();
+	public static ArrayList<String> iconNames = new ArrayList<String>();
 
 	public static void main() {
 
 	}
 
 	public static void iniImage() {
+		imageParam.putString("yes", "images/yes.png");
+		imageParam.putString("no", "images/no.png");
+
 		if (Main.graphic.getBoolean("option brightmode", true)) {
 			imageParam.putString("over", "images/brightOver.png");
-			imageParam.putString("outline", "images/brightOutline.png");
-			for (String image : iconNames){
-				imageParam.putString(image, ImageData.ICON_SAVE_PATH+"/255-255-255-255/"+image+".png");
-				System.out.println(ImageData.ICON_SAVE_PATH+"/255-255-255-255/"+image+".png");
-			
-			}
+			imageParam.putString("outline", ImageData.ICON_SAVE_PATH + "/255-255-255-255/" + "selected" + ".png");
+			for (String image : iconNames) {
+				imageParam.putString(image, ImageData.ICON_SAVE_PATH + "/0-0-0-255/" + image + ".png");
 
+			}
 
 		} else {
 			imageParam.putString("over", "images/darkOver.png");
-			imageParam.putString("outline", "images/darkOutline.png");
-			for (String image : iconNames){
-				imageParam.putString(image, ImageData.ICON_SAVE_PATH+"/0-0-0-255/"+image+".png");
-				System.out.println(ImageData.ICON_SAVE_PATH+"/0-0-0-255/"+image+".png");
+			imageParam.putString("outline", ImageData.ICON_SAVE_PATH + "/0-0-0-255/" + "selected" + ".png");
+
+			for (String image : iconNames) {
+				imageParam.putString(image, ImageData.ICON_SAVE_PATH + "/255-255-255-255/" + image + ".png");
 
 			}
 
@@ -180,10 +180,6 @@ public class Main extends ApplicationAdapter {
 		graphic.putInteger("little border", 5);
 
 		Main.graphic.putInteger("size of date", 50);
-
-		// Main.graphic.putInteger("size of full width", 1200);
-		// Main.graphic.putInteger("size of full height",
-		// Gdx.graphics.getHeight() - graphic.getInteger("border", 25) * 2);
 
 		Main.graphic.putInteger("size of full width", x - graphic.getInteger("border", 25) * 2);
 		Main.graphic.putInteger("size of full height",
@@ -296,11 +292,9 @@ public class Main extends ApplicationAdapter {
 		iconNames.add("error");
 		iconNames.add("export");
 		iconNames.add("file");
-		// iconNames.add("icon");
 		iconNames.add("infoIsOn");
 		iconNames.add("isSelected");
 		iconNames.add("left");
-		// iconNames.add("loading button");
 		iconNames.add("love");
 		iconNames.add("loved preview");
 		iconNames.add("map");
@@ -338,7 +332,9 @@ public class Main extends ApplicationAdapter {
 			if (!dir.exists()) {
 				dir.mkdirs();
 			}
-			MixOfImage.manager.load(from.path(), Texture.class);
+			LoadImage.loadIfExist(from.path());
+			// MixOfImage.manager.load(from.path(), Texture.class);
+
 			MixOfImage.manager.finishLoading();
 			Texture texture = MixOfImage.manager.get(from.path(), Texture.class);
 			Pixmap pixmap = LoadImage.textureToPixmap(texture);
@@ -354,7 +350,7 @@ public class Main extends ApplicationAdapter {
 			}
 			PixmapIO.writePNG(to, pixmap);
 			pixmap.dispose();
-			System.out.println("created");
+			// System.out.println("created");
 		}
 	}
 
@@ -381,10 +377,7 @@ public class Main extends ApplicationAdapter {
 		mainTable.setPosition(Main.graphic.getInteger("border"),
 				Gdx.graphics.getHeight() - Main.graphic.getInteger("border")
 						- Main.graphic.getInteger("size of basic button") * 3);
-		System.out.println(Main.graphic.getInteger("border"));
-		System.out.println(Gdx.graphics.getHeight()
-				- Main.graphic.getInteger("border")
-				- Main.graphic.getInteger("size of basic button"));
+
 		Main.mainStage.addActor(mainTable);
 	}
 
@@ -393,7 +386,6 @@ public class Main extends ApplicationAdapter {
 		addIconImage();
 		createIcon(255, 255, 255, 255);
 		createIcon(0, 0, 0, 255);
-
 
 		graphic = Gdx.app.getPreferences("graphic params");
 		imageParam = Gdx.app.getPreferences("image params");
@@ -404,10 +396,6 @@ public class Main extends ApplicationAdapter {
 		inigraphic();
 
 		Text.openText("fr");
-
-		// MixOfImage.manager.load(Main.graphic.getString("image error"),
-		// Texture.class);
-		// MixOfImage.manager.load("images/error.png", Texture.class);
 
 		MixOfImage.manager.finishLoading();
 		mainStage = new Stage(
@@ -477,25 +465,13 @@ public class Main extends ApplicationAdapter {
 					.getImageDataIfExist(imageName);
 
 			if (null != jpegMetadata) {
-				// note that exif might be null if no Exif metadata is found.
 				final TiffImageMetadata exif = jpegMetadata.getExif();
 
 				if (null != exif) {
-					// TiffImageMetadata class is immutable (read-only).
-					// TiffOutputSet class represents the Exif data to write.
-					//
-					// Usually, we want to update existing Exif metadata by
-					// changing
-					// the values of a few fields, or adding a field.
-					// In these cases, it is easiest to use getOutputSet() to
-					// start with a "copy" of the fields read from the image.
+
 					outputSet = exif.getOutputSet();
 				}
 			}
-
-			// if file does not contain any exif metadata, we create an empty
-			// set of exif metadata. Otherwise, we keep all of the other
-			// existing tags.
 			if (null == outputSet) {
 				outputSet = new TiffOutputSet();
 			}
@@ -511,8 +487,6 @@ public class Main extends ApplicationAdapter {
 
 						exifDir.add(ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL,
 								imageData.getDate());
-						System.out.println("date save succefully : " + imageData.getDate());
-						// marche pas bien !!!
 					}
 					if (!imageData.getCoords().equals("") && imageData.getCoords() != null) {
 
@@ -547,13 +521,10 @@ public class Main extends ApplicationAdapter {
 
 			new ExifRewriter().updateExifMetadataLossless(jpegImageFile, os, outputSet);
 		} catch (ImageWriteException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (ImageReadException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -605,10 +576,31 @@ public class Main extends ApplicationAdapter {
 			mainStage.act();
 			mainStage.draw();
 
-			// if (windowOpen.equals("")) {
-			// FileChooser.open();
-			// }
 			MixOfImage.manager.update();
+
+			if (!MixOfImage.toCreate.isEmpty() && MixOfImage.onToCreate.size() <= 5) {
+				System.out.println(1);
+				if (MixOfImage.manager.isLoaded(MixOfImage.toCreate.get(0))) {
+					System.out.println("loaded");
+					MixOfImage.onToCreate
+							.add(MixOfImage.toCreate.get(0));
+					LoadImage.createAllSize(Main.departurePathAndImageNameAndFolder(MixOfImage.toCreate.get(0)).get(1));
+					MixOfImage.toCreate.remove(0);
+					System.out.println(MixOfImage.toCreate);
+				} else {
+
+					LoadImage.loadIfExist(MixOfImage.toCreate.get(0));
+					System.out.println(MixOfImage.toCreate.get(0));
+				}
+			}
+			if (!LoadImage
+					.needToBeCreated(MixOfImage.onToCreate.get(0))) {
+				System.out.println(2);
+
+				MixOfImage.onToCreate.remove(0);
+			}
+
+			// System.out.println(windowOpen);
 			if (openWindow) {
 				openWindow = false;
 				if (windowOpen.equals("ImageEdition")) {
@@ -942,7 +934,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public void createCloseButton() {
-		placeImage(List.of("images/round outline.png", "images/close.png"), "close button",
+		placeImage(List.of("images/close.png"), "close button",
 				new Vector2(Gdx.graphics.getWidth() - graphic.getInteger("size of " + "close button", 50),
 						Gdx.graphics.getHeight() - graphic.getInteger("size of " + "close button",
 								50)),
@@ -1533,6 +1525,7 @@ public class Main extends ApplicationAdapter {
 	}
 
 	public static List<String> departurePathAndImageNameAndFolder(String path) {
+
 		String[] ListImageName = path.split("/");
 		String folder = ListImageName[ListImageName.length - 2];
 		String departurePath = "";

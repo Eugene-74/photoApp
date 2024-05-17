@@ -1,13 +1,13 @@
 package photoapp.main;
 
-import photoapp.main.windows.BigPreview;
-import photoapp.main.windows.DateEdition;
-import photoapp.main.windows.EnterValue;
-import photoapp.main.windows.FileChooser;
-import photoapp.main.windows.ImageEdition;
-import photoapp.main.windows.LocationEdition;
-import photoapp.main.windows.MainImages;
-import photoapp.main.windows.Parameter;
+import photoapp.main.windows.BigPreview.BigPreview;
+import photoapp.main.windows.DateEdition.DateEdition;
+import photoapp.main.windows.EnterValue.EnterValue;
+import photoapp.main.windows.FileChooser.FileChooser;
+import photoapp.main.windows.ImageEdition.ImageEdition;
+import photoapp.main.windows.LocationEdition.LocationEdition;
+import photoapp.main.windows.MainImages.MainImages;
+import photoapp.main.windows.Parameter.Parameter;
 
 public class CommonFunction {
     public static void back() {

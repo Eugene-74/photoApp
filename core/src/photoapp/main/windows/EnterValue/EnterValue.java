@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.EnterValue;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -13,7 +13,7 @@ import com.badlogic.gdx.utils.Align;
 import photoapp.main.Main;
 
 public class EnterValue {
-    static TextField txtValue;
+    public static TextField txtValue;
     public static Table validationTable;
     public static Table textTable;
     public static Label label;
@@ -38,10 +38,9 @@ public class EnterValue {
 
         txtValue.setAlignment(Align.center);
         txtValue.setPosition(-txtValue.getWidth() / 2, -50);
-
         Main.mainStage.addActor(textTable);
         Main.mainStage.addActor(validationTable);
-        Main.placeImage(List.of("images/isSelected.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("isSelected")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {

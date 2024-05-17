@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.MainImages;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import photoapp.main.CommonButton;
 import photoapp.main.Main;
 import photoapp.main.graphicelements.MixOfImage;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.ImageEdition.ImageEdition;
 
 public class MainImages {
     static String fileName = "MainImages";
@@ -95,13 +96,13 @@ public class MainImages {
         }
         CommonButton.createRefreshButton(Main.mainTable);
 
-        Main.placeImage(List.of("images/next down.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("next down")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
                     nextImages();
                 }, null, null, true, true, false, Main.mainTable, true, true, "next images");
-        Main.placeImage(List.of("images/previous up.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("previous up")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -110,7 +111,7 @@ public class MainImages {
                 true, true, false, Main.mainTable, true, true, "previous images");
         if (selectModeIsOn) {
 
-            Main.placeImage(List.of("images/delete.png"), "basic button",
+            Main.placeImage(List.of(Main.imageParam.getString("delete")), "basic button",
                     new Vector2(0, 0),
                     Main.mainStage,
                     (o) -> {
@@ -120,7 +121,7 @@ public class MainImages {
 
                     }, null, null,
                     true, true, false, Main.mainTable, true, true, "delete selected images");
-            Main.placeImage(List.of("images/love.png"), "basic button",
+            Main.placeImage(List.of(Main.imageParam.getString("love")), "basic button",
                     new Vector2(0, 0),
                     Main.mainStage,
                     (o) -> {
@@ -133,7 +134,7 @@ public class MainImages {
 
         } else {
 
-            Main.placeImage(List.of("images/isSelected.png"), "basic button",
+            Main.placeImage(List.of(Main.imageParam.getString("isSelected")), "basic button",
                     new Vector2(0, 0),
                     Main.mainStage,
                     (o) -> {
@@ -250,17 +251,12 @@ public class MainImages {
 
                         placeImageList.add(ImageData.IMAGE_PATH + "/" + imageName);
 
-                        if (selectModeIsOn) {
-                            placeImageList.add("images/red outline.png");
-
-                        } else {
-                            placeImageList.add(Main.imageParam.getString("outline"));
-                        }
+                        placeImageList.add(Main.imageParam.getString("outline"));
                         if (selectedList.contains(imageData) && selectModeIsOn) {
                             placeImageList.add("images/isSselected.png");
                         }
                         if (imageData.getLoved()) {
-                            placeImageList.add("images/loved preview.png");
+                            placeImageList.add(Main.imageParam.getString("loved preview"));
                         }
                         if (ImageEdition.toDelete.contains(imageData, true)) {
                             placeImageList.add("images/deleted preview.png");
@@ -345,95 +341,18 @@ public class MainImages {
                 },
                 (enter) -> {
 
-                    // // if (lastImageChange != null && !lastImageName.equals(imageName) &&
-                    // // lastImageChange != null) {
-                    // // }
-
-                    // System.out.println("enter : " + imageName);
-                    // // over2 = false;
-                    // // if (!over1) {
-                    // if (!lastImageName.equals(imageName)) {
-                    // if (!lastImageName.equals("")) {
-
-                    // placeImageButton(lastPlaceImageList, lastImageName, "enter",
-                    // lastPlaceImageList,
-                    // (click) -> {
-                    // clear();
-                    // Main.unLoadAll();
-                    // ImageEdition.open(imageName, true);
-                    // }, onEnter,
-                    // onExit);
-                    // }
-                    // placeImageButton(placeImageList, imageName, "exit", placeImageListOver,
-                    // onClicked, onEnter,
-                    // onExit);
-
                     if (onEnter != null) {
                         onEnter.accept(null);
                     }
-                    // }
-                    // lastImageName = imageName;
-                    // lastPlaceImageList = new ArrayList<String>(placeImageList);
 
                 }, (exit) -> {
-
-                    // System.out.println("exit bis : " + imageName);
-                    // if (!over2) {
-                    // System.out.println("change");
-                    // placeImageButton(placeImageList, imageName, "enter", placeImageListOver,
-                    // onClicked, onEnter,
-                    // onExit);
 
                     if (onExit != null) {
                         onExit.accept(null);
                     }
-                    // over1 = false;
-                    // }
-                    // over2 = false;
-                    // imageOver = "";
 
-                    // }
-                    System.out.println("exit");
                 }, true, true, false, imagesTable, false, true, "");
 
-        // else if (mode.equals("exit")) {
-        // Main.placeImage(placeImageListOver,
-        // "main images button",
-        // new Vector2(0, 0),
-        // Main.mainStage,
-        // (click) -> {
-        // System.out.println("test");
-        // // onOver = false;
-
-        // if (onClicked != null) {
-        // onClicked.accept(null);
-        // }
-
-        // }, (enter) -> {
-        // // System.out.println("will be out");
-        // // onOver = true;
-        // }, (exit) -> {
-        // // marche pas bien !!!
-        // System.out.println("exit nothing : " + imageName);
-        // placeImageButton(placeImageList, imageName, "enter", placeImageListOver,
-        // onClicked, onEnter,
-        // onExit);
-
-        // if (onExit != null) {
-        // onExit.accept(null);
-        // }
-        // // --
-        // // if (onOver) {
-        // // if (window.equals(Main.windowOpen)) {
-
-        // // }
-
-        // // } else {
-        // // onOver = false;
-        // // }
-
-        // }, true, true, false, imagesTable, false, true, "");
-        // }
     }
 
     public static void previousImages() {
@@ -472,6 +391,8 @@ public class MainImages {
     }
 
     public static void render() {
+        System.out.println("render");
+
         if (TimeUtils.millis() - lastImageChange > 600) {
             lastImageChange = TimeUtils.millis();
             if (imageI.equals(lastImageI)) {
@@ -485,6 +406,12 @@ public class MainImages {
                         String imageName = imageData.getName();
                         change = false;
 
+                        System.out.println(!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/"
+                                + MixOfImage.squareSize.get(0) + "/" + imageName));
+                        System.out.println(!MixOfImage.isOnLoading.contains(ImageData.IMAGE_PATH + "/"
+                                + MixOfImage.squareSize.get(0) + "/" + imageName));
+                        System.out.println(ImageData.IMAGE_PATH + "/"
+                                + MixOfImage.squareSize.get(0) + "/" + imageName);
                         if (!MixOfImage.manager.isLoaded(ImageData.IMAGE_PATH + "/"
                                 + MixOfImage.squareSize.get(0) + "/" + imageName)
                                 && !MixOfImage.isOnLoading.contains(ImageData.IMAGE_PATH + "/"

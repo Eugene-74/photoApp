@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.LocationEdition;
 
 import java.util.ArrayList;
 
@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Align;
 
 import photoapp.main.Main;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.ImageEdition.ImageEdition;
 
 public class LocationEdition {
     static Table mainTable, validationTable, textTable;
@@ -66,7 +67,6 @@ public class LocationEdition {
         Boolean minusLat = false;
         Boolean minusLon = false;
         String coord = imageData.getCoords();
-        // System.out.println("ccord : " + coord);
 
         String[] latt;
         String[] lonn;
@@ -192,7 +192,7 @@ public class LocationEdition {
 
         Main.mainStage.addActor(textTable);
         Main.mainStage.addActor(validationTable);
-        Main.placeImage(java.util.List.of("images/isSelected.png"), "basic button",
+        Main.placeImage(java.util.List.of(Main.imageParam.getString("isSelected")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -308,7 +308,6 @@ public class LocationEdition {
 
                     if (isLatitude1 && isLatitude2 && isLatitude3 && isLatitude4 && isLongitude1 && isLongitude2
                             && isLongitude3 && isLongitude4) {
-                        System.out.println("good");
                         String lat = latitude1.getText() + "° ";
                         lat += latitude2.getText() + "' ";
                         lat += latitude3.getText() + "\"" + "_";

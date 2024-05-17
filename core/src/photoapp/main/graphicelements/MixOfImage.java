@@ -15,9 +15,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.OrderedMap;
 
 import photoapp.main.Main;
-import photoapp.main.windows.LoadImage;
+import photoapp.main.windows.LoadImage.LoadImage;
 
 public class MixOfImage extends Group {
+    public static List<String> toCreate = new ArrayList<String>();
+    public static List<String> onToCreate = new ArrayList<String>();
+
     public static List<String> LoadingList = new ArrayList<String>();
     public static List<String> toPlaceList = new ArrayList<String>();
     public static List<String> notToReLoadList = new ArrayList<String>();
@@ -58,40 +61,70 @@ public class MixOfImage extends Group {
     public static void loadImage(String lookingFor, boolean instant, boolean force) {
         FileHandle imagePath = Gdx.files.absolute(lookingFor);
         if (!imagePath.exists()) {
-            imagePath = Gdx.files.internal(lookingFor);
-            if (!imagePath.exists()) {
+            if (!instant) {
+
+                imagePath = Gdx.files.internal(lookingFor);
+                // if (!imagePath.exists()) {
                 System.out.println(imagePath + " does not exist");
-                return;
+                // System.out.println(Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2));
+                if (Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2).equals("10")
+                        || Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2).equals("100")
+                        || Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2).equals("150")) {
+                    System.out.println("creating the files ");
 
-            }
-        }
-        isOnLoading.add(lookingFor);
-        if (instant) {
-
-            manager.load(lookingFor, Texture.class);
-            if (force) {
-                manager.finishLoading();
-            }
-        } else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-
-                        if (Main.infoText == " " || Main.infoText == Main.graphic.getString("text.done")) {
-                            Main.infoTextSet("loading .", false);
+                    if (!toCreate.contains(Main.departurePathAndImageNameAndFolder(imagePath.path()).get(1))) {
+                        if (Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2).equals("10")) {
+                            toCreate.add(imagePath.path().replace("/10", ""));
+                        } else if (Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2).equals("100")) {
+                            toCreate.add(imagePath.path().replace("/100", ""));
+                        } else if (Main.departurePathAndImageNameAndFolder(imagePath.path()).get(2).equals("150")) {
+                            toCreate.add(imagePath.path().replace("/150", ""));
                         }
 
-                        isLoading = true;
-                        manager.load(lookingFor, Texture.class);
+                    }
+                    return;
 
-                        notToReLoadList.add(lookingFor);
-                    } catch (Exception e) {
-                        System.err.println("image can't be load");
-                    } finally {
+                }
+            }
+
+        } else {
+            isOnLoading.add(lookingFor);
+
+            if (instant) {
+                FileHandle f = new FileHandle(lookingFor);
+                if (f.exists()) {
+
+                    LoadImage.loadIfExist(lookingFor);
+
+                    if (force) {
+
+                        System.out.println(lookingFor + "exist \n\n");
+
+                        manager.finishLoading();
                     }
                 }
-            }).start();
+            } else {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+
+                            if (Main.infoText == " " || Main.infoText == Main.graphic.getString("text.done")) {
+                                Main.infoTextSet("loading .", false);
+                            }
+
+                            isLoading = true;
+
+                            LoadImage.loadIfExist(lookingFor);
+
+                            notToReLoadList.add(lookingFor);
+                        } catch (Exception e) {
+                            System.err.println("image can't be load");
+                        } finally {
+                        }
+                    }
+                }).start();
+            }
         }
     }
 
@@ -107,17 +140,23 @@ public class MixOfImage extends Group {
             boolean force,
             boolean isFirstLoading, boolean isSquare) {
         FileHandle departureSizeImageHandle = Gdx.files.absolute(imagePath);
+        // if (departureSizeImageHandle.exists()) {
 
-        if (force) {
-            manager.load(departureSizeImageHandle.path(), Texture.class);
+        if (force || Main.iconNames
+                .contains(Main.departurePathAndImageNameAndFolder(imagePath)
+                        .get(1).replace(".png", ""))) {
+
+            LoadImage.loadIfExist(departureSizeImageHandle.path());
             manager.finishLoading();
         } else {
             imagePath = getImageSizedPath(imagePath, isSquare);
             departureSizeImageHandle = Gdx.files.absolute(imagePath);
             if (shouldBeForce(imagePath, isSquare)) {
-
-                loadImage(departureSizeImageHandle.path(), true, true);
-
+                FileHandle f = new FileHandle(departureSizeImageHandle.path());
+                if (f.exists()) {
+                    System.out.println("exist \n\n");
+                    loadImage(departureSizeImageHandle.path(), true, true);
+                }
             }
 
         }
@@ -125,11 +164,11 @@ public class MixOfImage extends Group {
             return manager.get(departureSizeImageHandle.path(), Texture.class);
         } else {
             if (!manager.isLoaded(Main.graphic.getString("image error"), Texture.class)) {
-                manager.load(Main.graphic.getString("image error"), Texture.class);
+
+                LoadImage.loadIfExist(Main.graphic.getString("image error"));
                 manager.finishLoading();
             }
             isLoading = true;
-            // manager.load(departureSizeImageHandle.path(), Texture.class);
 
             loadImage(departureSizeImageHandle.path(), false, false);
 
@@ -137,15 +176,13 @@ public class MixOfImage extends Group {
                 startToLoadImage(departureSizeImageHandle.path());
                 firstLoading = true;
                 LoadingList.add(departureSizeImageHandle.path());
-                System.out.println("error : " + departureSizeImageHandle.path());
                 return manager.get(Main.graphic.getString("image error"), Texture.class);
 
             }
         }
-        System.out.println("error : " + departureSizeImageHandle.path());
 
+        // }
         return manager.get(Main.graphic.getString("image error"), Texture.class);
-
     }
 
     public MixOfImage(List<String> imagePaths, float width, float height, String prefSizeName,
@@ -155,6 +192,7 @@ public class MixOfImage extends Group {
         Texture texture;
 
         for (String imagePath : imagePaths) {
+
             Integer rotation = 0;
             imagePath = imagePath.replace("\\", "/");
             List<String> list = Main.departurePathAndImageNameAndFolder(imagePath);
@@ -162,7 +200,9 @@ public class MixOfImage extends Group {
             String[] ListImageName = imagePath.split("/");
             String folder = list.get(2);
 
-            if (!folder.equals("images")) {
+            if (!folder.equals("images") && !Main.iconNames
+                    .contains(Main.departurePathAndImageNameAndFolder(imagePath)
+                            .get(1).replace(".png", ""))) {
                 fileName = Gdx.files.absolute(imagePath);
 
             }
@@ -193,8 +233,6 @@ public class MixOfImage extends Group {
 
                 }
             }
-
-            // }
 
             texture = isInImageData(imagePath, force, false,
                     isSquare);
@@ -246,17 +284,12 @@ public class MixOfImage extends Group {
 
             image.rotateBy(rotation);
             if (isSquare) {
-                if (!imagePath.endsWith("utline.png")) { // && !prefSizeName.equals("preview image")
+                // if (!imagePath.endsWith("utline.png")) { // && !prefSizeName.equals("preview
+                // image")
 
-                    // image.setOrigin((max - espace) / 2, (max - espace) / 2);
-                    image.setOrigin((max) / 2, (max) / 2);
+                image.setOrigin((max) / 2, (max) / 2);
 
-                    // resized image
-                    // } else {
-                    // // preview image
-                    // image.setOrigin(width / 2, height / 2);
-
-                }
+                // }
             } else {
                 // main image
                 if (rotation == 90 || rotation == 270) {
@@ -272,7 +305,7 @@ public class MixOfImage extends Group {
 
             }
 
-            if (imagePath.endsWith("utline.png")) {
+            if (imagePath.endsWith("utline.png") || imagePath.endsWith("ected.png")) {
                 image.setName("outline");
             } else {
                 image.setName("image");
@@ -281,9 +314,7 @@ public class MixOfImage extends Group {
             addActor(image);
 
         }
-        if (fileName != null)
-
-        {
+        if (fileName != null) {
             setName(fileName.name());
 
         } else {
@@ -315,7 +346,8 @@ public class MixOfImage extends Group {
                 if (!arrivalHandle.exists()) {
                     arrivalHandle.mkdirs();
                 }
-                loadImage(departureImageHandle.path(), true, force);
+
+                loadImage(departureImageHandle.path(), true, false);
                 Texture texture = manager.get(departureImageHandle.path(), Texture.class);
                 Pixmap pixmap = null;
                 if (size != null) {
@@ -418,9 +450,11 @@ public class MixOfImage extends Group {
                     .absolute(departurePath + folder + "/" + size.get(size.size() - 1) + "/" + name);
 
             if (!handle.exists()) {
-                createAnImage(departurePath + folder, departurePath + folder + "/" + size.get(size.size() - 1), name,
-                        name,
-                        Integer.parseInt(size.get(size.size() - 1)), isSquare, true);
+                // createAnImage(departurePath + folder, departurePath + folder + "/" +
+                // size.get(size.size() - 1), name,
+                // name,
+                // Integer.parseInt(size.get(size.size() - 1)), isSquare, true);
+                LoadImage.createAllSize(Main.departurePathAndImageNameAndFolder(imagePath).get(1));
             }
             return (departurePath + folder + "/" + size.get(size.size() - 1) + "/" + name);
 
@@ -428,6 +462,14 @@ public class MixOfImage extends Group {
     }
 
     public static boolean shouldBeForce(String imagePath, boolean isSquare) {
+
+        // System.out.println("exist : " + imagePath);
+        if (Main.iconNames
+                .contains(Main.departurePathAndImageNameAndFolder(imagePath)
+                        .get(1).replace(".png", ""))) {
+            return true;
+
+        }
         for (String size : forceSize) {
             if (Main.departurePathAndImageNameAndFolder(getImageSizedPath(imagePath, isSquare))
                     .get(2).equals(size)
@@ -435,7 +477,9 @@ public class MixOfImage extends Group {
                             .get(2).equals("images")) {
                 return true;
             }
+
         }
+
         return false;
     }
 }

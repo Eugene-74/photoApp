@@ -1,13 +1,14 @@
-package photoapp.main.windows;
+package photoapp.main;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.TimeUtils;
 
-import photoapp.main.CommonFunction;
-import photoapp.main.Main;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.BigPreview.BigPreview;
+import photoapp.main.windows.ImageEdition.ImageEdition;
+import photoapp.main.windows.MainImages.MainImages;
 
 public class Keybord implements InputProcessor {
     public static boolean crtl = false;

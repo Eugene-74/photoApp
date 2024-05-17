@@ -1,4 +1,4 @@
-package photoapp.main.windows;
+package photoapp.main.windows.FileChooser;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +12,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import photoapp.main.CommonButton;
 import photoapp.main.Main;
 import photoapp.main.storage.ImageData;
+import photoapp.main.windows.EnterValue.EnterValue;
+import photoapp.main.windows.MainImages.MainImages;
+import photoapp.main.windows.Parameter.Parameter;
 
 public class FileChooser {
 
@@ -77,7 +80,7 @@ public class FileChooser {
     }
 
     public static void placeButton() {
-        Main.placeImage(List.of("images/addFile.png"),
+        Main.placeImage(List.of(Main.imageParam.getString("addFile")),
                 "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
@@ -92,7 +95,7 @@ public class FileChooser {
                 }, null, null,
                 true, true, false, Main.mainTable, true, true, "add a file");
 
-        Main.placeImage(List.of("images/openParameter.png"), "basic button",
+        Main.placeImage(List.of(Main.imageParam.getString("openParameter")), "basic button",
                 new Vector2(0, 0),
                 Main.mainStage,
                 (o) -> {
@@ -129,7 +132,7 @@ public class FileChooser {
             Integer index = 0;
             List<String> names = new ArrayList<String>();
 
-            Main.placeImage(List.of("images/allFile.png"),
+            Main.placeImage(List.of(Main.imageParam.getString("allFile")),
                     "full button",
                     new Vector2(0, 0),
                     Main.mainStage,
@@ -160,8 +163,8 @@ public class FileChooser {
                 if (i < totalMax) {
                     i += 1;
                     List<String> placeList = new ArrayList<>();
-                    placeList.add("images/file.png");
-                    placeList.add("images/outline.png");
+                    placeList.add(Main.imageParam.getString("file"));
+                    placeList.add(Main.imageParam.getString("outline"));
 
                     Main.placeImage(placeList,
                             "full button",
